@@ -1,9 +1,9 @@
 from itertools import chain
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.preprocessing import LabelBinarizer
-from konlpy.tag import Kkma
+
 from random import shuffle
-kkma = Kkma() ###komoran-->kkma
+
 import ner_settings as st
 import re
 

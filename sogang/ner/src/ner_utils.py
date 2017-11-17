@@ -21,6 +21,8 @@ def write_result(test_sents, y_pred,file_full_name) :
             wf.write('\n'.encode('utf-8'))
 
 def write_result_from_ft(orisents, nesents, X, y_pred,file_full_name, yprob = None) :
+    if yprob != None :
+        sent_prob = [min(prob_list) for prob_list in yprob]
     wf = codecs.open(file_full_name, 'w',encoding= st.ENCODING)
     if len(orisents) != len(X) or len(nesents) != len(X) :
         print('error!!!') #blocked for tmp hy
@@ -29,7 +31,10 @@ def write_result_from_ft(orisents, nesents, X, y_pred,file_full_name, yprob = No
             print ('...'+str(s_idx)+'/'+str(len(X))+'...')
         if len(y_pred[s_idx]) == 0:
             continue
-        wf.write(';'+orisents[s_idx]+'\n') #blocked for tmp hy
+        if yprob != None :
+            wf.write(';'+orisents[s_idx]+'\t'+str(sent_prob[s_idx])+'\n') #blocked for tmp hy
+        else :
+            wf.write(';' + orisents[s_idx] +'\n')
         #wf.write('$' + nesents[s_idx] + '\n')
         for word_idx in range(len(X[s_idx])):
             word_fts = X[s_idx][word_idx]
@@ -135,7 +140,7 @@ def read_labeled_text_data_dir(dir_path, encoding,flatten=False) :
         X += x_f
         y += y_f
     return orisent,nesent, sent, X, y
-def read_labeled_text_data(file_path, encoding, save = False, save_path = None, flatten = True, make_ft = True) :
+def read_labeled_text_data(file_path, encoding, save = False, save_path = None, flatten = False, make_ft = True) :
     f = codecs.open(file_path, 'r', encoding=encoding)
     orisents, nesents, sents = pre.read_labeled_file(f, flatten=flatten)
     X = []
