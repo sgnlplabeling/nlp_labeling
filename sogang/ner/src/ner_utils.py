@@ -20,9 +20,18 @@ def write_result(test_sents, y_pred,file_full_name) :
                 wf.write(out_str.encode('utf-8'))
             wf.write('\n'.encode('utf-8'))
 
+def change_ej_yj2donga(ej_yj) :
+    ej_donga = []
+    donga_i = 0
+    for e in ej_yj :
+        if e == 0 :
+            donga_i += 1
+        ej_donga.append(donga_i)
+    return ej_donga
 def write_result_from_ft(orisents, nesents, X, y_pred,file_full_name, yprob = None) :
     if yprob != None :
-        sent_prob = [min(prob_list) for prob_list in yprob]
+        sent_prob = [min(prob_list) if len(prob_list)>0 else 0.0 for prob_list in yprob ]
+
     wf = codecs.open(file_full_name, 'w',encoding= st.ENCODING)
     if len(orisents) != len(X) or len(nesents) != len(X) :
         print('error!!!') #blocked for tmp hy
@@ -36,13 +45,14 @@ def write_result_from_ft(orisents, nesents, X, y_pred,file_full_name, yprob = No
         else :
             wf.write(';' + orisents[s_idx] +'\n')
         #wf.write('$' + nesents[s_idx] + '\n')
+        ej_number_yj = [int(get_ft_value(w, 'position')) for w in X[s_idx]]
+        ej_number_donga = change_ej_yj2donga(ej_number_yj)
         for word_idx in range(len(X[s_idx])):
             word_fts = X[s_idx][word_idx]
             if yprob == None:
-                out_str = get_ft_value(word_fts, 'word') + ' ' + get_ft_value(word_fts, 'postag') + ' ' + get_ft_value(
-                word_fts, 'position') + ' ' + y_pred[s_idx][word_idx] + '\n'
+                out_str = get_ft_value(word_fts, 'word') + ' ' + get_ft_value(word_fts, 'postag') + ' ' + str(ej_number_donga[word_idx])+ ' ' + y_pred[s_idx][word_idx] + '\n'
             else :
-                out_str = get_ft_value(word_fts, 'word') + ' ' + get_ft_value(word_fts, 'postag') + ' ' + get_ft_value(word_fts, 'position') + ' ' + y_pred[s_idx][word_idx] + ' '+str(yprob[s_idx][word_idx])+'\n'
+                out_str = get_ft_value(word_fts, 'word') + ' ' + get_ft_value(word_fts, 'postag') + ' ' + str(ej_number_donga[word_idx]) + ' ' + y_pred[s_idx][word_idx] + ' '+str(yprob[s_idx][word_idx])+'\n'
             wf.write(out_str)
         wf.write('\n')
     #with open(file_full_name, 'w') as wf:
