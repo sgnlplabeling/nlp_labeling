@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="collection">
+	<resultMap id="CollectionMap" type="CollectionVo">
+        <result property="colId" column="COL_ID"/>
+        <result property="name" column="NAME"/>
+        <result property="parentId" column="PARENT_ID"/>
+        <result property="path" column="PATH"/>
+    </resultMap>	
+    
+	<select id="getCollectionList" resultMap="CollectionMap">
+		SELECT
+			COL_ID, NAME, PARENT_ID, PATH
+		FROM 
+			COLLECTION_NEW
+		WHERE 
+			1=1
+	</select>
+	
+	<select id="getCollectionOne" parameterType="int" resultMap="CollectionMap">
+		SELECT
+			COL_ID, NAME, PARENT_ID, PATH
+		FROM 
+			COLLECTION_NEW
+		WHERE 
+			1=1
+			AND col_ID = #{colId}
+	</select>
+		
+	<insert id="insertDomain" parameterType="CollectionVo">
+			INSERT INTO 
+				COLLECTION_NEW (NAME, PARENT_ID, PATH) 
+			SELECT
+				#{name}, #{parentId}, #{path}
+	</insert>
+	
+	<delete id="deleteDomain" parameterType="CollectionVo">
+		DELETE FROM COLLECTION_NEW
+		WHERE 
+			COL_ID = #{colId}
+	</delete>
+	
+	<update id="updateDomain" parameterType="CollectionVo">
+		UPDATE COLLECTION_NEW 
+		SET 
+			name = #{name}
+		WHERE 
+			COL_ID = #{colId}
+	</update>
+</mapper>
