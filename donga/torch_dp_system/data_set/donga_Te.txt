@@ -1,0 +1,12 @@
+; 그렇게 얼마간 들떠 있는 봄이 무작정 좋았던 시기가 나에게도 있었다.
+1	3	VP	그렇/VA+게/EC
+2	3	NP_AJT	얼마간/NNG
+3	4	VP	들뜨/VV+어/EC
+4	5	VP_MOD	있/VX+는/ETM
+5	7	NP_SBJ	봄/NNG+이/JKS
+6	7	NP	무작정/NNG
+7	8	VP_MOD	좋/VA+았/EP+던/ETM
+8	10	NP_SBJ	시기/NNG+가/JKS
+9	10	NP_AJT	나/NP+에게/JKB+도/JX
+10	0	VP	있/VA+었/EP+다/EF+./SF
+

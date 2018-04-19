@@ -1,0 +1,18 @@
+; 엠마누엘 웅가로는 "실내 장식품을 디자인할 때 옷을 만들 때와는 다른 해방감을 느낀다"고 말한다.
+1	2	NP	엠마누엘/NNP
+2	16	NP_SBJ	웅가로/NNP+는/JX
+3	14	L	"/SS
+4	5	NP	실내/NNG
+5	6	NP_OBJ	장식품/NNG+을/JKO
+6	7	VP_MOD	디자인/NNG+하/XSV+ㄹ/ETM
+7	13	NP_AJT	때/NNG
+8	9	NP_OBJ	옷/NNG+을/JKO
+9	10	VP_MOD	만들/VV+ㄹ/ETM
+10	11	NP_SBJ	때/NNG+와/JKB+는/JX
+11	12	VP_MOD	다르/VA+ㄴ/ETM
+12	13	NP_OBJ	해방감/NNG+을/JKO
+13	14	VP	느끼/VV+ㄴ다/EC
+14	15	R	"/SS
+15	16	X_CMP	고/JKQ
+16	0	VP	말/NNG+하/XSV+ㄴ다/EF+./SF
+

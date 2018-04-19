@@ -1,0 +1,20 @@
+; 그 중 나아 보이는 한 집 앞에서 나그네는 지친 발길을 멈추고 "이리 오너라!" 하고 주인을 찾았다.
+1	2	NP	그/MM
+2	3	NP	중/NNB
+3	4	NP	낫/VA+아/EC
+4	18	NP	보이/VV+는/ETM
+5	6	NP	한/MM
+6	7	NP	집/NNG
+7	9	NP	앞/NNG+에서/JKB
+8	9	NP	나그네/NNG+는/JX
+9	18	NP	지치/VV+ㄴ/ETM
+10	11	NP	발길/NNG+을/JKO
+11	18	NP	멈추/VV+고/EC
+12	13	NP	"/SS
+13	18	NP	이리/MAG
+14	18	NP	오/VV+너라/EF+!/SF
+15	18	NP	"/SS
+16	18	NP	하/VV+고/EC
+17	18	NP	주인/NNG+을/JKO
+18	0	NP	찾/VV+았/EP+다/EF+./SF
+
