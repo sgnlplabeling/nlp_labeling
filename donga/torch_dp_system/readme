@@ -31,7 +31,8 @@ PointerNetworks : 프로그램 실행 관련 소스 및 학습된 모델, Pickle
                        -w : word embedding dimension을 지정하는 파라미터입니다.
                        -l : LSTM hidden layer size를 지정하는 파라미터입니다.
                        -p : pretrained word embedding pickle 파일의 위치를 지정하는 파라미터입니다.
-		            반드시 사전 형태로 구성되어 있어야 하며, key는 단어, value는 벡터로 구성되어 있어야 합니다.
+		            반드시 사전 형태로 구성되어 있어야 하며,
+			    key는 단어, value는 벡터로 구성되어 있어야 합니다.
                        -D : dropout rate를 지정하는 파라미터입니다. 
 		            이 파라미터를 0을 주면 dropout을 하지 않는 것을 의미합니다.
                        -M : 학습을 수행할 것인지 구문 분석을 행할 것이지 정하는 파라미터입니다.
