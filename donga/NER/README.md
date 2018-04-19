@@ -1,10 +1,14 @@
 작성자 : 유홍연(hongyeon1408@gmail.com), 이승욱(seungwooklee76@gmail.com)
 날짜 : 2018년 4월 2일
 
-Python Version : 2.7.0
-PyTorch Version : 0.3.0
-Numpy version : 1.14.0
-SciPy version : 1.0.0
+
+환경
+
+
+Python : 2.7.0
+PyTorch : 0.3.0
+Numpy : 1.14.0
+SciPy : 1.0.0
 
 bidirectional LSTM CRFs Model
 음절 LSTM 임베딩, 워드임베딩, POS Onehot임베딩 추가자질로 사용
@@ -12,14 +16,23 @@ bidirectional LSTM CRFs Model
 입력 형태
 
 단어   품사태그 어절 순서   태그
+
 서호프	NNP	1	B-PS
+
 와	JC	1	O
+
 파사노	NNP	2	B-PS
+
 에게	JC	2	O
+
 연속	NNG	3	O
+
 안타	NNG	4	O
+
 를	JKO	4	O
+
 내주	VV	5	O
+
 며	EC	5	O
 
 평가시 출력 형태
