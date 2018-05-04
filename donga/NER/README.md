@@ -16,7 +16,7 @@ https://github.com/sgnlplabeling/nlp_labeling
 
 유홍연, 고영중. (2017). Bidirectional LSTM CRF 기반의 개체명 인식을 위한 단어 표상의 확장. 정보과학회논문지, 44(3), 306-313.
 
-날짜 : 2018년 4월 2일 
+작성날짜 : 2018년 4월 2일 
 
 
 환경
