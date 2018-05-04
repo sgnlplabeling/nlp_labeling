@@ -1,6 +1,6 @@
 소속 : 동아대학교 지능형 시스템 실험실
 
-개발 : 고영중(YoungJoog Ko) 유홍연(HongYeon Yu) 이승욱(SeungWook Lee)
+개발 : 고영중(YoungJoog Ko),  유홍연(HongYeon Yu),  이승욱(SeungWook Lee)
 
 홈페이지 : http://islab.donga.ac.kr/
 
