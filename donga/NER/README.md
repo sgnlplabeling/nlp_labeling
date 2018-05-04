@@ -12,6 +12,7 @@ E-Mail : hongyeon1408@gmail.com, seungwooklee76@gmail.com
 
 참조는 아래 논문을 참조하여 주시기를 바랍니다.
 
+
 https://github.com/sgnlplabeling/nlp_labeling
 
 유홍연, 고영중. (2017). Bidirectional LSTM CRF 기반의 개체명 인식을 위한 단어 표상의 확장. 정보과학회논문지, 44(3), 306-313.
