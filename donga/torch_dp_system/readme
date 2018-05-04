@@ -1,7 +1,12 @@
 소속 : 동아대학교 지능형 시스템 실험실
 이름 : 안재현(Jae Hyun An, 석사과정), 고영중(Youngjoong Ko, 교수)
 메일 : anjaehyun17@gmail.com, youngjoong.ko@gmail.com
+본 프로그램은 동아대학교 지능형시스템 연구실의 소중한 자산입니다. 본 프로그램을 이용한 어떠한 결과물일지라도 본 프로그램의 논문 혹은 주소가 참조되어야 합니다.
+참조는 아래 논문을 참조하여 주시기를 바랍니다.
 
+git address : https://github.com/sgnlplabeling/nlp_labeling/tree/master/donga/torch_dp_system
+
+paper : Jaehyun An, Youngjoong Ko, "The Korean Dependency Parser for Pointer Networks based on Multi-task learning and Relation Label Distribution of Syllables", KSC2017
 
 본 프로그램은 레이블링 과제 의존 구문 분석 프로그램에 대한 문서입니다.
 
