@@ -463,14 +463,13 @@ if parameters['mode']:
 			best_test = dev_score
 			with open(models_path+parameters['name'], 'wb') as f:
 				torch.save(model,f)
-			print("New best score on dev.")
+			print("New best score on Test.")
+		print(("Test f1 : {}").format(dev_score))
                 sys.stdout.flush()
                 model.train(True)
 
             if count % len(train_data) == 0:
                 adjust_learning_rate(optimizer, lr=learning_rate/(1+0.05*count/len(train_data)))
-
-        print(("Test f1 : {}").format(dev_score))
         dev_list.append(dev_score)
         end_epoch_time = time.time()
         print(dev_list)
