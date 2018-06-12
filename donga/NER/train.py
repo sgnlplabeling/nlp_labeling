@@ -459,19 +459,18 @@ if parameters['mode']:
                 count % (eval_every*4) == 0 and count < (eval_every * 20):
                 model.train(False)
                 dev_score, _ = evaluating(model, test_data)
+		if dev_score > best_test:
+			best_test = dev_score
+			with open(models_path+parameters['name'], 'wb') as f:
+				torch.sva(model,f)
+			print("New best score on dev.")
                 sys.stdout.flush()
                 model.train(True)
 
             if count % len(train_data) == 0:
                 adjust_learning_rate(optimizer, lr=learning_rate/(1+0.05*count/len(train_data)))
 
-        print(("dev f1 : {}").format(dev_score))
-
-        if dev_score > best_test:
-            best_test = dev_score
-            with open(models_path+parameters['name'], 'wb') as f:
-                torch.save(model, f)
-            print("New best score on dev.")
+        print(("Test f1 : {}").format(dev_score))
         dev_list.append(dev_score)
         end_epoch_time = time.time()
         print(dev_list)
