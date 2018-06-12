@@ -462,7 +462,7 @@ if parameters['mode']:
 		if dev_score > best_test:
 			best_test = dev_score
 			with open(models_path+parameters['name'], 'wb') as f:
-				torch.sva(model,f)
+				torch.save(model,f)
 			print("New best score on dev.")
                 sys.stdout.flush()
                 model.train(True)
