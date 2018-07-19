@@ -324,7 +324,7 @@ all_F = [[0, 0, 0]]
 plot_every = 50
 eval_every = 500
 count = 0
-dev_list = []
+test_list = []
 n_epoch = 100
 sys.stdout.flush()
 
@@ -455,22 +455,23 @@ if parameters['mode']:
                 losswin = 'loss_' + name
                 textwin = 'loss_text_' + name
                 loss = 0.0
-            if count % (eval_every) ==0 and count > (eval_every*20) or \
-                count % (eval_every*4) == 0 and count < (eval_every * 20):
-                model.train(False)
-                dev_score, _ = evaluating(model, test_data)
-		if dev_score > best_test:
-			best_test = dev_score
-			with open(models_path+parameters['name'], 'wb') as f:
-				torch.save(model,f)
-			print("New best score on Test.")
-		print(("Test f1 : {}").format(dev_score))
-                sys.stdout.flush()
-                model.train(True)
 
             if count % len(train_data) == 0:
                 adjust_learning_rate(optimizer, lr=learning_rate/(1+0.05*count/len(train_data)))
-        dev_list.append(dev_score)
+	model.train(False)
+	best_dev_F, _ = evaluating(model, dev_data)
+	best_test_F, _ = evaluating(model, test_data)
+	if best_test_F > best_test:
+		best_test = best_test_F
+		with open(models_path+parameters['name'], 'wb') as f:
+			torch.save(model, f)
+		print("New best score on Test")
+	sys.stdout.flush()
+	model.train(True)
+	print(("dev f1 : {}").format(best_dev_F))
+	print(("test f1 : {}").format(best_test_F))
+	
+        test_list.append(test_score)
         end_epoch_time = time.time()
         print(dev_list)
         print("Epoch {} done. Average cost: {}, time: {:.3f} min".format(epoch, np.mean(losses), (end_epoch_time - start_epoch_tim)/60.0))
