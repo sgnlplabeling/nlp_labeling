@@ -51,3 +51,7 @@
  본 연구를 통해 개발된 텍스트 분석 엔진, 관리도구 및 생성된 코퍼스는 빅데이터 분석, 심층학습을 포함하는 기계학습 분야와 자연어처리 분야의 발전에 기여할 것이며, 대화 코퍼스와 자동차 사용설명서의 두 가지 응용영역에 적용되는 화행분석과 인과관계 분석의 기술은 향후 4차 산업혁명의 중요 분야인 인공지능 분야의 대화시스템과 질의응답시스템의 발전에 중대한 기여를 할 것이다.   
  
 ![성과](./images/labeling4.jpg)
+
+#  해당 repository에 포함 된 모든 source code와 image, data는 CCL(저작자표시-비영리-변경금지(BY-NC-ND)) license를 따릅니다.
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="크리에이티브 커먼즈 라이선스" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />이 저작물은 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">크리에이티브 커먼즈 저작자표시-비영리-변경금지 4.0 국제 라이선스</a>에 따라 이용할 수 있습니다.
+<img src="http://cckorea.org/images/b05.jpg" width="20%"></img>
