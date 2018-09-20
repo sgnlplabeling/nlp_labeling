@@ -320,11 +320,13 @@ best_test = -np.inf
 best_dev_F = -1.0
 best_test_F = -1.0
 best_train_F = -1.0
+best_epoch = 0
 all_F = [[0, 0, 0]]
 plot_every = 50
 eval_every = 500
 count = 0
 test_list = []
+dev_list = []
 n_epoch = 100
 sys.stdout.flush()
 
@@ -463,6 +465,7 @@ if parameters['mode']:
 	best_test_F, _ = evaluating(model, test_data)
 	if best_test_F > best_test:
 		best_test = best_test_F
+		best_epoch = epoch
 		with open(models_path+parameters['name'], 'wb') as f:
 			torch.save(model, f)
 		print("New best score on Test")
@@ -471,11 +474,13 @@ if parameters['mode']:
 	print(("dev f1 : {}").format(best_dev_F))
 	print(("test f1 : {}").format(best_test_F))
 	
-        test_list.append(test_score)
+        test_list.append(best_test_F)
+	dev_list.append(best_dev_F)
         end_epoch_time = time.time()
         print(dev_list)
         print("Epoch {} done. Average cost: {}, time: {:.3f} min".format(epoch, np.mean(losses), (end_epoch_time - start_epoch_tim)/60.0))
         print("Best test : {}".format(best_test))
+	print("Best test epoch : {}".format(best_epoch))
 
     print(time.time() - t)
 else:
