@@ -13,7 +13,7 @@ E-Mail : hongyeon1408@gmail.com, seungwooklee76@gmail.com
 참조는 아래 논문 및 사이트를 참조하여 주시기 바랍니다.
 
 
-https://github.com/sgnlplabeling/nlp_labeling/tree/master/donga/NER
+https://github.com/sgnlplabeling/nlp_labeling/tree/master/%5BLabeling%20tool%5D%20Deep-learning%20based/NER
 
 Hongyeon Yu, Youngjoong Ko. "Expansion of Word Representation for Named Entity Recognition Based on Bidirectional LSTM CRFs." Journal of KIISE, 44.3 (2017.3): 306-313.
 
