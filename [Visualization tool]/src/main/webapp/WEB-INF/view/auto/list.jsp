@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
-<script type="text/javascript" src="/resources/js/page/auto/list.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/page/auto/list.js"></script>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -36,7 +36,7 @@
 				<!--// 문서집합 관리 트리 end -->
 				
 				<div class="cont_win domain_02">
-					<form id="searchForm" action="/auto/list.do?_format=json" method="post">
+					<form id="searchForm" action="${pageContext.request.contextPath}/auto/list.do?_format=json" method="post">
 						<input type="hidden" id="pageSize" name="pageSize" value="${doc.pageSize}"/>
 						<input type="hidden" id="colId" name="colId" value="${doc.colId}" />
 						<input type="hidden" id="domain" name="domain" value=""/> 
@@ -51,6 +51,8 @@
 										<li><input type="radio" name="groupName" value="namedentity" <c:if test="${doc.groupName == 'namedentity'}">checked</c:if>>개체명</li>
 										<li><input type="radio" name="groupName" value="syntactic" <c:if test="${doc.groupName == 'syntactic'}">checked</c:if>>구문분석</li>
 										<li><input type="radio" name="groupName" value="causation" <c:if test="${doc.groupName == 'causation'}">checked</c:if>>인과관계</li>
+										<li><input type="radio" name="groupName" value="speech" <c:if test="${doc.groupName == 'speech'}">checked</c:if>>화행</li>
+										<li><input type="radio" name="groupName" value="simentic" <c:if test="${doc.groupName == 'simentic'}">checked</c:if>>의미역 결정</li>
 									 </ul>
 								</div>
 							</fieldset>
@@ -98,7 +100,7 @@
 							</div>
 						<!-- 목록 start -->
 						<fieldset><legend>목록</legend>
-							<form id="labeling_form" action="/auto/start.do?_format=json">
+							<form id="labeling_form" action="${pageContext.request.contextPath}/auto/start.do?_format=json">
 							<input type="hidden" id="autoGroupName" name="groupName" value="${doc.groupName}"/>
 				            <table class="tbl_type03 h_type03 mt_10">
 							    <caption>문서 목록</caption>
@@ -122,9 +124,9 @@
 				                		<th scope="col">도메인</th>
 				                		<th scope="col">문서제목 (파일명)</th>
 				                		<th scope="col">내용</th>
-				                		<th scope="col">등록자</th>
-				                		<th scope="col">작업완료확인</th>
-				                		<th scope="col">등록일</th>
+				                		<th scope="col">작업자</th>
+				                		<th scope="col">시작시간</th>
+				                		<th scope="col">종료시간</th>
 				                		<th scope="col">Action</th>
 				                	</tr>
 				                </thead>
@@ -132,12 +134,14 @@
 				                 <c:if test="${not empty list}">
 									<c:forEach var="result" items="${list}">
 				                	<tr>
-				                		<td><input type="checkbox" name="docIds" value="${result.docId}"/></td>
-					                	<td>${result.rabelStat}</td>
+				                		<td><input type="checkbox" name="docIds" id="docIdChk_${result.docId}" value="${result.docId}"/></td>
+					                	<td id="learningStatus_${result.docId}">${result.rabelStat}</td>
 			                			<td> 
-				                			<c:if test="${doc.groupName == 'namedentity'}">개체명</c:if>
-				                			<c:if test="${doc.groupName == 'syntactic'}">구문분석</c:if>
-				                			<c:if test="${doc.groupName == 'causation'}">인과관계</c:if>
+				                			<c:if test="${result.groupName == 'namedentity'}">개체명</c:if>
+				                			<c:if test="${result.groupName == 'syntactic'}">구문분석</c:if>
+				                			<c:if test="${result.groupName == 'causation'}">인과관계</c:if>
+				                			<c:if test="${result.groupName == 'simentic'}">의미역 결정</c:if>
+				                			<c:if test="${result.groupName == 'speech'}">화행</c:if>
 			                			</td>
 					                	<td title='<c:if test="${not empty result.domainPath}">${result.domainPath}/</c:if>${result.domain}'>
 					                		${result.domain}
@@ -145,8 +149,8 @@
 					                	<td title="${result.subject}"><div class="of_hidden">${result.subject}</div></td>
 					                	<td title="${result.content} .." class="left"><div class="of_hidden">${result.content}</div></td>
 					                	<td>${result.regId}</td>
-				                		<td>${result.confId}</td>
-				                		<td><fmt:formatDate value="${result.regDate}" pattern="yyyy-MM-dd"/></td>
+				                		<td>${result.startDate}</td>
+				                		<td>${result.endDate}</td>
 					                	<td>
 				                			<a href="javascript:fn_AutoLabeling('${result.docId}');" class="btn_td btn_tbl_labeling">자동 레이블링</a>
 				                		</td>
@@ -165,7 +169,6 @@
 							<!--// 페이징 end -->
 							
 							<div class="align_r mt_5">
-								<a href="javascript:void(0);" id="" class="btn b_gray medium">전체 자동레이블링 시작</a>					
 								<a href="javascript:void(0);" id="btn_auto_labeling" class="btn b_gray medium">선택항목 자동레이블링 시작</a>					
 							</div>							
 						</fieldset>

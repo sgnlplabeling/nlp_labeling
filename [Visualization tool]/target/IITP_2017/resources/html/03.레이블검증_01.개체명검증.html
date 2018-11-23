@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<title>학습 코퍼스 구축 도구</title>
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
+
+<script type="text/javascript">
+<!--
+	$(function(){
+
+		//개채명 외 아코디언
+		$('.label_accordion li:first-child').addClass('on');
+		$('.label_accordion li:first-child .cont_gray').show();
+		$('.btn_label_onoff').click(function(){
+			if(!$(this).closest('li').hasClass('on')){
+				$(this).closest('.label_accordion').find('.cont_gray').slideUp('fast');
+				$(this).closest('.label_accordion').find('li').removeClass('on');
+				$(this).closest('.label_accordion').find('.btn_label_onoff').attr('title','펼치기');
+				$(this).closest('li').addClass('on');
+				$(this).parent().next('.cont_gray').slideDown('fast');
+				$(this).attr('title','');
+			};
+			return false;
+		});
+
+		//cyan 버튼
+		$('.label_cyan_list > li > a').click(function(){
+			$(this).closest('ul').find('a').removeClass('on');
+			$(this).addClass('on');
+			return false;
+		});
+
+
+	});
+//-->
+</script>
+</head>
+<body>
+
+<div id="skipnavi">
+	<ul>
+	<li><a href="#menu">주메뉴 바로가기</a></li>
+	<li><a href="#content">본문 바로가기</a></li>
+	</ul>
+</div>
+
+<hr />
+
+<div id="wrapper">
+
+<hr />
+
+	<!-- content start -->
+	<div id="content">
+
+		<!-- page title start -->
+		<div class="tit_page clear2">
+			<h2>개체명 검증</h2>
+			
+			<div class="location">
+				<ul>
+				<li>Home</li>
+				<li>레이블링 검증</li>
+				<li class="loc_this">개체명 검증</li>
+				</ul>
+			</div>
+		</div>
+		<!--// page title end -->
+
+
+
+		<div class="cont">
+
+			<!-- full area start -->
+			<div class="full_area">
+
+				<!-- 검색 start -->
+				<div class="box_cyan mb_25">
+					<div class="search_area">
+						<fieldset><legend>검색</legend>
+							<label for="form_label1">개체명</label>
+							<input type="text" id="form_label1" class="w300px ml_10 mr_30" title="개체명 입력">
+
+							<label for="form_label2">키워드</label>
+							<input type="text" id="form_label2" class="w300px ml_10 mr_30" title="키워드 입력"><a href="#" class="btn_search">검색</a>
+						</fieldset>
+					</div>
+				</div>
+				<!--// 검색 end -->
+
+				<div class="type_label02 clear2">
+
+					<!-- 개체명 start -->
+					<div class="label_01">
+						<div class="cont_win">
+							<ul class="label_accordion">
+								<li>
+									<p class="cont_tit2 clear2">개체명<a href="#" class="btn_label_onoff" title="펼치기"></a></p>
+									<div class="cont_gray clear2" style="height:406px;">
+									트리삽입1
+									</div>
+								</li>
+								<li>
+									<p class="cont_tit2 clear2">구문분석<a href="#" class="btn_label_onoff" title="펼치기"></a></p>
+									<div class="cont_gray clear2" style="height:406px;">
+									트리삽입2
+									</div>
+								</li>
+								<li>
+									<p class="cont_tit2 clear2">의미역<a href="#" class="btn_label_onoff" title="펼치기"></a></p>
+									<div class="cont_gray clear2" style="height:406px;">
+									트리삽입3
+									</div>
+								</li>
+								<li>
+									<p class="cont_tit2 clear2">의존관계<a href="#" class="btn_label_onoff" title="펼치기"></a></p>
+									<div class="cont_gray clear2" style="height:406px;">
+									트리삽입4
+									</div>
+								</li>
+								<li>
+									<p class="cont_tit2 clear2">화행<a href="#" class="btn_label_onoff" title="펼치기"></a></p>
+									<div class="cont_gray clear2" style="height:406px;">
+									트리삽입5
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<!--// 개체명 end -->
+
+					<!-- 키워드 start -->
+					<div class="label_02">
+						<div class="cont_win">
+							<div class="cont_tit2">키워드</div>
+							<div class="cont_gray clear2" style="height:530px;">
+								<ul class="label_cyan_list">
+									<li><a href="#">인공지능(120건)</a></li>
+									<li><a href="#">딥러닝 (68건)</a></li>
+									<li><a href="#">신경망 (54건)</a></li>
+									<li><a href="#">시냅스 (33건)</a></li>
+									<li><a href="#">AI (24건)</a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<!--// 키워드 end -->
+
+					<!-- 우측영역 start -->
+					<div class="label_03">
+						<div class="clear2">
+
+							<!-- 레이블링 된 문서 start -->
+							<div class="label_03_1">
+								<div class="cont_win">
+									<div class="cont_tit2">레이블링 된 문서
+										<div class="tit_opt type_label">
+											<a href="#" class="btn_tit_box">언레이블링</a>
+										</div>										
+									</div>
+									<div class="cont_gray clear2" style="height:205px;">
+										<ul class="label_cyan_list type_checkbox">
+											<li><input type="checkbox" /><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+											<li><input type="checkbox" /><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+											<li><input type="checkbox" /><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+											<li><input type="checkbox" /><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+											<li><input type="checkbox" /><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+											<li><input type="checkbox" /><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!--// 레이블링된 문서 end -->
+
+							<!-- 레이블링 안된 문서 start -->
+							<div class="label_03_2">
+								<div class="cont_win">
+									<div class="cont_tit2">레이블링 안된 문서
+										<div class="tit_opt type_label">
+											<a href="#" class="btn_tit_box">레이블링</a>
+										</div>										
+									</div>
+									<div class="cont_gray clear2" style="height:205px;">
+										<ul class="label_cyan_list type_checkbox">
+											<li><input type="checkbox" /><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+											<li><input type="checkbox" /><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+											<li><input type="checkbox" /><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+											<li><input type="checkbox" /><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+											<li><input type="checkbox" /><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+											<li><input type="checkbox" /><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!--// 레이블링 안된 문서 end -->
+
+						</div>
+
+						<!-- 상세보기 start -->
+						<div class="cont_win mt_20">
+							<div class="cont_tit2">상세보기
+								<div class="tit_opt type_label">
+									<a href="#" class="btn_tit_box type_prev">이전</a>
+									<a href="#" class="btn_tit_box type_next">다음</a>
+								</div>
+							</div>
+							<div class="cont_gray clear2" style="height:274px;">
+							내용 삽입
+							</div>
+						</div>
+						<!--// 상세보기 end -->
+
+					</div>
+					<!--// 우측영역 end -->
+
+				</div>
+			
+			</div>
+			<!--// full area end -->
+
+		</div>
+
+	</div>
+	<!--// content end -->
+
+
+<hr />	
+
+</div>
+
+</body>
+
+</html>

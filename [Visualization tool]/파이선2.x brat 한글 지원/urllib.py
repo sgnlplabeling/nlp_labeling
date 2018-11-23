@@ -28,6 +28,9 @@ import os
 import time
 import sys
 from urlparse import urljoin as basejoin
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 
 __all__ = ["urlopen", "URLopener", "FancyURLopener", "urlretrieve",
            "urlcleanup", "quote", "quote_plus", "unquote", "unquote_plus",

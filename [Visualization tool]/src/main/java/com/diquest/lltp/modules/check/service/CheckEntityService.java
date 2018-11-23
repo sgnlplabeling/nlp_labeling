@@ -35,7 +35,7 @@ public interface CheckEntityService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<AnnotationVo> getKeywordList(String groupName, String entity, String searchTerm) throws Exception;
+	public List<AnnotationVo> getKeywordList(String groupName, String entity, String searchTerm, String orderField, String orderOpt) throws Exception;
 
 	/**
 	 * labeling 된 문서 가져오기
@@ -64,4 +64,5 @@ public interface CheckEntityService {
 	 * @throws Exception
 	 */
 	public void unlabelingDoc(String[] docId, String groupName, String[] keyword) throws Exception;
+
 }

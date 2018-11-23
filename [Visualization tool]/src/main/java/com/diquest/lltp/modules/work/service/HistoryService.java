@@ -1,5 +1,6 @@
 package com.diquest.lltp.modules.work.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.diquest.lltp.domain.AnnotationVo;
@@ -26,6 +27,6 @@ public interface HistoryService {
 
 	public List<HistoryVo> getRecordHistoryList(DocumentVo vo) throws Exception;
 
-	public List<AnnotationVo> getCompareLoc(DocumentVo vo) throws Exception;
+	public List<AnnotationVo> getCompareLoc(HashMap<String,Object> map) throws Exception;
 
 }

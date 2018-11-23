@@ -3,7 +3,6 @@ package com.diquest.lltp.modules.learning.service.download;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.util.List;
 
 import com.diquest.lltp.domain.DocumentVo;
 

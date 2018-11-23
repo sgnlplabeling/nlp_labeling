@@ -37,12 +37,12 @@ public class DownloadService {
 	private DocumentService documentService;
 	private String downloadFilePath;
 	private String zipFilePath;
-	
+
 	public DownloadService(DocumentService service, String resultPath, String exportID, DocumentVo vo) {
 		this.documentService = service;
 		this.resultPath = resultPath;
 		this.vo = vo;
-//		zipFilePath = this.resultPath + File.separator + exportID + ".zip";
+		// zipFilePath = this.resultPath + File.separator + exportID + ".zip";
 		zipFilePath = this.resultPath + "/" + exportID + ".zip";
 	}
 
@@ -57,7 +57,7 @@ public class DownloadService {
 
 		/**
 		 * @param date
-		 * 이전 날짜 수.
+		 *            이전 날짜 수.
 		 */
 		protected CustomFileFilter(int date) {
 			c.add(Calendar.DATE, date);
@@ -102,7 +102,7 @@ public class DownloadService {
 		}
 
 		try {
-//			downloadFilePath = this.resultPath + File.separator + subject + ".txt";
+			// downloadFilePath = this.resultPath + File.separator + subject + ".txt";
 			downloadFilePath = this.resultPath + "/" + subject + ".txt";
 			subjects.add(subject);
 			export = new DownloadResultText(downloadFilePath, vo);
@@ -119,28 +119,29 @@ public class DownloadService {
 		String[] docIds = vo.getDocIds();
 		DocumentVo doc;
 		DocumentVo record;
-		
-		for	 (int i=0; i<docIds.length; i++) {
+
+		for (int i = 0; i < docIds.length; i++) {
 			try {
 				doc = new DocumentVo();
 				record = new DocumentVo();
-				
+
 				doc.setDocId(Integer.parseInt(docIds[i]));
 				doc.setGroupName(vo.getGroupName());
-//				doc.setUserId(vo.getUserId());
-				
+				// doc.setUserId(vo.getUserId());
+
 				record = documentService.getRecordOne(doc);
-				
+
 				doc = new DocumentVo();
 				if (record != null) {
 					createFileInit(record.getSubject());
 					doc.setRecordId(record.getRecordId());
-					
+
 					DocumentVo resultDoc = documentService.getLearnData(doc);
 					makeFile(resultDoc);
 				}
-				
-				DownloadController.DOWNLOAD_INFO.put(this.fileName, subjects.get(i)+"("+String.valueOf(i+1)+"/"+String.valueOf(docIds.length)+")");
+
+				DownloadController.DOWNLOAD_INFO.put(this.fileName,
+						subjects.get(i) + "(" + String.valueOf(i + 1) + "/" + String.valueOf(docIds.length) + ")");
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error(e.getMessage(), e);
@@ -151,37 +152,46 @@ public class DownloadService {
 				}
 			}
 		}
-		
-		if(subjects.size() > 0) {
+
+		if (subjects.size() > 0) {
 			ZipOutputStream zout = null;
-			
-			try{ 
-				zout = new ZipOutputStream(new FileOutputStream(zipFilePath)); 
+
+			try {
+				zout = new ZipOutputStream(new FileOutputStream(zipFilePath));
 				byte[] buf = new byte[1024];
-				
-				for(int idx=0; idx < subjects.size(); idx++) {
-//					FileInputStream in = new FileInputStream(this.resultPath + File.separator + subjects.get(idx) + ".txt");//압축대상 파일 
-					FileInputStream in = new FileInputStream(this.resultPath + "/" + subjects.get(idx) + ".txt");//압축대상 파일
-					zout.putNextEntry( new ZipEntry(subjects.get(idx)+".txt") ); 
-					int len; 
-					while( (len = in.read(buf)) > 0 ){ 
-						zout.write(buf, 0, len); 
-					} 
-					zout.closeEntry(); 
+				for (int idx = 0; idx < subjects.size(); idx++) {
+					// FileInputStream in = new FileInputStream(this.resultPath + File.separator +
+					// subjects.get(idx) + ".txt");//압축대상 파일
+					FileInputStream in = null;
+					zout.putNextEntry(new ZipEntry(subjects.get(idx) + ".txt"));
+					try {
+						in = new FileInputStream(this.resultPath + "/" + subjects.get(idx) + ".txt");// 압축대상 파일
+						int len;
+						while ((len = in.read(buf)) > 0) {
+							zout.write(buf, 0, len);
+						}
+					} catch (Exception e) {
+						logger.error(e.getMessage(), e);
+					} finally {
+						if (in != null) {
+							in.close();
+						}
+						zout.closeEntry();
+					}
 				}
-			}catch(Exception e){ 
-				e.printStackTrace(); 
-			}finally{ 
-				if( null != zout ){ 
-					try { 
-						zout.close(); 
-					}catch(Exception e){ 
-					} 
-					zout = null; 
-				} 
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				if (null != zout) {
+					try {
+						zout.close();
+					} catch (Exception e) {
+					}
+					zout = null;
+				}
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -195,7 +205,7 @@ public class DownloadService {
 		if (resultDoc == null) {
 			throw new Exception("download시 오류가 발생했습니다. resultDoc객체가 null입니다.");
 		}
-		
+
 		export.setData(resultDoc.getLearnData());
 	}
 

@@ -1,11 +1,19 @@
 package com.diquest.lltp.common.utils;
 
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
-
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import lombok.Data;
 
 /**
  * JsTree 유틸리티
@@ -89,11 +97,11 @@ public class JsTree {
     /**
      * JsTree Mapper
      */
-    @Slf4j
+//    @Slf4j
     @Data
     public static class Mapper {
-
-        private static final Comparator nodeCompare = new Comparator<Node> () {
+    	static final Logger log = LoggerFactory.getLogger(ExcelReadUtils.class);
+        private static final Comparator<Node> nodeCompare = new Comparator<Node> () {
 
             @Override
             public int compare(Node o1, Node o2) {
@@ -138,7 +146,7 @@ public class JsTree {
         public Mapper(String idKey, String nameKey, String delimiter) {
             this.idKey = idKey;
             this.nameKey = nameKey;
-            this.delimiter = delimiter;
+            Mapper.delimiter = delimiter;
         }
 
         /**
@@ -166,9 +174,6 @@ public class JsTree {
 
                 names.put(name, id);
                 
-                for (String test : names.keySet()) {
-                	String ids = names.get(test);
-                }
                 // 부모이름 추가 (ID 없이 추가함)
                 int level = getLevel(name);
                 if (0 < level) {

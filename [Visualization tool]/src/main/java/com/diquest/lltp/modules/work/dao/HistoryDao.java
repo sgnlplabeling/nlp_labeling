@@ -1,5 +1,6 @@
 package com.diquest.lltp.modules.work.dao;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -22,7 +23,7 @@ public class HistoryDao extends CommonDAO {
 	}
 	
 	public List<HistoryVo> getHistoryList(CommonVo vo) {
-		return (List<HistoryVo>)selectList("history.getHistoryList" , vo);
+		return selectList("history.getHistoryList" , vo);
 	}
 
 	public int getHistoryListCount(CommonVo vo) {
@@ -30,11 +31,11 @@ public class HistoryDao extends CommonDAO {
 	}
 
 	public List<HistoryVo> getRecordHistoryList(DocumentVo vo) {
-		return (List<HistoryVo>)selectList("history.getRecordHistoryList" , vo);
+		return selectList("history.getRecordHistoryList" , vo);
 	}
 
-	public List<AnnotationVo> getCompareLoc(DocumentVo vo) {
-		return (List<AnnotationVo>)selectList("history.getCompareLoc" , vo);
+	public List<AnnotationVo> getCompareLoc(HashMap<String,Object> map) {
+		return selectList("history.getCompareLoc" , map);
 	}
 
 }

@@ -187,8 +187,8 @@ public class HistoryServiceImpl implements HistoryService {
 		return list;
 	}
 	
-	public List<AnnotationVo> getCompareLoc(DocumentVo vo) throws Exception {
-		return historyDao.getCompareLoc(vo);
+	public List<AnnotationVo> getCompareLoc(HashMap<String,Object> map) throws Exception {
+		return historyDao.getCompareLoc(map);
 	}
 	
 	public static boolean eulrlega(String word) {

@@ -1,5 +1,7 @@
 package com.diquest.lltp.modules.check.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -40,14 +42,18 @@ public class CheckLabelingController {
 
 	        String domainJstreeHtml = collectionService.domainJstreeHtml(null);
 	        
-	        String namedentityJstreeHtml = checkLabelingService.elementJstreeHtml("namedentity");
-	        String syntacticJstreeHtml = checkLabelingService.elementJstreeHtml("syntactic");
-	        String causationJstreeHtml = checkLabelingService.elementJstreeHtml("causation");
+	        String namedentityJstreeHtml = checkLabelingService.elementJstreeHtml("namedentity", null);
+	        String syntacticJstreeHtml = checkLabelingService.elementJstreeHtml("syntactic", null);
+	        String causationJstreeHtml = checkLabelingService.elementJstreeHtml("causation", null);
+	        String simenticJstreeHtml = checkLabelingService.elementJstreeHtml("simentic", null);
+	        String speechJstreeHtml = checkLabelingService.elementJstreeHtml("speech", null);
 	        
 	        mv.addObject("domainJstreeHtml", domainJstreeHtml);
 	        mv.addObject("namedentityJstreeHtml", namedentityJstreeHtml);
 	        mv.addObject("syntacticJstreeHtml", syntacticJstreeHtml);
 	        mv.addObject("causationJstreeHtml", causationJstreeHtml);
+	        mv.addObject("simenticJstreeHtml", simenticJstreeHtml);
+	        mv.addObject("speechJstreeHtml", speechJstreeHtml);
 	        return mv;
 	    }
 
@@ -56,16 +62,21 @@ public class CheckLabelingController {
 	        ModelAndView mv = new ModelAndView("jsonView");
 	        List<DocumentVo> docList = documentService.getDocSubjectList(documentVo);
 	        
+	        int index = 0;
+	        for (DocumentVo vo : docList) {
+	        	Date regDate = vo.getRegDate();
+	        	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+	        	String date = format.format(regDate);
+	        	vo.setDate(date);
+	        	
+	        	docList.set(index, vo);
+	        	index++;
+	        }
+	        
 	        mv.addObject("docList", docList);
 	        mv.addObject("count", docList.size());
 	        return mv;
 	    }
 
-	    @RequestMapping(value="/data/entity/list.do")
-	    public ModelAndView entity() throws Exception{
-	        ModelAndView mv = new ModelAndView();
-	        mv.setViewName("data/entity/list");
-	        return mv;
-	    }
 	    
 }

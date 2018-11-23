@@ -1,4 +1,3 @@
-<!-- -*- Mode: XHTML; tab-width: 2; indent-tabs-mode: nil; -*- -->
 <!-- vim:set ft=xhtml ts=2 sw=2 sts=2 autoindent: -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -70,6 +69,20 @@
 		winNum = window.opener.document.getElementById('winNum').value;
 		docType = window.opener.document.getElementById('docType').value;
 		labelGrade = window.opener.document.getElementById('labelGrade').value;
+		
+		// 2017.12.04 GOOD인 라인을 찾아 스타일을 변경 추가
+		if(labelGrade != null && labelGrade != 'undefined') {
+			var labelGrades = labelGrade.split('|');
+         
+			for ( var i in labelGrades ) {
+				var line = labelGrades[i].substr(0, labelGrades[i].length - 1);
+				var grade = labelGrades[i].substr(labelGrades[i].length - 1, labelGrades[i].length);
+										
+				if(grade == 'G') {
+					$("rect[id^='BROW_"+line).attr('class','backgroundHighlight');
+				}
+			}
+		}
 		
 		if (docType == 'edit') {
 			document.getElementById('bratSaveBtn').style.display = 'block';

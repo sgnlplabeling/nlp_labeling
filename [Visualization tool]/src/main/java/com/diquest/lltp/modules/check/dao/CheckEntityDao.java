@@ -16,21 +16,21 @@ import com.diquest.lltp.domain.EntityVo;
 public class CheckEntityDao extends CommonDAO{
 
 	public List<EntityVo> getEntityList(CommonVo vo) {
-		return (List<EntityVo>)selectList("checkEntity.getEntityList" , vo);
+		return selectList("checkEntity.getEntityList" , vo);
 	}
 
 	public List<AnnotationVo> getKeywordList(HashMap<String,Object> map) {
-		return (List<AnnotationVo>)selectList("checkEntity.getKeywordList" , map);
+		return selectList("checkEntity.getKeywordList" , map);
 	}
 
 	public List<DocumentVo> getLabelingDocList(AnnotationVo vo) {
-		return (List<DocumentVo>)selectList("checkEntity.getLabelingDocList" , vo);
+		return selectList("checkEntity.getLabelingDocList" , vo);
 	}
 
 	public List<DocumentVo> getUnlabelingList(List<DocumentVo> list) {
 		HashMap <String,Object> map = new HashMap<>();
 		map.put("list", list);
-		return (List<DocumentVo>)selectList("checkEntity.getUnlabelingList" , map);
+		return selectList("checkEntity.getUnlabelingList" , map);
 	}
 
 }

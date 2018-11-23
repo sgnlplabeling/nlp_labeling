@@ -49,7 +49,7 @@ public class MainController {
     @RequestMapping(value = "/login/login_success.do", method = RequestMethod.GET)
     public ModelAndView login_success(Principal principal, HttpSession session) {
     	ModelAndView mv = new ModelAndView("redirect:/check/labeling/list.do");
-    	
+    	System.out.println(principal.getName());
     	UserVo vo = userService.selectUser(principal.getName());
     	
     	session.setAttribute("userLoginInfo", vo);

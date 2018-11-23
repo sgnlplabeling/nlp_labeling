@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="auto">
+    <resultMap id="HistoryMap" type="HistoryVo">
+        <result property="id" column="ID"/>
+        <result property="recordId" column="RECORD_ID"/>
+        <result property="recordSeq" column="RECORD_SEQ"/>
+        <result property="type" column="TYPE"/>
+        <result property="job" column="JOB"/>
+        <result property="note" column="NOTE"/>
+        <result property="regId" column="REG_ID"/>
+        <result property="regDate" column="REG_DATE"/>
+        <result property="subject" column="SUBJECT"/>
+        <result property="groupName" column="GROUP_NAME"/>
+        <result property="domainPath" column="PATH"/>
+    </resultMap>	
+    
+    
+    <select id="getAutoLabelingStat" parameterType="DocumentVo" resultMap="HistoryMap">
+		SELECT 
+			* 
+		FROM
+			JOB_HISTORY
+		WHERE 
+			RECORD_ID = #{recordId}
+			and RECORD_SEQ = #{recordSeq}
+			and TYPE ='레이블링' and JOB in ('시작','종료')
+	</select>
+</mapper>

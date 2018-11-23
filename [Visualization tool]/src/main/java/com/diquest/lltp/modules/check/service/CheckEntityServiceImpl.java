@@ -33,7 +33,11 @@ public class CheckEntityServiceImpl implements CheckEntityService {
 	@Autowired public HistoryService historyService;	
 	
 	public List<EntityVo> getEntityList(CommonVo commonVo) {
-		return entityDao.getEntityList(commonVo);
+		List<EntityVo> list = new ArrayList<>();
+		if (!StringUtils.isEmpty(commonVo.getGroupName())) {
+			list = entityDao.getEntityList(commonVo);
+		}
+		return list;
 	}
 	
 	public String entityJstreeHtml(String groupName) throws Exception {
@@ -71,7 +75,7 @@ public class CheckEntityServiceImpl implements CheckEntityService {
 		return new JsTree.Mapper("jstreeId","jstreeName").parseAsHtml(entityList);
 	}
 
-	public List<AnnotationVo> getKeywordList(String groupName, String entity, String searchTerm) throws Exception {
+	public List<AnnotationVo> getKeywordList(String groupName, String entity, String searchTerm, String orderField, String orderOpt) throws Exception {
 		entity = entity.replaceAll("ent", "");
 		String [] entIds = entity.split(",");
 		
@@ -79,6 +83,8 @@ public class CheckEntityServiceImpl implements CheckEntityService {
 		map.put("groupName", groupName);
 		map.put("entIds", entIds);
 		map.put("searchTerm", searchTerm);
+		map.put("orderField", orderField);
+		map.put("orderOpt", orderOpt);
 		
 		return entityDao.getKeywordList(map);
 	}

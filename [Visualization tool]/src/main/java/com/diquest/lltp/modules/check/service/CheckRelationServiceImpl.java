@@ -101,4 +101,12 @@ public class CheckRelationServiceImpl implements CheckRelationService{
 	public List<DocumentVo> getUnlabelingList(List<DocumentVo> list) throws Exception {
 		return reltationDao.getUnlabelingList(list);
 	}
+	
+	public List<AnnotationVo> getKeywordList(RelationVo vo) throws Exception {
+		return reltationDao.getKeywordList(vo);
+	}
+
+	public List<RelationVo> getRelationLoc(AnnotationVo vo) {
+		return (List<RelationVo>)reltationDao.getRelationLoc(vo);
+	}
 }

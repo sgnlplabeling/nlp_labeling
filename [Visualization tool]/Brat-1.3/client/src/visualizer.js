@@ -2377,15 +2377,20 @@ Util.profileStart('rows');
         var y = Configuration.visual.margin.y;
         var sentNumGroup = svg.group({'class': 'sentnum'});
         var currentSent;
+        var currentSentSeq;	// 2017.12.05 number40 추가
         $.each(rows, function(rowId, row) {
           $.each(row.chunks, function(chunkId, chunk) {
             $.each(chunk.fragments, function(fragmentId, fragment) {
               if (row.maxSpanHeight < fragment.height) row.maxSpanHeight = fragment.height;
             });
           });
+          // 2017.12.05 number40 추가
           if (row.sentence) {
-            currentSent = row.sentence;
-          }
+	        currentSent = row.sentence;
+	        currentSentSeq = 1;
+	      } else {
+	    	currentSentSeq++;
+	      }
           // SLOW (#724) and replaced with calculations:
           //
           // var rowBox = row.group.getBBox();
@@ -2424,6 +2429,7 @@ Util.profileStart('rows');
             0, y + sizes.texts.y + sizes.texts.height,
             canvasWidth, rowBoxHeight + sizes.texts.height + 1, {
             'class': bgClass,
+            'id' : "BROW_" + currentSent + "_" + currentSentSeq // 2017.12.05 number40 아이디 체계 변경
           });
           y += rowBoxHeight;
           y += sizes.texts.height;
@@ -2473,7 +2479,7 @@ Util.profileStart('rows');
             	var grade = labelGrades[i].substr(labelGrades[i].length - 1, labelGrades[i].length);
             	
             	if(grade == 'G') {
-            		$('#BROW_'+line).attr('class','backgroundHighlight');
+            		$("rect[id^='BROW_"+line).attr('class','backgroundHighlight');
             	}
             }
         }

@@ -4,10 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.diquest.lltp.domain.AnnotationVo;
-import com.diquest.lltp.domain.CommonVo;
 import com.diquest.lltp.domain.DocumentVo;
-import com.diquest.lltp.domain.EntityVo;
-import com.diquest.lltp.domain.RelationVo;
 
 public interface BratService {
 
@@ -79,7 +76,7 @@ public interface BratService {
 	 * @param documentVo
 	 * @return
 	 */
-	public List<AnnotationVo> getAnnotationList(DocumentVo documentVo);
+	public List<AnnotationVo> getAnnotationList(DocumentVo documentVo) throws Exception;
 
 	/**
 	 * annotation 삽입
@@ -87,5 +84,6 @@ public interface BratService {
 	 * @param ann
 	 */
 	public void insertAnnotation(AnnotationVo ann);
+
 
 }

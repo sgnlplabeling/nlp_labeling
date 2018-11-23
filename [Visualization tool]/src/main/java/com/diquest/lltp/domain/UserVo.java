@@ -1,16 +1,17 @@
 package com.diquest.lltp.domain;
 
+import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
-@Data
+@Getter
+@Setter
 @ToString
 public class UserVo implements UserDetails  {
 	/**
@@ -27,8 +28,8 @@ public class UserVo implements UserDetails  {
 	private String type;
 	private String note;
 	
-	private Date regDate;
-	private Date modDate;
+	private Timestamp regDate;
+	private Timestamp modDate;
 	
 	private Collection<? extends GrantedAuthority> authorities;
 	

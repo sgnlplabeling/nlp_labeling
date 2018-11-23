@@ -44,14 +44,14 @@ public class CommonDAO {
         return sqlSession.selectOne(queryId, params);
     }
      
-    @SuppressWarnings("rawtypes")
-    public List selectList(String queryId){
+//    @SuppressWarnings("rawtypes")
+    public <T> List<T> selectList(String queryId){
         printQueryId(queryId);
         return sqlSession.selectList(queryId);
     }
      
-    @SuppressWarnings("rawtypes")
-    public List selectList(String queryId, Object params){
+//    @SuppressWarnings("rawtypes")
+    public <T> List<T> selectList(String queryId, Object params){
         printQueryId(queryId);
         return sqlSession.selectList(queryId,params);
     }
