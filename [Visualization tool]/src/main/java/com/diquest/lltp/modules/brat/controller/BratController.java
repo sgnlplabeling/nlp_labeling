@@ -3,13 +3,11 @@ package com.diquest.lltp.modules.brat.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.diquest.lltp.domain.AnnotationVo;
@@ -57,8 +55,8 @@ public class BratController {
 	        return mv;
 	    }	 
 	    
-	    @RequestMapping(value="/labeling/keyowrdLoc.do", produces = MediaType.APPLICATION_JSON_VALUE)
-	    public ModelAndView keyowrdLoc(DocumentVo documentVo) throws Exception{
+	    @RequestMapping(value="/labeling/entityLoc.do", produces = MediaType.APPLICATION_JSON_VALUE)
+	    public ModelAndView entityLoc(DocumentVo documentVo) throws Exception{
 	    	
 	        ModelAndView mv = new ModelAndView("jsonView");
 
@@ -71,4 +69,5 @@ public class BratController {
 	        mv.addObject("keywordLoc", keywordLoc);
 	        return mv;
 	    }
+	    
 }

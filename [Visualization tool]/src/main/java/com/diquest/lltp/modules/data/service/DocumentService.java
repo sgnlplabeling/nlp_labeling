@@ -11,44 +11,48 @@ public interface DocumentService {
 
 	public JSONObject insertDocument(DocumentVo vo) throws Exception;
 
-	public String txtParser(FileInfo file) throws Exception;
+	public int insertRecord(DocumentVo vo) throws Exception;
 	
+	public void updateRecordConf(DocumentVo vo) throws Exception;
+
+	public void updateRecord(DocumentVo vo) throws Exception;
+	
+	public void updateRabelStat(DocumentVo vo) throws Exception;
+	
+	public void updateLearnStat(DocumentVo vo) throws Exception;
+	
+	public DocumentVo getDocOne(DocumentVo vo) throws Exception;
+	
+	public DocumentVo getRecordOne(DocumentVo vo) throws Exception;	
+
 	public List<DocumentVo> getDocList(DocumentVo vo) throws Exception;
 
 	public List<DocumentVo> getDocSubjectList(DocumentVo vo) throws Exception;
 	
 	public List<DocumentVo> getDocHistoryList(DocumentVo vo) throws Exception;
+
+	public List<DocumentVo> getRecordList(DocumentVo vo) throws Exception;
 	
+	public List<DocumentVo> getDocRecordList(DocumentVo vo) throws Exception;
+
+	public List<DocumentVo> getDocIdsRecordList(DocumentVo vo) throws Exception;
+
 	public int getDocListCount(DocumentVo vo) throws Exception;
 
-	public DocumentVo getDocOne(DocumentVo vo) throws Exception;
-	
-	public DocumentVo getRecordOne(DocumentVo vo) throws Exception;	
-	
-	public List<DocumentVo> getRecordList(DocumentVo vo) throws Exception;
+	public int getDocHistoryListCount(DocumentVo vo);
 
 	public int getRecordListCount(DocumentVo vo) throws Exception;
+
+	public int getDocRecordListCount(DocumentVo vo) throws Exception;
+	
+	public DocumentVo getLearnData(DocumentVo vo) throws Exception;
 
 	public void deleteDocument(Integer[] docId) throws Exception;
 	
 	public void deleteRecord(Integer[] recordId) throws Exception;
 	
-	public void updateRecordConf(DocumentVo vo) throws Exception;
-
-	public int insertRecord(DocumentVo vo) throws Exception;
-
-	public void updateRecord(DocumentVo vo) throws Exception;
-
-	public List<DocumentVo> getDocRecordList(DocumentVo vo) throws Exception;
-
-	public int getDocRecordListCount(DocumentVo vo) throws Exception;
-	
-	public List<DocumentVo> getDocIdsRecordList(DocumentVo vo) throws Exception;
-
 	public void fileDelete(String string) throws Exception;
 	
-	public DocumentVo getLearnData(DocumentVo vo) throws Exception;
-
-	public int getDocHistoryListCount(DocumentVo vo);
+	public String txtParser(FileInfo file) throws Exception;
 
 }

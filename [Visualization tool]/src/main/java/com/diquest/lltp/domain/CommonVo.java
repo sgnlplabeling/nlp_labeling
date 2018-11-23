@@ -7,6 +7,7 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -52,6 +53,10 @@ public class CommonVo {
 	@Getter
 	@Setter
 	String name;
+
+	@Getter
+	@Setter
+	private String keyword;
 	
 	@Getter
 	@Setter
@@ -59,7 +64,6 @@ public class CommonVo {
 	
 	@Setter
 	String userId;
-	
 	
 	public String getUserId() {
 		if (StringUtils.isEmpty(userId)) {
@@ -86,7 +90,11 @@ public class CommonVo {
 	
 	@Getter
 	@Setter
-	String []endIds;
+	String []entIds;
+
+	@Getter
+	@Setter
+	String []recordIds;
 	
 	@Getter
 	@Setter
@@ -118,4 +126,19 @@ public class CommonVo {
 		return date;
 	}
 
+	@Getter
+	@Setter
+	private MultipartFile [] file;
+	
+	@Getter
+	@Setter
+	String[] searchTagName;
+	
+	@Getter
+	@Setter
+	String orderField;
+	
+	@Getter
+	@Setter
+	String orderOpt;
 }

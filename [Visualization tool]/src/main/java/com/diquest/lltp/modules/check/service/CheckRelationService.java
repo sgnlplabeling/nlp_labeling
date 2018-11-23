@@ -64,4 +64,7 @@ public interface CheckRelationService {
 	 */
 	public List<DocumentVo> getUnlabelingList(List<DocumentVo> list) throws Exception;
 
+	public List<AnnotationVo> getKeywordList(RelationVo vo) throws Exception;
+
+	public List<RelationVo> getRelationLoc(AnnotationVo vo);
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -56,8 +57,8 @@ public class DocumentController {
     }
     
     @ResponseBody
-    @RequestMapping(value="/data/document/insert.do")
-    public String insertDocument(DocumentVo vo) throws Exception {
+    @RequestMapping(value="/data/document/insert.do", produces = "text/json; charset=UTF-8")
+    public String insertDocument(HttpServletResponse response, DocumentVo vo) throws Exception {
     	JSONObject result = documentService.insertDocument(vo);
 		return result.toJSONString();
     }

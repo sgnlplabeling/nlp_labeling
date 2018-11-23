@@ -14,6 +14,7 @@ import com.diquest.lltp.domain.CommonVo;
 import com.diquest.lltp.domain.EntityVo;
 import com.diquest.lltp.domain.RelationVo;
 import com.diquest.lltp.modules.brat.service.BratService;
+import com.diquest.lltp.modules.data.service.EntityService;
 
 @Service("checkLabelingService")
 public class CheckLabelingServiceImpl implements CheckLabelingService{
@@ -29,7 +30,10 @@ public class CheckLabelingServiceImpl implements CheckLabelingService{
 	@Autowired
 	public CheckRelationService checkRelationService;
 	
-	public String elementJstreeHtml(String groupName) {
+	@Autowired 
+	public EntityService entityService;
+	
+	public String elementJstreeHtml(String groupName, String[] selectIds) throws Exception {
 		CommonVo commonVo = new CommonVo();
 		commonVo.setGroupName(groupName);
 		
@@ -49,15 +53,34 @@ public class CheckLabelingServiceImpl implements CheckLabelingService{
 				commonVo = new CommonVo();
 				String name = "객체/";
 				commonVo.setJstreeId(vo.getName());
-				//commonVo.setJstreeId("ent"+String.valueOf(vo.getEntId()));
 				
 				if (!StringUtils.isEmpty(vo.getParentEnt())) {
-					String parentEnt[] = (vo.getParentEnt()).split("/");
-					for (int i=0; i<parentEnt.length; i++) {
-						name += map.get(parentEnt[i]);
+					ArrayList<String> parentEntList = new ArrayList<String>();
+					String parentEnt = vo.getParentEnt();
+					parentEntList.add(parentEnt);
+					
+					while(true){
+						EntityVo ent = new EntityVo();
+						ent.setName(parentEnt);
+						ent.setGroupName(vo.getGroupName());
+						ent = entityService.getEntityOne(ent);
+						if (ent != null) {
+							if (!StringUtils.isEmpty(ent.getParentEnt())) {
+								parentEnt = ent.getParentEnt();
+								parentEntList.add(parentEnt);
+								continue;
+							} else {
+								break;
+							}
+						}
+						break;
+					}
+					for (int i=parentEntList.size()-1; i>=0; i--) {
+						name += map.get(parentEntList.get(i));
 						name += "/";
 					}
 				}
+			
 				name += vo.getJstreeName();
 				commonVo.setJstreeName(name);
 				elementList.add(commonVo);
@@ -89,7 +112,7 @@ public class CheckLabelingServiceImpl implements CheckLabelingService{
 				elementList.add(commonVo);
 			}
 		}
-		return new JsTree.Mapper("jstreeId","jstreeName").parseAsHtml(elementList);
+		return new JsTree.Mapper("jstreeId","jstreeName").parseAsHtml(elementList,selectIds);
 	}
 	
 	
@@ -100,6 +123,4 @@ public class CheckLabelingServiceImpl implements CheckLabelingService{
 		}
 		return str;
 	}
-	
-
 }

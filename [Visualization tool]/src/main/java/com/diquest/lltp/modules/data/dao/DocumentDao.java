@@ -36,11 +36,11 @@ public class DocumentDao extends CommonDAO {
 	}
 	
 	public List<DocumentVo> getDocList(DocumentVo vo) throws Exception {
-		return (List<DocumentVo>)selectList("document.getDocList" , vo);
+		return selectList("document.getDocList" , vo);
 	}
 	
 	public List<DocumentVo> getDocRecordList(DocumentVo vo) throws Exception {
-		List<DocumentVo> list = (List<DocumentVo>)selectList("document.getDocNum" , vo);
+		List<DocumentVo> list = selectList("document.getDocNum" , vo);
 		
 		List<DocumentVo> result = new ArrayList<DocumentVo>();
 		if (list.size() > 0) {
@@ -49,7 +49,7 @@ public class DocumentDao extends CommonDAO {
 			if (!StringUtils.isEmpty(vo.getGroupName())) {
 				map.put("groupName", vo.getGroupName());
 			}
-			result = (List<DocumentVo>)selectList("document.getDocRecordList" ,map);
+			result = selectList("document.getDocRecordList" ,map);
 		}
 		
 		return result;
@@ -72,19 +72,19 @@ public class DocumentDao extends CommonDAO {
 			if (!StringUtils.isEmpty(vo.getGroupName())) {
 				map.put("groupName", vo.getGroupName());
 			}
-			result = (List<DocumentVo>)selectList("document.getDocRecordList" ,map);
+			result = selectList("document.getDocRecordList" ,map);
 		}
 		
 		return result;
 	}
 
 	public List<DocumentVo> getDocHistoryList(DocumentVo vo) {
-		List<DocumentVo> result = (List<DocumentVo>)selectList("document.getDocHistoryList" ,vo);
+		List<DocumentVo> result = selectList("document.getDocHistoryList" ,vo);
 		return result;
 	}
 	
 	public List<DocumentVo> getDocSubjectList(DocumentVo vo) throws Exception {
-		return (List<DocumentVo>)selectList("document.getDocSubjectList" , vo);
+		return selectList("document.getDocSubjectList" , vo);
 	}
 	
 	public int getDocListCount(DocumentVo vo) throws Exception {
@@ -96,7 +96,7 @@ public class DocumentDao extends CommonDAO {
 	}	
 	
 	public List<DocumentVo> getRecordList(DocumentVo vo) throws Exception {
-		return (List<DocumentVo>)selectList("document.getRecordList" , vo);
+		return selectList("document.getRecordList" , vo);
 	}
 
 	public int getRecordListCount(DocumentVo vo) throws Exception {
@@ -122,6 +122,14 @@ public class DocumentDao extends CommonDAO {
 
 	public void updateRecord(DocumentVo vo) throws Exception {
 		update("document.updateRecord", vo);
+	}
+
+	public void updateRabelStat(DocumentVo vo) throws Exception {
+		update("document.updateRabelStat", vo);
+	}
+	
+	public void updateLearningStat(DocumentVo vo) throws Exception {
+		update("document.updateLearningStat", vo);
 	}
 
 	public void deleteDocument(Integer docId) throws Exception {

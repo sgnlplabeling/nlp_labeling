@@ -16,14 +16,10 @@ import com.diquest.lltp.common.utils.Pagination;
 import com.diquest.lltp.domain.DocumentVo;
 import com.diquest.lltp.modules.auto.service.AutoLabelingService;
 import com.diquest.lltp.modules.data.service.CollectionService;
-import com.diquest.lltp.modules.data.service.DocumentService;
 
 @Controller
 public class AutoLabelingController {
 	Logger log = Logger.getLogger(this.getClass());
-	
-	@Autowired
-	public DocumentService documentService;
 	
 	@Autowired
 	public CollectionService collectionService;
@@ -41,8 +37,8 @@ public class AutoLabelingController {
         Integer colId = vo.getColId();
         String domainJstreeHtml = collectionService.domainJstreeHtml(colId);
         
-        List<DocumentVo> list = documentService.getDocRecordList(vo);
-        int count = documentService.getDocRecordListCount(vo);
+        List<DocumentVo> list = autoLabelingService.getAutoLabelingList(vo);
+        int count = autoLabelingService.getAutoLabelingListCount(vo);
         
         mv.addObject("domainJstreeHtml", domainJstreeHtml);
         mv.addObject("list", list);
@@ -59,5 +55,26 @@ public class AutoLabelingController {
 		autoLabelingService.labelingStart(vo);
 		return mv;
 	}	
+	
+	@RequestMapping(value="/auto/checkAutoLabel.do", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ModelAndView checkAutoLabel(DocumentVo vo) throws Exception {
+		ModelAndView mv = new ModelAndView("jsonView");
+		List<Integer> checked = autoLabelingService.isRunningAutoLabeled(vo);
+		System.out.println(checked);
+		if(!checked.isEmpty()) {
+			mv.addObject("docId", checked);
+		}
+		return mv;
+	}
+	
+	@RequestMapping(value="/auto/runChkAutoLabel.do", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ModelAndView runChkAutoLabel(DocumentVo vo) throws Exception {
+		ModelAndView mv = new ModelAndView("jsonView");
+		List<Integer> checked = autoLabelingService.isRunningAutoLabeled(vo);
+		if(!checked.isEmpty()) {
+			mv.addObject("docId", checked);
+		}
+		return mv;
+	}
 	
 }

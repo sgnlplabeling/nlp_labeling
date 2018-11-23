@@ -28,12 +28,20 @@ function bindDomainTree(){
 }
 
 function bindToggleCheckbox() {
-	$(".toggle_checkbox").click(function() {
+	$(".toggle_checkbox").change(function() {
 		var value = $(this).is(":checked");
 
 		$("input[name=docIds]:checkbox").each(function() {
 			$(this).prop("checked", value);
 		});
+	});
+	
+	$("input[name=docIds]:checkbox").change(function() {
+		if($('input[name=docIds]').length == $('input[name=docIds]:chechked').length){
+			$(".toggle_checkbox").prop("checked", true);
+		} else {
+			$(".toggle_checkbox").prop("checked", false);
+		}
 	});
 }
 
@@ -53,30 +61,72 @@ function fn_search() {
 	$("#searchForm").submit();
 }
 
+var autoLabelingInterval = null;
 function bindLearning() {
     $("#btn_learning_start").click(function (e) {
+    	if($('input[name=docIds]:checked').length == 0){
+    		alert('학습 데이터를 생성 위해서는 문서를 선택해주세요.');
+    		return;
+    	}
+    	
+    	var isProcessing = false;
+//    	$('td[id^=learningStatus_]').each(function(){
+//    		if($.trim($(this).html()) == '처리중'){
+//    			isProcessing = true;
+//    		}
+//    	});
+    	
+    	if(isProcessing){
+    		alert('학습 데이터를 생성 작업중인 문서가 존재합니다.')
+    		return;
+    	}
+    	
 	    if (!confirm('선택하신 문서에 대한 학습 데이터를 생성하시겠습니까?'))
 	        return false;
 	    
 	    var labelingForm = $('#labeling_form').serialize();
 	    
 	    $.ajax({
-	    	url: '/learning/start.do?_format=json'
+	    	url: contextPath+'/learning/start.do?_format=json'
 	    	, dataType: 'json'
 	    	, data: labelingForm
+	    	, beforeSend : function(){
+	    		$('input[name=docIds]:checked').each(function(){
+	    			$('#learningStatus_'+$(this).val()).html('처리중');
+	    		});
+	    	} 
 	    	, success: function (data) {
-	    		alert('학습 요청이 완료되었습니다.');
-
-	    		windowRefresh();
+	    		autoLabelingInterval = setInterval(function(){checkLearingForm(labelingForm)}, 15000);
 	    	}
 	    });
     });
 }
 
+var checkLearingForm = function (form){
+	 $.ajax({
+	    	url: contextPath+'/learning/checkLearning.do?_format=json'
+	    	, dataType: 'json'
+	    	, data: form
+	    	, success : function (data){
+	    		if(data.docId){
+	    			$.each(data.docId, function(index, value){
+	    				$('#learningStatus_'+value).html('자동');
+	    				$('#docIdChk_'+value).prop("checked", false);
+	    			});
+	    			if($('input[name=docIds]:checked').length == data.docId.length){
+    					alert('선택한 문서의 학습 데이터 생성이 완료되었습니다.')
+    					clearInterval(autoLabelingInterval);
+    					$('input[name=docIds]:checked').prop('checked', false);
+    					windowRefresh();
+    				}
+	    		}
+	    	}
+	 });
+}
+
 function bindDownload() {
     $("#btn_download_start").click(function (e) {
-//	    if (!confirm('선택하신 문서에 대한 학습 데이터를 다운로드 하시겠습니까?'))
-//	        return false;
+    	
     	var flag=false;
 	    
 	    var f = document.labeling_form;
@@ -99,7 +149,7 @@ function bindDownload() {
 	    }
 	    
 	    window.open('',"download_pop","toolbar=no,status=no,width=500,height=270,directories=no,scrollbars=yes,location=no,resizable=yes,menubar=no");
-	    var url = "/learning/downloadForm.do";
+	    var url =contextPath+ "/learning/downloadForm.do";
 	    f.target = 'download_pop';
 	    f.method = 'post';
 	    f.action = url;
@@ -108,23 +158,60 @@ function bindDownload() {
 }
 
 function fn_learning(docId) {
-	  if (!confirm('문서에 대한 학습 데이터를 생성하시겠습니까?'))
-	        return false;
-	    
-	    var groupName = $("#learningGroupName").val();
-	    
-	    $.ajax({
-	    	url: '/learning/start.do?_format=json'
-	    	, dataType: 'json'
-	    	, data: {"docIds" : docId, "groupName" : groupName}
-	    	, success: function (data) {
-	    		alert('학습 요청이 완료되었습니다.');
-
-	    		windowRefresh();
-	    	}
-	    });
+	var isProcessing = false;
+//	$('td[id^=learningStatus_]').each(function(){
+//		if($.trim($(this).html()) == '처리중'){
+//			isProcessing = true;
+//		}
+//	});
+	
+	if(isProcessing){
+		alert('학습 데이터를 생성 작업중인 문서가 존재합니다.')
+		return;
+	}
+	
+	
+   if (!confirm('문서에 대한 학습 데이터를 생성하시겠습니까?'))
+        return false;
+    
+    var groupName = $("#learningGroupName").val();
+    
+    $.ajax({
+    	url:contextPath+ '/learning/start.do?_format=json'
+    	, dataType: 'json'
+    	, data: {"docIds" : docId, "groupName" : groupName}
+    	, beforeSend : function(){
+    		$('#learningStatus_'+docId).html('처리중');
+    	} 
+    	, success: function (data) {
+    		console.log(data);
+    		autoLabelingInterval = setInterval(function(){checkLearingValue(docId, groupName)}, 15000);
+    	}
+    });
 }
 
+
+var checkLearingValue = function (docId, groupName){
+	 $.ajax({
+	    	url: contextPath+'/learning/checkLearning.do?_format=json'
+	    	, dataType: 'json'
+    		, data: {"docIds" : docId, "groupName" : groupName}
+	    	, success : function (data){
+	    		console.log(data);
+    			if(data.docId){
+    				$.each(data.docId, function(index, value){
+    					$('#learningStatus_'+value).html('자동');
+    					$('#docIdChk_'+value).prop("checked", false);
+    				});
+    				if(docId == data.docId[0]){
+    					alert('선택한 문서의 학습 데이터 생성이 완료되었습니다.')
+    					clearInterval(autoLabelingInterval);
+    					windowRefresh();
+    				}
+        		}
+	    	}
+	 });
+}
 
 function fn_searchTermOpt() {
 	var searchTermOpt = $("#boardtop01_left").val();
@@ -135,6 +222,21 @@ function fn_searchTermOpt() {
 	} else {
 		$("#inputTerm").removeAttr("readonly");
 	}
+}
+
+function fn_downloadPop(docId) {
+	var f = document.popupForm;
+	
+	var groupName = $("#learningGroupName").val();
+	
+    window.open('',"download_pop","toolbar=no,status=no,width=500,height=270,directories=no,scrollbars=yes,location=no,resizable=yes,menubar=no");
+    var url = contextPath+"/learning/downloadForm.do";
+    f.docId.value = docId;
+    f.groupName.value = groupName;
+    f.target = 'download_pop';
+    f.method = 'post';
+    f.action = url;
+    f.submit();
 }
 
 function windowRefresh() {
@@ -149,19 +251,3 @@ function windowRefresh() {
 	form.append(input);
     form.submit();
 }
-
-function fn_downloadPop(docId) {
-	var f = document.popupForm;
-	
-	var groupName = $("#learningGroupName").val();
-	
-    window.open('',"download_pop","toolbar=no,status=no,width=500,height=270,directories=no,scrollbars=yes,location=no,resizable=yes,menubar=no");
-    var url = "/learning/downloadForm.do";
-    f.docId.value = docId;
-    f.groupName.value = groupName;
-    f.target = 'download_pop';
-    f.method = 'post';
-    f.action = url;
-    f.submit();
-}
-

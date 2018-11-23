@@ -7,6 +7,9 @@ functions from this module themselves.
 """
 import os
 import stat
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 __all__ = ['commonprefix', 'exists', 'getatime', 'getctime', 'getmtime',
            'getsize', 'isdir', 'isfile']
@@ -43,13 +46,16 @@ def isdir(s):
     try:
         st = os.stat(s.decode('utf-8').encode('utf-8'))
     except os.error:
-        return False
+        try:
+            st = os.stat(s)
+        except os.error :
+            return False
     return stat.S_ISDIR(st.st_mode)
 
 
 def getsize(filename):
     """Return the size of a file, reported by os.stat()."""
-    return os.stat(filename).st_size
+    return os.stat(filename.decode('utf-8').encode('utf-8')).st_size
 
 
 def getmtime(filename):

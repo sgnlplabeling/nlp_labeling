@@ -8,6 +8,6 @@ public interface CheckLabelingService {
 	 * @param groupName
 	 * @return
 	 */
-	public String elementJstreeHtml(String groupName);
+	public String elementJstreeHtml(String groupName, String[] selectIds) throws Exception;
 
 }

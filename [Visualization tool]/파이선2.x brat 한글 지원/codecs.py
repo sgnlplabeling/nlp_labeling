@@ -8,7 +8,8 @@ Written by Marc-Andre Lemburg (mal@lemburg.com).
 """#"
 
 import __builtin__, sys
-
+reload(sys)
+sys.setdefaultencoding('utf-8')
 ### Registry and builtin stateless codec functions
 
 try:

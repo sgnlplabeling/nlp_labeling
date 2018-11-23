@@ -199,7 +199,6 @@ public class Pagination {
         }
 
         html += Form.end();
-
         return html;
     }
 

@@ -17,7 +17,6 @@ import com.diquest.lltp.domain.DocumentVo;
 import com.diquest.lltp.modules.data.service.CollectionService;
 import com.diquest.lltp.modules.data.service.DocumentService;
 
-
 @Controller
 public class DomainController {
 	Logger log = Logger.getLogger(this.getClass());

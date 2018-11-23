@@ -1,5 +1,7 @@
 package com.diquest.lltp.modules.work.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.diquest.lltp.common.utils.Pagination;
@@ -83,8 +84,27 @@ public class HistoryController {
     @RequestMapping(value="/work/document/compareLoc.do", produces = MediaType.APPLICATION_JSON_VALUE)
     public ModelAndView compareLoc(DocumentVo documentVo) throws Exception{
         ModelAndView mv = new ModelAndView("jsonView");
-        List<AnnotationVo> list = historyService.getCompareLoc(documentVo);
-        mv.addObject("list", list);
+        
+        List<AnnotationVo> compareList1 = new ArrayList<>();
+		List<AnnotationVo> compareList2 = new ArrayList<>();
+		HashMap<String,Object> map = new HashMap<>();
+		
+		String recordSeq = documentVo.getRecordSeq();
+		String lastRecordSeq = documentVo.getLastRecordSeq();
+
+		map.put("recordId", documentVo.getRecordId());
+		map.put("recordSeq1", recordSeq);
+		map.put("recordSeq2", lastRecordSeq);	
+		
+		compareList1 = historyService.getCompareLoc(map);
+		
+		map.put("recordSeq1", lastRecordSeq);
+		map.put("recordSeq2", recordSeq);
+		
+		compareList2 = historyService.getCompareLoc(map);
+		
+        mv.addObject("compareList1", compareList1);
+        mv.addObject("compareList2", compareList2);
         return mv;
     }
     

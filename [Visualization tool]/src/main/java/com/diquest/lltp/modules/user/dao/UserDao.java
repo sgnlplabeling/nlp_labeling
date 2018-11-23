@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import com.diquest.lltp.common.dao.CommonDAO;
 import com.diquest.lltp.domain.CommonVo;
-import com.diquest.lltp.domain.HistoryVo;
 import com.diquest.lltp.domain.UserVo;
 
 @Repository("UserDao")
@@ -18,7 +17,7 @@ public class UserDao extends CommonDAO {
 	}
 
 	public List<UserVo> getUserList(CommonVo vo) {
-		return (List<UserVo>)selectList("user.selectUserList" , vo);
+		return selectList("user.selectUserList" , vo);
 	}
 	
 	public UserVo getUser(String userId) {
