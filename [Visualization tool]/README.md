@@ -14,20 +14,20 @@
 ## 2.1. 레이블링 대상 구축
 
 ![레이블링대상구축](./images/manage1.jpg)
-<video src="./images/시연1.mp4"></video>	
+<video src="./images/시연01.mp4"></video>	
 ## 2.3. 레이블링 결과 검증
 
 ![레이블링결과검증](./images/manage3.jpg)
-<video src="./images/시연3.mp4"></video>
+<video src="./images/시연03.mp4"></video>
 ## 2.4. 레이블링 오류 수정
 
 ![레이블링오류수정](./images/manage4.jpg)
-<video src="./images/시연4.mp4"></video>
+<video src="./images/시연04.mp4"></video>
 ## 2.5. 학습데이터 자동 생성
 
 ![학습데이터자동생성](./images/manage5.jpg)
-<video src="./images/시연5.mp4"></video>
+<video src="./images/시연05.mp4"></video>
 ## 2.6. 이력 관리
 
 ![이력관리](./images/manage6.jpg)
-<video src="./images/시연6.mp4"></video>
+<video src="./images/시연06.mp4"></video>
