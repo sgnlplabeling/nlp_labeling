@@ -1,20 +1,31 @@
 소속 동아대학교 지능형 시스템 연구실
+
 작성자 : 이승욱(seungwooklee76@gmail.com)
+
 개발 : 유홍연(HongYeon Yu, 석사과정), 이승욱(SeungWook Lee, 석사과정), 고영중(YoungJoong Ko, 교수)
+
 홈페이지 : http://islab.donga.ac.kr/
+
 E-Mail : seungwooklee76@gmail.com
 
 본 프로그램은 동아대학교 지능형 시스템 연구실의 소중한 자산입니다.
+
 본 프로그램을 이용한 어떠한 려과물일지라도 본 프로그램의 논문 혹은 주소가 참조되어야 합니다.
+
 참조는 아래 논문 및 사이트를 참조하여 주시기 바랍니다.
 
 이승욱, 유홍연, 고영중 "학습 데이터 확장을 통한 딥러닝 기반 인과관계 추출 모델." 한글 및 한국어 정보처리 학술 대회, p61-66, 2018.
 
 환경
+
 Python version = 3.5 이상
+
 pytorch 0.3.1
+
 CUDA = 8.0
+
 CUDNN = 7.1.3
+
 Numpy = 1.15.4
 
 학습시 입력 형태
