@@ -3,11 +3,11 @@ labeled data :
 	donga_pos_schedule_corpus.txt : https://drive.google.com/open?id=1-ljEGWNNlAOz5Srj5g10nrWz9IRxuXat
 
 Unlabeled data : 
-	
+    ë°ì´í„° ë¬¸ì˜: ë°•ì˜ì¤€	
 
-Unlabeled data¿¡ ´ëÇÑ Label :
+Unlabeled dataì˜ Label :
 	https://drive.google.com/open?id=12PVazFx9tIPK8ODgf8h7bYEzf9ldx-AW
 
-Bootstrap ¿Ï·áµÈ ¹®Àå°ú Label:
+Bootstrap ì™„ë£Œëœ ë¬¸ì¥ê³¼ ê·¸ ë¬¸ì¥ë“¤ì˜ Label:
 	
 
