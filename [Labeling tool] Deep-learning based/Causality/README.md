@@ -31,81 +31,139 @@ Numpy = 1.15.4
 학습시 입력 형태
 
 단어  품사태그 어절 순서  태그
+
 이 	MM 	1 	B-C
+
 현상 	NNG 	2 	I-C
+
 이 	JKS 	2 	I-C
+
 계속되 	VV 	3 	I-C
+
 면 	EC 	3 	I-C
+
 반복되 	VV 	4 	B-E
+
 는 	ETM 	4 	I-E
+
 변형 	NNG 	5 	I-E
+
 으로 	JKB 	5 	I-E
+
 타이어 	NNG 	6 	I-E
+
 가 	JKS 	6 	I-E
+
 단시간 	NNG 	7 	I-E
+
 에 	JKB 	7 	I-E
+
 파열되 	VV 	8 	I-E
+
 ㅂ니다 	EF 	8 	I-E
+
 . 	SF 	8 	I-E
 
 평가시 입력형태
 
 단어  품사태그 어절 순서  태그
+
 이 	MM 	1 	O
+
 현상 	NNG 	2 	O
+
 이 	JKS 	2 	O
+
 계속되 	VV 	3 	O
+
 면 	EC 	3 	O
+
 반복되 	VV 	4 	O
+
 는 	ETM 	4 	O
+
 변형 	NNG 	5 	O
+
 으로 	JKB 	5 	O
+
 타이어 	NNG 	6 	O
+
 가 	JKS 	6 	O
+
 단시간 	NNG 	7 	O
+
 에 	JKB 	7 	O
+
 파열되 	VV 	8 	O
+
 ㅂ니다 	EF 	8 	O
+
 . 	SF 	8 	O
 
 
 평가시 출력 형태
 
+
 단어          예측 태그
+
 이/MM 		B-C
+
 현상/NNG 	I-C
+
 이/JKS 		I-C
+
 계속되/VV 	I-C
+
 면/EC 		I-C
+
 반복되/VV 	B-E
+
 는/ETM 		I-E
+
 변형/NNG 	I-E
+
 으로/JKB 	I-E
+
 타이어/NNG 	I-E
+
 가/JKS 		I-E
+
 단시간/NNG 	I-E
+
 에/JKB 		I-E
+
 파열되/VV 	I-E
+
 ㅂ니다/EF 	I-E
+
 ./SF 		I-E
 
+
+
 bidirectional LSTM CRFs Model
+
 워드임베딩
 
-######################################################################################################################################
+
+
+############################################################################################################################
+##########
+
+
 
 Options
-  -h, --help show this help message and exit
 
-  -T TRAIN, --train=TRAIN (Train 데이터의 위치를 정해줍니다)
+-h, --help show this help message and exit
 
-  -t TEST, --test=TEST(Test 데이터의 위치를 정해줍니다)
+-T TRAIN, --train=TRAIN (Train 데이터의 위치를 정해줍니다)
 
-  --score=SCORE         score file location
+-t TEST, --test=TEST(Test 데이터의 위치를 정해줍니다)
 
-  -s TAG_SCHEME, --tag_scheme=TAG_SCHEME(IOB 혹은 IOBES Tagging scheme을 선택합니다)
+--score=SCORE         score file location
 
-  -l LOWER, --lower=LOWER(영어를 모두 소문자로 정규화 음절단에선 적용되지 않음)
+-s TAG_SCHEME, --tag_scheme=TAG_SCHEME(IOB 혹은 IOBES Tagging scheme을 선택합니다)
+
+-l LOWER, --lower=LOWER(영어를 모두 소문자로 정규화 음절단에선 적용되지 않음)
 
   -z ZEROS, --zeros=ZEROS(모든 숫자들을 0으로 정규화 시킵니다.)
 
@@ -150,47 +208,67 @@ Options
 ######################################################################################################################################
 
 *** 기본 파라미터로 Train Mode bi-LSTM-CRFs 실행 방법 ***
+
 train.py 파일을 python으로 실행하면서 파라미터로 train, dev, test 입력과 Train Mode 선택
+
 gpu 사용시
+
 python train.py -m 1 -T train_data_path -d dev_data_path -t test_data_path --is_char_emb 0 --is_pre_emb 0 -P 1
 
+
 gpu 미사용시
+
 python train.py -m 1 -T train_data_path -d dev_data_path -t test_data_path --is_char_emb 0 --is_pre_emb 0 -P 0
 
 
+
 ***기본 파라미터로 Test Mode bi-LSTM-CRFs 실행 방법 ***
+
 gpu 사용시
+
 python train.py -m 0 -T train_data_path -d dev_data_path -t test_data_path --is_char_emb 0 --is_pre_emb 0 -P 1
 
 gpu 미사용시
+
 python train.py -m 0 -T train_data_path -d dev_data_path -t test_data_path --is_char_emb 0 --is_pre_emb 0 -P 0
 
 
 *** 기본 파라미터에 pre trained 추가한 bi-LSTM-CRFs 실행 방법 ***
+
 gpu 사용시
+
 python train.py -T train_data_path -d dev_data_path -t test_data_path -p word_embedding_path -C Character_embedding_path -P 1
 
 gpu 미사용시
+
 python train.py -T train_data_path -d dev_data_path -t test_data_path -p word_embedding_path -C Character_embedding_path -P 0
 
 *** 기본 파라미터로 Train Mode bi-LSTM 실행 방법 ***
+
 train.py 파일을 python으로 실행하면서 파라미터로 train, dev, test 입력과 Train Mode 선택
+
 gpu 사용시
+
 python train.py -m 1 -T train_data_path -d dev_data_path -t test_data_path --is_char_emb 0 --is_pre_emb 0 -P 1 -f 0
 
 gpu 미사용시
+
 python train.py -m 1 -T train_data_path -d dev_data_path -t test_data_path --is_char_emb 0 --is_pre_emb 0 -P 0 -f 0
 
 ######################################################################################################################################
 
 *** 주의사항 ***
+
 1. 입력으로 품사태그가 없을 경우 plus_tag의 값을 0으로 수정
+
 2. 입력 데이터가 존재하지 않을 시 모델 작동하지 않음
+
 3. 평가시 출력 경로는 evaluation/temp
 
 ######################################################################################################################################
 
 *** 성능 ***
+
 최종 Best test F1 Score 75.00%
 
 ######################################################################################################################################
