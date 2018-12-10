@@ -13,12 +13,11 @@ E-Mail : hongyeon1408@gmail.com, seungwooklee76@gmail.com
 참조는 아래 논문 및 사이트를 참조하여 주시기 바랍니다.
 
 
-https://github.com/sgnlplabeling/nlp_labeling/tree/master/%5BLabeling%20tool%5D%20Deep-learning%20based/NER
+사이트 : https://github.com/sgnlplabeling/nlp_labeling/tree/master/%5BLabeling%20tool%5D%20Deep-learning%20based/NER
 
-Hongyeon Yu, Youngjoong Ko. "Expansion of Word Representation for Named Entity Recognition Based on Bidirectional LSTM CRFs." Journal of KIISE, 44.3 (2017.3): 306-313.
+논문 : Hongyeon Yu, Youngjoong Ko. "Expansion of Word Representation for Named Entity Recognition Based on Bidirectional LSTM       CRFs." Journal of KIISE, 44.3 (2017.3): 306-313.
 
 작성날짜 : 2018년 4월 2일 
-
 
 환경
 
@@ -29,8 +28,6 @@ PyTorch : 0.3.0
 Numpy : 1.14.0
 
 SciPy : 1.0.0
-
-
 
 
 bidirectional LSTM CRFs Model
