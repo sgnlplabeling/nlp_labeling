@@ -29,6 +29,10 @@ Numpy : 1.14.0
 
 SciPy : 1.0.0
 
+CUDA = 8.0
+
+CUDNN = 7.1.3
+
 
 bidirectional LSTM CRFs Model
 음절 LSTM 임베딩, 워드임베딩, POS Onehot임베딩 추가자질로 사용
