@@ -14,9 +14,9 @@ E-Mail : seungwooklee76@gmail.com
 
 참조는 아래 논문 및 사이트를 참조하여 주시기 바랍니다.
 
-이승욱, 유홍연, 고영중 "학습 데이터 확장을 통한 딥러닝 기반 인과관계 추출 모델." 한글 및 한국어 정보처리 학술 대회, p61-66, 2018.
+논문 : 이승욱, 유홍연, 고영중 "학습 데이터 확장을 통한 딥러닝 기반 인과관계 추출 모델." 한글 및 한국어 정보처리 학술 대회, p61-66, 2018.
 
-https://github.com/sgnlplabeling/nlp_labeling
+사이트 : https://github.com/sgnlplabeling/nlp_labeling
 
 환경
 
