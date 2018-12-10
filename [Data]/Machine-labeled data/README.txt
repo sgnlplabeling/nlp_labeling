@@ -10,4 +10,5 @@
 화행 분석 최종 레이블 데이터 링크:  데이터 문의 => 박영준
 SRL CRF machine labeled data : https://drive.google.com/open?id=1YrmB3Xcy6YDljxZVcsIkBUOpasTk6ms6
 CAUSALITY CRF machine labeled data : https://drive.google.com/drive/folders/1z178pH5aHjmoqDr0BSfNn3PUcOYt24o-
+CAUSALITY DEPP machine labeled data : https://drive.google.com/drive/folders/1QgVIgIS2UCZqZGCv-W_O5-nI7Vcnn8dB
 >>>>>>> 21c0e61a5ac28a6570126bded7183f5298df3560
