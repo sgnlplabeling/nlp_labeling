@@ -108,7 +108,6 @@ Options
 
   -h, --help show this help message and exit
 
-
   -T TRAIN, --train=TRAIN (Train 데이터의 위치를 정해줍니다)
 
 
@@ -119,46 +118,38 @@ Options
 
 
   -l LOWER, --lower=LOWER (영어를 모두 소문자로 정규화 음절단에선 적용되지 않음)
-
    default = 1
  
 
   -z ZEROS, --zeros=ZEROS (모든 숫자들을 0으로 정규화 시킵니다.)
-
    default = 1
 
 
   -w WORD_DIM, --word_dim=WORD_DIM (단어 단위 입력 차원 값)
-
    default = 64
   
 
 
   -W WORD_LSTM_DIM, --word_lstm_dim=WORD_LSTM_DIM (LSTM hidden 차원 값)
-
-   default = 64
+   default = 126
 
 
   -p PRE_EMB, --pre_emb=PRE_EMB (pre trained 단어 임베딩 위치)
 
 
   --is_pre_emb=IS_PRE_EMB (0:랜덤 단어 임베딩 사용, 1:pre trained 단어 임베딩 사용)
-
    default = 0
 
 
   -f CRF, --crf=CRF     Use CRF (0:CRF Layer 사용하지 않음, 1:CRF Layer 사용)
-  
    default = 1
 
 
   -D DROPOUT, --dropout=DROPOUT (입력단에 Dropout Layer 적용 0=no Dropout)
-
    default = 0.5
 
 
   -P USE_GPU, --use_gpu=USE_GPU (0:GPU를 사용하지 않음, 1:GPU 사용)
-
    default = 0
 
 
