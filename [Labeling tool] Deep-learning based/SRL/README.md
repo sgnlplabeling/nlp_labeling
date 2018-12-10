@@ -33,76 +33,72 @@ Numpy = 1.15.4
 
 
 
-현재어절	현재어절	술어어절	술어어절	정답태그
+현재어절	        현재어절	   술어어절	      술어어절	  정답태그
+첫번째 형태소	  마지막형태소	 첫번째형태소	  마지막형태소	
 
-첫번째 형태소	마지막형태소	첫번째형태소	마지막형태소	
+그/NP             는/JX        남/VV         아/EC      O
 
+김대중/NNP       <none!#>      남/VV         아/EC      O
 
-그/NP		는/JX	 	남/VV 		아/EC 		O
+정부/NNG          가/JKS       남/VV         아/EC      O
 
-김대중/NNP 	<none!#> 	남/VV 		아/EC 		O
+많/VA             은/ETM       남/VV         아/EC      O
 
-정부/NNG	가/JKS		남/VV 		아/EC 		O
+것/NNB            을/JKO       남/VV         아/EC      O
 
-많/VA		은/ETM		남/VV 		아/EC 		O
+하/VV             지만/EC      남/VV         아/EC   ARGM-DIS
 
-것/NNB		을/JKO		남/VV 		아/EC 		O
+아직/MAG          도/JX        남/VV         아/EC      O
 
-하/VV		지만/EC		남/VV 		아/EC 		ARGM-DIS
+하/VV             여야/EC      남/VV         아/EC      O
 
-아직/MAG	도/JX		남/VV 		아/EC 		O
+하/VX             ㄹ/ETM       남/VV         아/EC      O
 
-하/VV		여야/EC		남/VV 		아/EC 		O
+일/NNG            이/JKS       남/VV         아/EC     ARG1
 
-하/VX		ㄹ/ETM		남/VV 		아/EC 		O
+많이/MAG          <none!#>     남/VV         아/EC   ARGM-EXT
 
-일/NNG		이/JKS		남/VV 		아/EC 		ARG1
+남/VV             아/EC        남/VV         아/EC      O
 
-많이/MAG	<none!#>	남/VV 		아/EC 		ARGM-EXT
+있/VX             다고/EC      남/VV         아/EC      AUX
 
-남/VV		아/EC		남/VV 		아/EC 		O
-
-있/VX		다고/EC		남/VV 		아/EC 		AUX
-
-강조하/VV	다/EF		남/VV 		아/EC 		O
+강조하/VV          다/EF        남/VV         아/EC      O
 
 
 
 
 평가시 출력 형태
 
-현재어절	현재어절	술어어절	술어어절	정답태그	예측태그
+현재어절	        현재어절	   술어어절	      술어어절	  정답태그
+첫번째 형태소	  마지막형태소	 첫번째형태소	  마지막형태소	
 
-첫번째 형태소	마지막형태소	첫번째형태소	마지막형태소	
+그/NP             는/JX        남/VV         아/EC      O
 
+김대중/NNP       <none!#>      남/VV         아/EC      O
 
-그/NP		는/JX	 	남/VV 		아/EC 		O 		O
+정부/NNG          가/JKS       남/VV         아/EC      O
 
-김대중/NNP 	<none!#> 	남/VV 		아/EC 		O 		O
+많/VA             은/ETM       남/VV         아/EC      O
 
-정부/NNG	가/JKS		남/VV 		아/EC 		O 		O
+것/NNB            을/JKO       남/VV         아/EC      O
 
-많/VA		은/ETM		남/VV 		아/EC 		O 		O
+하/VV             지만/EC      남/VV         아/EC   ARGM-DIS
 
-것/NNB		을/JKO		남/VV 		아/EC 		O 		O
+아직/MAG          도/JX        남/VV         아/EC      O
 
-하/VV		지만/EC		남/VV 		아/EC 		ARGM-DIS 	ARGM-DIS
+하/VV             여야/EC      남/VV         아/EC      O
 
-아직/MAG	도/JX		남/VV 		아/EC 		O 		O
+하/VX             ㄹ/ETM       남/VV         아/EC      O
 
-하/VV		여야/EC		남/VV 		아/EC 		O 		O
+일/NNG            이/JKS       남/VV         아/EC     ARG1
 
-하/VX		ㄹ/ETM		남/VV 		아/EC 		O 		O
+많이/MAG          <none!#>     남/VV         아/EC   ARGM-EXT
 
-일/NNG		이/JKS		남/VV 		아/EC 		ARG1 		ARG1
+남/VV             아/EC        남/VV         아/EC      O
 
-많이/MAG	<none!#>	남/VV 		아/EC 		ARGM-EXT	ARGM-EXT
+있/VX             다고/EC      남/VV         아/EC      AUX
 
-남/VV		아/EC		남/VV 		아/EC 		O 		O
-
-있/VX		다고/EC		남/VV 		아/EC 		AUX 		AUX
-
-강조하/VV	다/EF		남/VV 		아/EC 		O		O
+강조하/VV          다/EF        남/VV         아/EC      O
 
 
 bidirectional LSTM CRFs Model
@@ -178,7 +174,6 @@ Options
 
 *** 기본 파라미터로 Train Mode bi-LSTM-CRFs 실행 방법 ***
 
-
 gpu 사용시
 
 python3 train.py -T train_data_path -t test_data_path -P 1
@@ -191,7 +186,6 @@ python3 train.py -T train_data_path -t test_data_path
 
 *** 기본 파라미터에 pre trained 추가한 bi-LSTM-CRFs 실행 방법 ***
 
-
 gpu 사용시
 
 python3 train.py -T train_data_path -t test_data_path --is_pre_emb 1 -P 1 -p word_embedding_path
@@ -199,7 +193,6 @@ python3 train.py -T train_data_path -t test_data_path --is_pre_emb 1 -P 1 -p wor
 gpu 미사용시
 
 python3 train.py -T train_data_path -t test_data_path --is_pre_emb 1 -p word_embedding_path
-
 
 
 ##############################################################
