@@ -1,0 +1,6 @@
+h5py==2.8.0
+tensorflow_gpu==1.6.0
+hanja==0.11.0
+numpy==1.15.4
+tensorflow==1.14.0
+typing==3.7.4
