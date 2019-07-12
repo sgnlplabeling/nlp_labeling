@@ -1,192 +1,75 @@
-소속 동아대학교 지능형 시스템 연구실
+소속 서강대학교 자연어처리 연구실
 
-작성자 : 윤정민(yjungmin2@gmail.com)
+작성자 : 박찬민(cksals302@gmail.com)
 
-개발 : 윤정민(JeongMin Yoon, 석사과정), 이승욱(SeungWook Lee, 석사과정), 고영중(YoungJoong Ko, 교수)
+개발 : 박찬민(cksals302@gmail.com, 석사과정)
 
-홈페이지 : http://islab.donga.ac.kr/
+관리자 : 김주애(jju75474@gmail.com, 박사과정)
 
+본 프로그램은 서강대학교 자연어처리 연구실의 소중한 자산입니다.
 
-
-본 프로그램은 동아대학교 지능형 시스템 연구실의 소중한 자산입니다.
-
-본 프로그램을 이용한 어떠한 결과물일지라도 본 프로그램의 주소가 참조되어야 합니다.
-
+본 프로그램을 이용한 모든 결과물은 본 프로그램의 주소가 참조되어야 합니다.
 
 참조 사이트 : https://github.com/sgnlplabeling/nlp_labeling
 
-
-환경
-
-Python version = 3.5 이상
-
-pytorch 0.3.1
-
-CUDA = 8.0
-
-CUDNN = 7.1.3
-
-Numpy = 1.15.4
-
-학습시 입력 형태
-
-입력 형태 순서 (현재어절 첫번째형태소, 현재어절 두번째형태소, 술어어절 첫번째형태소, 술어어절 두번째형태소, 정답태그)
+개발 환경 (src/requirements.txt 참조)
 
 
-그/NP             는/JX        남/VV         아/EC      O
+Pyhton==3.5.6
 
-김대중/NNP       <none!#>      남/VV         아/EC      O
+h5py==2.8.0
 
-정부/NNG          가/JKS       남/VV         아/EC      O
+tensorflow_gpu==1.6.0
 
-많/VA             은/ETM       남/VV         아/EC      O
+hanja==0.11.0
 
-것/NNB            을/JKO       남/VV         아/EC      O
+numpy==1.15.4
 
-하/VV             지만/EC      남/VV         아/EC   ARGM-DIS
+tensorflow==1.14.0
 
-아직/MAG          도/JX        남/VV         아/EC      O
+typing==3.7.4
 
-하/VV             여야/EC      남/VV         아/EC      O
-
-하/VX             ㄹ/ETM       남/VV         아/EC      O
-
-일/NNG            이/JKS       남/VV         아/EC     ARG1
-
-많이/MAG          <none!#>     남/VV         아/EC   ARGM-EXT
-
-남/VV             아/EC        남/VV         아/EC      O
-
-있/VX             다고/EC      남/VV         아/EC      AUX
-
-강조하/VV          다/EF        남/VV         아/EC      O
-
-
-
-
-평가시 출력 형태
-
-출력 형태 순서 (현재어절 첫번째형태소, 현재어절 두번째형태소, 술어어절 첫번째형태소, 술어어절 두번째형태소, 정답태그, 예측태그)
-
-
-그/NP             는/JX        남/VV         아/EC      O
-
-김대중/NNP       <none!#>      남/VV         아/EC      O
-
-정부/NNG          가/JKS       남/VV         아/EC      O
-
-많/VA             은/ETM       남/VV         아/EC      O
-
-것/NNB            을/JKO       남/VV         아/EC      O
-
-하/VV             지만/EC      남/VV         아/EC   ARGM-DIS
-
-아직/MAG          도/JX        남/VV         아/EC      O
-
-하/VV             여야/EC      남/VV         아/EC      O
-
-하/VX             ㄹ/ETM       남/VV         아/EC      O
-
-일/NNG            이/JKS       남/VV         아/EC     ARG1
-
-많이/MAG          <none!#>     남/VV         아/EC   ARGM-EXT
-
-남/VV             아/EC        남/VV         아/EC      O
-
-있/VX             다고/EC      남/VV         아/EC      AUX
-
-강조하/VV          다/EF        남/VV         아/EC      O
-
-
-bidirectional LSTM CRFs Model
-
-
-##############################################################
-
-Options
-
-
-  -h, --help show this help message and exit
-
-  -T TRAIN, --train=TRAIN (Train 데이터의 위치를 정해줍니다)
-
-
-  -t TEST, --test=TEST (Test 데이터의 위치를 정해줍니다)
-
-
-  --score=SCORE         score file location
-
-
-  -l LOWER, --lower=LOWER (영어를 모두 소문자로 정규화 음절단에선 적용되지 않음)
-   default = 1
+*** 예시 문장 ***
  
+ ※ 학습 시
+ 이/NP+와/JKB 관련/NNG+,/SP 정부/NNG+는/JX 내달/NNG 남북/NNP+교류협력추진/NNG 실무위원회/NNG+를/JKO 열/VV+어/EC 정부/NNG 차원/NNG+의/JKG 남북/NNP+경제공동체/NNG 건설/NNG 방안/NNG+을/JKO 마무리하/VV+ㄹ/ETM 방침/NNG+이/VCP+나/EC 4.13/SN+총선/NNG 때/NNG+까지는/JX 민간급/NNG 경제협력/NNG 활성화/NNG 방안/NNG 추진/NNG+에/JKB 주력하/VV+ㄹ/ETM 계획/NNG+이/VCP+다/EF+./SF
+ 
+ ->
+ 
+ (술어 index) (술어 원형 정보) (형태소 분석된 문장)|||(의미역 태그)
+ 
+ 6 yeol.01 이/NP+와/JKB 관련/NNG+,/SP 정부/NNG+는/JX 내달/NNG 남북/NNP+교류협력추진/NNG 실무위원회/NNG+를/JKO 열/VV+어/EC 정부/NNG 차원/NNG+의/JKG 남북/NNP+경제공동체/NNG 건설/NNG 방안/NNG+을/JKO 마무리하/VV+ㄹ/ETM 방침/NNG+이/VCP+나/EC 4.13/SN+총선/NNG 때/NNG+까지는/JX 민간급/NNG 경제협력/NNG 활성화/NNG 방안/NNG 추진/NNG+에/JKB 주력하/VV+ㄹ/ETM 계획/NNG+이/VCP+다/EF+./SF|||_	_	_	ARGM-TMP	_	ARG1	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+ 
+ 12 ma-mu-ri.01 이/NP+와/JKB 관련/NNG+,/SP 정부/NNG+는/JX 내달/NNG 남북/NNP+교류협력추진/NNG 실무위원회/NNG+를/JKO 열/VV+어/EC 정부/NNG 차원/NNG+의/JKG 남북/NNP+경제공동체/NNG 건설/NNG 방안/NNG+을/JKO 마무리하/VV+ㄹ/ETM 방침/NNG+이/VCP+나/EC 4.13/SN+총선/NNG 때/NNG+까지는/JX 민간급/NNG 경제협력/NNG 활성화/NNG 방안/NNG 추진/NNG+에/JKB 주력하/VV+ㄹ/ETM 계획/NNG+이/VCP+다/EF+./SF|||_	_	ARG0	_	_	_	ARGM-MNR	_	_	_	_	ARG1	_	_	_	_	_	_	_	_	_	_	_
+ 
+ 21 cu-ryeok.01 이/NP+와/JKB 관련/NNG+,/SP 정부/NNG+는/JX 내달/NNG 남북/NNP+교류협력추진/NNG 실무위원회/NNG+를/JKO 열/VV+어/EC 정부/NNG 차원/NNG+의/JKG 남북/NNP+경제공동체/NNG 건설/NNG 방안/NNG+을/JKO 마무리하/VV+ㄹ/ETM 방침/NNG+이/VCP+나/EC 4.13/SN+총선/NNG 때/NNG+까지는/JX 민간급/NNG 경제협력/NNG 활성화/NNG 방안/NNG 추진/NNG+에/JKB 주력하/VV+ㄹ/ETM 계획/NNG+이/VCP+다/EF+./SF|||_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	ARGM-TMP	_	_	_	_	ARG1	_	_
 
-  -z ZEROS, --zeros=ZEROS (모든 숫자들을 0으로 정규화 시킵니다.)
-   default = 1
+ ※ 태깅 시
+ 
+ 이/NP+와/JKB 관련/NNG+,/SP 정부/NNG+는/JX 내달/NNG 남북/NNP+교류협력추진/NNG 실무위원회/NNG+를/JKO 열/VV+어/EC 정부/NNG 차원/NNG+의/JKG 남북/NNP+경제공동체/NNG 건설/NNG 방안/NNG+을/JKO 마무리하/VV+ㄹ/ETM 방침/NNG+이/VCP+나/EC 4.13/SN+총선/NNG 때/NNG+까지는/JX 민간급/NNG 경제협력/NNG 활성화/NNG 방안/NNG 추진/NNG+에/JKB 주력하/VV+ㄹ/ETM 계획/NNG+이/VCP+다/EF+./SF
+ 
+ ->
+ 
+ 6 yeol.01 이/NP+와/JKB 관련/NNG+,/SP 정부/NNG+는/JX 내달/NNG 남북/NNP+교류협력추진/NNG 실무위원회/NNG+를/JKO 열/VV+어/EC 정부/NNG 차원/NNG+의/JKG 남북/NNP+경제공동체/NNG 건설/NNG 방안/NNG+을/JKO 마무리하/VV+ㄹ/ETM 방침/NNG+이/VCP+나/EC 4.13/SN+총선/NNG 때/NNG+까지는/JX 민간급/NNG 경제협력/NNG 활성화/NNG 방안/NNG 추진/NNG+에/JKB 주력하/VV+ㄹ/ETM 계획/NNG+이/VCP+다/EF+./SF|||_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+ 
+ 12 ma-mu-ri.01 이/NP+와/JKB 관련/NNG+,/SP 정부/NNG+는/JX 내달/NNG 남북/NNP+교류협력추진/NNG 실무위원회/NNG+를/JKO 열/VV+어/EC 정부/NNG 차원/NNG+의/JKG 남북/NNP+경제공동체/NNG 건설/NNG 방안/NNG+을/JKO 마무리하/VV+ㄹ/ETM 방침/NNG+이/VCP+나/EC 4.13/SN+총선/NNG 때/NNG+까지는/JX 민간급/NNG 경제협력/NNG 활성화/NNG 방안/NNG 추진/NNG+에/JKB 주력하/VV+ㄹ/ETM 계획/NNG+이/VCP+다/EF+./SF|||_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
+ 
+ 21 cu-ryeok.01 이/NP+와/JKB 관련/NNG+,/SP 정부/NNG+는/JX 내달/NNG 남북/NNP+교류협력추진/NNG 실무위원회/NNG+를/JKO 열/VV+어/EC 정부/NNG 차원/NNG+의/JKG 남북/NNP+경제공동체/NNG 건설/NNG 방안/NNG+을/JKO 마무리하/VV+ㄹ/ETM 방침/NNG+이/VCP+나/EC 4.13/SN+총선/NNG 때/NNG+까지는/JX 민간급/NNG 경제협력/NNG 활성화/NNG 방안/NNG 추진/NNG+에/JKB 주력하/VV+ㄹ/ETM 계획/NNG+이/VCP+다/EF+./SF|||_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
 
-
-  -w WORD_DIM, --word_dim=WORD_DIM (단어 단위 입력 차원 값)
-   default = 64
-  
-
-
-  -W WORD_LSTM_DIM, --word_lstm_dim=WORD_LSTM_DIM (LSTM hidden 차원 값)
-   default = 126
-
-
-  -p PRE_EMB, --pre_emb=PRE_EMB (pre trained 단어 임베딩 위치)
-
-
-  --is_pre_emb=IS_PRE_EMB (0:랜덤 단어 임베딩 사용, 1:pre trained 단어 임베딩 사용)
-   default = 0
-
-
-  -f CRF, --crf=CRF     Use CRF (0:CRF Layer 사용하지 않음, 1:CRF Layer 사용)
-   default = 1
-
-
-  -D DROPOUT, --dropout=DROPOUT (입력단에 Dropout Layer 적용 0=no Dropout)
-   default = 0.5
-
-
-  -P USE_GPU, --use_gpu=USE_GPU (0:GPU를 사용하지 않음, 1:GPU 사용)
-   default = 0
-
-
-  --loss=LOSS           loss file location
-
-
-  --name=NAME           model name(Train 이후 최고 성능 모델의 이름 지정)
-
-##############################################################
-
-*** 기본 파라미터로 Train Mode bi-LSTM-CRFs 실행 방법 ***
-
-gpu 사용시
-
-python3 train.py -T train_data_path -t test_data_path -P 1
-
-gpu 미사용시
-
-python3 train.py -T train_data_path -t test_data_path
-
-
-
-*** 기본 파라미터에 pre trained 추가한 bi-LSTM-CRFs 실행 방법 ***
-
-gpu 사용시
-
-python3 train.py -T train_data_path -t test_data_path --is_pre_emb 1 -P 1 -p word_embedding_path
-
-gpu 미사용시
-
-python3 train.py -T train_data_path -t test_data_path --is_pre_emb 1 -p word_embedding_path
-
-
-##############################################################
 
 *** 주의사항 ***
-1. 각 어절의 형태소는 특수문자를 제외한 의미있는 형태소만을 취함 (<none!#>은 패딩을 의미함)
-2. 입력 데이터가 존재하지 않을 시 모델이 작동하지 않음
-3. 평가 시 출력 경로 : evaluation/temp
 
+ 1. 각 형태소는 특수 문자를 제외한 의미있는 형태소만을 취함.
+ 2. 입력 데이터가 존재하지 않거나, 예시 문장과 다른 포멧일 경우 작동하지 않을 수 있음.
+ 3. tagging시 출력 경로 : result/predict
+ 4. 술어 index는 0부터 시작
+ 5. 초기 학습시, 파라미터는 config.py에서 수정 가능
+ 6. 한국어 ELMo 소스코드는 https://github.com/allenai/bilm-tf를 참고하여 한국어 특성에 적합하게 수정함
+ 
+*** 실행 방법 ***
+ 
+ ※ train 모드 및 tagging 모드 선택은 src/config.py에 있는 mode를 통해 선택 가능.
+ 
+ pip install -r requirements.txt
+ 
+ python src/main.py
