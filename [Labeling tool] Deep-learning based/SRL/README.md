@@ -64,7 +64,7 @@ typing==3.7.4
  3. tagging시 출력 경로 : result/predict
  4. 술어 index는 0부터 시작
  5. 초기 학습시, 파라미터는 config.py에서 수정 가능
- 6. 한국어 ELMo 소스코드는 https://github.com/allenai/bilm-tf를 참고하여 한국어 특성에 적합하게 수정함
+ 6. 한국어 ELMo 소스코드는 https://github.com/allenai/bilm-tf 를 참고하여 한국어 특성에 적합하게 수정함
  
 *** 실행 방법 ***
  
