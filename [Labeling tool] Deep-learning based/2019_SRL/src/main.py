@@ -12,7 +12,7 @@ from model_utils import create_model, get_logger, test_srl, write_tag, save_mode
 
 
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"]="1"
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 config = Config()
 
@@ -58,12 +58,12 @@ def train(sess):
 	writer = tf.summary.FileWriter(config.summary_path, sess.graph)
 
 	for epoch in range(config.max_epoch):
-		for _, batch in enumerate(train_manager.iter_batch(shuffle=True)):
+		for _, batch in enumerate(train_manager.iter_batch(shuffle= True)):
 			step, batch_loss, summary = SRL_Model.run_step(sess, ELMo_context, ELMo_ids, True, batch)
 			loss.append(batch_loss)
 			if step % config.steps_check == 0:
 				iteration = step // steps_per_epoch + 1
-				logger.info("epoch:{} iteration:{} step:{}/{}, "
+				logger.info("epoch:{} iteration:{} step:{}/{}, "hghg
 							"loss:{:>9.6f}".format(epoch, iteration, step % steps_per_epoch, \
 												   steps_per_epoch, np.mean(loss)))
 		writer.add_summary(summary, step)
@@ -82,29 +82,14 @@ def train(sess):
 			print("dev_f1 : %s" % dev_acc)
 			early_stop += 1
 			if early_stop > config.patience:
-				saver = tf.train.Saver()
-				saver.restore(sess, config.ckpt_path)
-				_, test_f1, test_report = evaluate(sess, SRL_Model, "test", test_manager, idx2label, logger)
-				print("Final best dev score : %s" % best)
-				print("Final best test score : %s" % test_f1)
 
+				print("Final best test score : %s" % best)
 				print("============DEV=============")
-				for line in best_dev:
-					logger.info(line.strip())
 
-				print("============TEST=============")
-				for line in test_report:
+				for line in best_dev:
 					logger.info(line.strip())
 				break
 		loss = []
-
-	print("============DEV=============")
-	for line in best_dev:
-		logger.info(line.strip())
-
-	print("============TEST=============")
-	for line in final_report:
-		logger.info(line.strip())
 
 def tagging(sess):
 	logger.info("start tagging")
