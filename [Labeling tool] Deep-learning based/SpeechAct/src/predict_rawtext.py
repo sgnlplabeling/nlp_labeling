@@ -12,17 +12,22 @@ import tensorflow as tf
 from text_cnn_rnn import TextCNNRNN
 
 logging.getLogger().setLevel(logging.INFO)
-
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 def load_trained_params(trained_dir):
 	#load trained params at the trained_dir
 	params = json.loads(open(trained_dir + 'trained_parameters.json',encoding='utf-8').read())
 	words_index = json.loads(open(trained_dir + 'words_index.json',encoding='utf-8').read())
 	labels = json.loads(open(trained_dir + 'labels.json',encoding='utf-8').read())
-	with open(trained_dir + 'embeddings.pickle', 'rb') as input_file:
+	with open(trained_dir + 'embedding_mat.pickle', 'rb') as input_file:
 		fetched_embedding = pickle.load(input_file)
+	with open(trained_dir + 'embedding_pre.pickle', 'rb') as input_file:
+		embedding_pre = pickle.load(input_file)
+
+	embedding_pre = np.array(embedding_pre, dtype=np.float32)
 	embedding_mat = np.array(fetched_embedding, dtype=np.float32)
 
-	return params, words_index,  labels, embedding_mat
+	return params, words_index,  labels, embedding_mat,embedding_pre
 
 def load_test_data(in_file):
 
@@ -75,13 +80,14 @@ def predict_raw_data(argv):
 		elif opt in ("-t", "--trained_dir"):
 			trained_dir = arg
 
-	params, words_index, labels, embedding_mat = load_trained_params(trained_dir)
+	params, words_index, labels, embedding_mat, embedding_pre = load_trained_params(trained_dir)
 	original_x, x_, y_ = load_test_data(in_file)
 
 	x_ = data_helper.pad_sentences(x_, forced_sequence_length= params['sequence_length'])
 	x_ = map_word_to_index(x_, words_index)
 
 	x_test, y_test = np.asarray(x_), None
+	pre_y_test = np.full((len(x_test), 1), labels.index('None'))
 	if y_ is not None:
 		y_test = np.asarray(y_)
 
@@ -92,6 +98,7 @@ def predict_raw_data(argv):
 		with sess.as_default():
 			cnn_rnn = TextCNNRNN(
 				embedding_mat=embedding_mat,
+				embedding_pre=embedding_pre,
 				non_static=params['non_static'],
 				hidden_unit=params['hidden_unit'],
 				sequence_length=len(x_test[0]),
@@ -106,9 +113,10 @@ def predict_raw_data(argv):
 			def real_len(batches):
 				return [np.ceil(np.argmin(batch + [0]) * 1.0 / params['max_pool_size']) for batch in batches]
 
-			def predict_step(x_batch):
+			def predict_step(x_batch,pre_y_batch):
 				feed_dict = {
 					cnn_rnn.input_x: x_batch,
+					cnn_rnn.input_pre_y: pre_y_batch,
 					cnn_rnn.dropout_keep_prob: 1.0,
 					cnn_rnn.batch_size: len(x_batch),
 					cnn_rnn.pad: np.zeros([len(x_batch), 1, params['embedding_dim'], 1]),
@@ -123,18 +131,23 @@ def predict_raw_data(argv):
 			saver.restore(sess, checkpoint_file)
 			logging.critical('{} has been loaded'.format(checkpoint_file))
 
-			batches = data_helper.batch_iter(list(x_test), params['batch_size'], 1,
+			batches = data_helper.batch_iter(list(zip(x_test, pre_y_test)), 1, 1,
 											 shuffle=False)
 
 			predictions, predict_labels, predict_probs = [], [], []
-			for x_test_batch in batches:
-				batch_predictions = predict_step(x_test_batch)[0]
-				batch_prop_preds = predict_step(x_test_batch)[1]
+			for idx, test_batch in enumerate(batches):
 
-				for  batch_prediction, batch_prop_pred in zip( batch_predictions, batch_prop_preds):
-					predictions.append(batch_prediction)
-					predict_labels.append(labels[batch_prediction])
-					predict_probs.append(batch_prop_pred[batch_prediction])
+				try: x_test_batch, pre_y_test_batch = zip(*test_batch)
+				except ValueError:
+					break
+				label, preds = predict_step(x_test_batch, pre_y_test_batch)
+
+				if idx != len(x_test) -1:
+					pre_y_test[idx+1] = label[0]
+
+				predictions.append(label[0])
+				predict_labels.append(labels[label[0]])
+				predict_probs.append(preds[0][label[0]])
 
 			with open(out_file, "w",encoding='utf-8') as f:
 				for original_x_, predict_label, predict_prob in zip(original_x, predict_labels, predict_probs):

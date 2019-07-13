@@ -1,12 +1,13 @@
 import numpy as np
 import tensorflow as tf
-
+from cnn_attention import cnn_attention
 class TextCNNRNN(object):
-    def __init__(self,embedding_mat, non_static, hidden_unit, sequence_length, max_pool_size,
-                 num_classes, embedding_size, filter_sizes, num_filters, l2_reg_lambda=0.0):
+    def __init__(self,embedding_mat, embedding_pre, non_static, hidden_unit, sequence_length, max_pool_size,
+                 num_classes, embedding_size, filter_sizes, num_filters, attention_size = 64, l2_reg_lambda=0.0):
 
         self.input_x = tf.placeholder(tf.int32, [None, sequence_length], name='input_x')
         self.input_y = tf.placeholder(tf.float32, [None, num_classes], name='input_y')
+        self.input_pre_y = tf.placeholder(tf.int32, [None, 1], name='input_pre_y')
         self.dropout_keep_prob = tf.placeholder(tf.float32, name='dropout_keep_prob')
         self.batch_size = tf.placeholder(tf.int32, [])
         self.pad = tf.placeholder(tf.float32, [None, 1, embedding_size, 1], name='pad')
@@ -21,8 +22,22 @@ class TextCNNRNN(object):
                 self.Word = tf.get_variable(initializer=embedding_mat, name='W',trainable=True)
             self.embedded_chars = tf.nn.embedding_lookup(self.Word, self.input_x)
 
-        emb = tf.expand_dims(self.embedded_chars, -1)
+        #emb = tf.expand_dims(self.embedded_chars, -1)
+        with tf.device('/cpu:0'), tf.name_scope('embedding_pre_y'):
+            if not non_static:
+                # print('Static Embedding MATRIX')
+                self.Pre = tf.constant(embedding_pre, name='P')
+            else:
+                # print('Variable Embedding MATRIX')
+                self.Pre = tf.get_variable(initializer=embedding_pre, name='P', trainable=True)
+            self.embedded_pre_y = tf.nn.embedding_lookup(self.Pre, self.input_pre_y)
+        with tf.name_scope('Attention_layer'):
+            attention_output = cnn_attention(self.embedded_chars, attention_size, self.embedded_pre_y, time_major=False,
+                                                 return_alphas=False)
+        #attention_output = tf.nn.dropout(attention_cell,self.dropout_keep_prob)
 
+        emb = tf.expand_dims(attention_output, -1)
+        #emb = tf.expand_dims(emb, 1)
         pooled_concat = []
         reduced = np.int32(np.ceil((sequence_length) * 1.0 / max_pool_size))
 
@@ -49,8 +64,8 @@ class TextCNNRNN(object):
 
         pooled_concat = tf.concat(pooled_concat, 2)
         pooled_concat = tf.nn.dropout(pooled_concat, self.dropout_keep_prob)
-        #lstm_cell = tf.nn.rnn_cell.LSTMCell(num_units=hidden_unit)
-        lstm_cell = tf.nn.rnn_cell.GRUCell(num_units=hidden_unit)
+        lstm_cell = tf.nn.rnn_cell.LSTMCell(num_units=hidden_unit)
+        #lstm_cell = tf.nn.rnn_cell.GRUCell(num_units=hidden_unit)
 
         lstm_cell = tf.nn.rnn_cell.DropoutWrapper(lstm_cell, output_keep_prob=self.dropout_keep_prob)
 
@@ -74,7 +89,7 @@ class TextCNNRNN(object):
         with tf.name_scope('output'):
             self.W = tf.Variable(tf.truncated_normal([hidden_unit, num_classes], stddev=0.1), name='W')
             b = tf.Variable(tf.constant(0.1, shape=[num_classes]), name='b')
-            l2_loss += tf.nn.l2_loss(W)
+            l2_loss += tf.nn.l2_loss(self.W)
             l2_loss += tf.nn.l2_loss(b)
             self.scores_ = tf.nn.xw_plus_b(output, self.W, b, name='scores')
             self.scores = tf.nn.softmax(self.scores_, name='scores')

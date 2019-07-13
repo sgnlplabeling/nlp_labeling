@@ -45,7 +45,7 @@ def load_embeddings(vocabulary):
 def load_pretrained_embeddings():
 	data = []
 	error_voc = 0
-	with open('./word_Embeddings_size64.pkl', 'rb') as f:
+	with open('../../withYJ/word_Embeddings_size64.pkl', 'rb') as f:
 		while True:
 			try:
 				line = pickle.load(f)
@@ -149,8 +149,9 @@ def load_data(in_file, out_file):
 
 		label_list.append(line_[-1])
 		sentence_list.append(line_[0])
-
+	label_list.append('None')
 	labels = sorted(list(set(label_list)))
+	label_list.pop()
 	num_labels = len(labels)
 	one_hot = np.zeros((num_labels, num_labels), int)
 	np.fill_diagonal(one_hot, 1)
@@ -159,10 +160,18 @@ def load_data(in_file, out_file):
 
 	x_raw = [s.split('|') for s in sentence_list[:-3000]]
 	y_raw = [label_dict[s] for s in label_list[:-3000]]
+	pre_y_raw = [[labels.index('None')]]
+	pre_y_raw.extend([[labels.index(s)] for s in label_list[:-3000]])
+	pre_y_raw.pop()
 
 	yj_x = [s.split('|') for s in sentence_list[-3000:]]
 	yj_y = [label_dict[s] for s in label_list[-3000:]]
-
+	yj_pre_y = [[labels.index('None')]]
+	yj_pre_y.extend([[labels.index(s)] for s in label_list[-3000:]])
+	yj_pre_y.pop()
+	pre_label_dict = {}
+	for p,_ in enumerate(label_list):
+		pre_label_dict[p] = np.random.uniform(-0.25,0.25,64)
 
 	total_x = np.r_[x_raw, yj_x]
 
@@ -189,6 +198,7 @@ def load_data(in_file, out_file):
 
 	x = np.array(tmp_)
 	y = np.array(y_raw)
+	pre_y = np.array(pre_y_raw)
 
 	tmp = []
 	tmp_ = []
@@ -203,8 +213,9 @@ def load_data(in_file, out_file):
 
 	new_x = np.array(tmp_)
 	new_y = np.array(yj_y)
+	new_pre_y = np.array(yj_pre_y)
 
 	del x_raw
 	del y_raw
 
-	return x, y, vocabulary, embedding_mat, labels, new_x, new_y
+	return x, y, pre_y, vocabulary, embedding_mat, pre_label_dict, labels, new_x, new_y, new_pre_y

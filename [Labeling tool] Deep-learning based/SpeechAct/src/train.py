@@ -10,8 +10,10 @@ import tensorflow as tf
 from text_cnn_rnn import TextCNNRNN
 
 logging.getLogger().setLevel(logging.INFO)
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
-def train_cnn_rnn(embedding_mat, x_train, x_dev, y_train, y_dev, labels, vocabulary, out_dir = './trained_results/'):
+def train_cnn_rnn(embedding_mat, embedding_pre, x_train, x_dev, y_train, y_dev, pre_y_train, pre_y_dev, labels, vocabulary, out_dir = './trained_results/'):
 
     if out_dir == '':
         trained_dir = './trained_results/'
@@ -21,16 +23,15 @@ def train_cnn_rnn(embedding_mat, x_train, x_dev, y_train, y_dev, labels, vocabul
             "batch_size": 128,
             "dropout_keep_prob": 0.5,
             "embedding_dim": 64,
-            "evaluate_every": 200,
+            "evaluate_every": 500,
             "filter_sizes": "3,4,5",
             "hidden_unit": 64,
             "l2_reg_lambda": 0.0,
             "max_pool_size": 4,
             "non_static": True,
-            "num_epochs": 200,
+            "num_epochs": 100,
             "num_filters": 32,
-            "attention_size" : 66,
-            "pre_y_filter":3
+            "attention_size" : 66
         }
 
     graph = tf.Graph()
@@ -41,6 +42,7 @@ def train_cnn_rnn(embedding_mat, x_train, x_dev, y_train, y_dev, labels, vocabul
 
             cnn_rnn = TextCNNRNN(
                 embedding_mat=embedding_mat,
+                embedding_pre=embedding_pre,
                 sequence_length=x_train.shape[1],
                 num_classes=y_train.shape[1],
                 non_static=params['non_static'],
@@ -53,18 +55,19 @@ def train_cnn_rnn(embedding_mat, x_train, x_dev, y_train, y_dev, labels, vocabul
 
             global_step = tf.Variable(0, name='global_step', trainable=False)
             optimizer = tf.train.RMSPropOptimizer(1e-3, decay=0.9)
-            # optimizer = tf.train.RMSPropOptimizer(1e-2, decay=0.9)
+
             grads_and_vars = optimizer.compute_gradients(cnn_rnn.loss)
             train_op = optimizer.apply_gradients(grads_and_vars, global_step=global_step)
 
             def real_len(batches):
                 return [np.ceil(np.argmin(batch + [0]) * 1.0 / params['max_pool_size']) for batch in batches]
 
-            def train_step(x_batch, y_batch):
+            def train_step(x_batch, y_batch, pre_y_batch):
 
                 feed_dict = {
                     cnn_rnn.input_x: x_batch,
                     cnn_rnn.input_y: y_batch,
+                    cnn_rnn.input_pre_y : pre_y_batch,
                     cnn_rnn.dropout_keep_prob: params['dropout_keep_prob'],
                     cnn_rnn.batch_size: len(x_batch),
                     cnn_rnn.pad: np.zeros([len(x_batch), 1, params['embedding_dim'], 1]),
@@ -76,10 +79,11 @@ def train_cnn_rnn(embedding_mat, x_train, x_dev, y_train, y_dev, labels, vocabul
 
                 return embedding_mat
 
-            def dev_step(x_batch, y_batch):
+            def dev_step(x_batch, y_batch, pre_y_batch):
                 feed_dict = {
                     cnn_rnn.input_x: x_batch,
                     cnn_rnn.input_y: y_batch,
+                    cnn_rnn.input_pre_y : pre_y_batch,
                     cnn_rnn.dropout_keep_prob: 1.0,
                     cnn_rnn.batch_size: len(x_batch),
                     cnn_rnn.pad: np.zeros([len(x_batch), 1, params['embedding_dim'], 1]),
@@ -93,25 +97,25 @@ def train_cnn_rnn(embedding_mat, x_train, x_dev, y_train, y_dev, labels, vocabul
             sess.run(tf.global_variables_initializer())
 
             # Training starts here
-            train_batches = data_helper.batch_iter(list(zip(x_train, y_train)),
+            train_batches = data_helper.batch_iter(list(zip(x_train, y_train, pre_y_train)),
                                                    params['batch_size'], params['num_epochs'])
             best_accuracy, best_at_step = 0, 0
 
             # Train the model with x_train and y_train
             for train_batch in train_batches:
-                x_train_batch, y_train_batch= zip(*train_batch)
-                embedding_mat = train_step(x_train_batch, y_train_batch)
+                x_train_batch, y_train_batch, pre_y_train_batch = zip(*train_batch)
+                embedding_mat = train_step(x_train_batch, y_train_batch, pre_y_train_batch)
                 current_step = tf.train.global_step(sess, global_step)
 
                 # Evaluate the model with x_dev and y_dev
                 if current_step % params['evaluate_every'] == 0:
-                    dev_batches = data_helper.batch_iter(list(zip(x_dev, y_dev)),
+                    dev_batches = data_helper.batch_iter(list(zip(x_dev, y_dev, pre_y_dev)),
                                                          params['batch_size'], 1)
 
                     total_dev_correct = 0
                     for dev_batch in dev_batches:
-                        x_dev_batch, y_dev_batch = zip(*dev_batch)
-                        acc, loss, num_dev_correct, predictions = dev_step(x_dev_batch, y_dev_batch)
+                        x_dev_batch, y_dev_batch, pre_y_dev_batch = zip(*dev_batch)
+                        acc, loss, num_dev_correct, predictions = dev_step(x_dev_batch, y_dev_batch, pre_y_dev_batch)
                         total_dev_correct += num_dev_correct
                     accuracy = float(total_dev_correct) / len(y_dev)
                     logging.info('Accuracy on dev set: {}'.format(accuracy))
@@ -127,8 +131,10 @@ def train_cnn_rnn(embedding_mat, x_train, x_dev, y_train, y_dev, labels, vocabul
     with open(trained_dir + 'words_index.json', 'w',encoding='utf-8') as outfile:
         json.dump(vocabulary, outfile, indent=4, ensure_ascii=False)
 
-    with open(trained_dir + 'embeddings.pickle', 'wb') as outfile:
+    with open(trained_dir + 'embedding_mat.pickle', 'wb') as outfile:
         pickle.dump(embedding_mat, outfile, pickle.HIGHEST_PROTOCOL)
+    with open(trained_dir + 'embedding_pre.pickle', 'wb') as outfile:
+        pickle.dump(embedding_pre, outfile, pickle.HIGHEST_PROTOCOL)
 
     with open(trained_dir + 'labels.json', 'w', encoding='utf-8') as outfile:
         json.dump(labels, outfile, indent=4, ensure_ascii=False)
