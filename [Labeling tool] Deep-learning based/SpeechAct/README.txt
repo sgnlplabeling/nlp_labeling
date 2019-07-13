@@ -72,7 +72,11 @@ File List :
 		 non_static (True : Pretrained embedding 사용, False : randomly initialized embedding 사용)
 		 이외에도 hidden_unit, sequence_length, max_pool_size, num_classes, embedding_size, filter_sizes, num_filters, l2_reg_lambda가 있다.
 	
-5. data_helper.py
+5. cnn_attention.py
+	CNN 입력 전 호출되는 함수
+	이전 화행 정보와 입력 발화 사이 어텐션 계산을 진행한다.
+
+6. data_helper.py
 	데이터 전처리를 담당하는 파일
 	load_data : 학습과 테스트에 사용되는 데이터를 불러온다. 
 	load_embeddings : pretrained embedding matrix로 부터 vocabulary에 있는 단어들을 불러온다
@@ -83,7 +87,7 @@ File List :
 	batch_iter : epoch마다 batch data를 생성한다.
 	
 
-5. predict_rawtext.py
+7. predict_rawtext.py
 	실행 방법 : python predict_rawtext.py -i <input file path> -o <output file path> (-t <rained_dir>)
 	ex) python predict_rawtext.py -i '../data/unlabeled_data/donga_pos_unlabeled_data.txt' -o 'DailyLife_MachineLabeled_SG_DNN.txt'
 
