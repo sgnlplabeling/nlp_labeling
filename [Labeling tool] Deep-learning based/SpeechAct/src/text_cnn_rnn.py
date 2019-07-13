@@ -22,22 +22,17 @@ class TextCNNRNN(object):
                 self.Word = tf.get_variable(initializer=embedding_mat, name='W',trainable=True)
             self.embedded_chars = tf.nn.embedding_lookup(self.Word, self.input_x)
 
-        #emb = tf.expand_dims(self.embedded_chars, -1)
         with tf.device('/cpu:0'), tf.name_scope('embedding_pre_y'):
             if not non_static:
-                # print('Static Embedding MATRIX')
                 self.Pre = tf.constant(embedding_pre, name='P')
             else:
-                # print('Variable Embedding MATRIX')
                 self.Pre = tf.get_variable(initializer=embedding_pre, name='P', trainable=True)
             self.embedded_pre_y = tf.nn.embedding_lookup(self.Pre, self.input_pre_y)
         with tf.name_scope('Attention_layer'):
             attention_output = cnn_attention(self.embedded_chars, attention_size, self.embedded_pre_y, time_major=False,
                                                  return_alphas=False)
-        #attention_output = tf.nn.dropout(attention_cell,self.dropout_keep_prob)
 
         emb = tf.expand_dims(attention_output, -1)
-        #emb = tf.expand_dims(emb, 1)
         pooled_concat = []
         reduced = np.int32(np.ceil((sequence_length) * 1.0 / max_pool_size))
 
@@ -64,8 +59,8 @@ class TextCNNRNN(object):
 
         pooled_concat = tf.concat(pooled_concat, 2)
         pooled_concat = tf.nn.dropout(pooled_concat, self.dropout_keep_prob)
-        lstm_cell = tf.nn.rnn_cell.LSTMCell(num_units=hidden_unit)
-        #lstm_cell = tf.nn.rnn_cell.GRUCell(num_units=hidden_unit)
+        #lstm_cell = tf.nn.rnn_cell.LSTMCell(num_units=hidden_unit)
+        lstm_cell = tf.nn.rnn_cell.GRUCell(num_units=hidden_unit)
 
         lstm_cell = tf.nn.rnn_cell.DropoutWrapper(lstm_cell, output_keep_prob=self.dropout_keep_prob)
 
