@@ -55,10 +55,12 @@ File List :
 	실행 방법 : main.py에서 호출되어 실행된다.
 	파라미터 조정 : params 변수로 선언 되어있는 곳에서 수정하면 된다.
 		       배치 사이즈 조정, 임베딩 차원, 드랍아웃 확률, CNN filter 사이즈 등등 조정할 수 있다.	       
-	결과물 : trained_results 디렉토리에 3개의 파일과 checkpoint 파일이 만들어 진다.
+	결과물 : trained_results 디렉토리에 5개의 파일과 checkpoint 파일이 만들어 진다.
 		labels.json (label set을 저장)
 		trained_parameters.json (파라미터 저장)
 		words_index.json (vocabulary 저장)
+		embedding_mat.pickle (워드 임베딩 저장)
+		embedding_pre.pickle (이전 화행 정보 임베딩 저장)
 
 3. predict.py
 	학습된 CNN-RNN 모델을 이용하여 예측하는 파일
@@ -68,7 +70,8 @@ File List :
 
 4. text_cnn_rnn.py
 	CNN-RNN 모델
-	파라미터 : embedding_mat (사용될 pretrained embedding matrix)
+	파라미터 : embedding_mat (사용될 pretrained embedding matrix),
+		 embedding_pre (이전 화행 정보 pretrained embedding matrix)
 		 non_static (True : Pretrained embedding 사용, False : randomly initialized embedding 사용)
 		 이외에도 hidden_unit, sequence_length, max_pool_size, num_classes, embedding_size, filter_sizes, num_filters, l2_reg_lambda가 있다.
 	
@@ -92,7 +95,7 @@ File List :
 	ex) python predict_rawtext.py -i '../data/unlabeled_data/donga_pos_unlabeled_data.txt' -o 'DailyLife_MachineLabeled_SG_DNN.txt'
 
 	-t <trained_dir> 지정하지 않으면 './trained_results/' 이름의 디렉토리로 지정된다.
-		trained_dir : train 결과(best_model.ckpt 파일, embeddings.pickle,
+		trained_dir : train 결과(best_model.ckpt 파일, embedding_mat.pickle, embedding_pre.pickle,
 		labels.json, trained_parameters.json, words_index.json)가 담긴 파일
 
 	유의사항 : input file의 경우 unlabeled 파일이여야 한다.

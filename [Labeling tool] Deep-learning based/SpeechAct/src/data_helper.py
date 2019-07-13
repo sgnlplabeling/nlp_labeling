@@ -45,7 +45,8 @@ def load_embeddings(vocabulary):
 def load_pretrained_embeddings():
 	data = []
 	error_voc = 0
-	with open('../../withYJ/word_Embeddings_size64.pkl', 'rb') as f:
+	# load word embedding
+	with open('./word_Embeddings_size64.pkl', 'rb') as f:
 		while True:
 			try:
 				line = pickle.load(f)
