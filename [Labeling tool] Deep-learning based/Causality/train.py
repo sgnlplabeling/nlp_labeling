@@ -22,15 +22,15 @@ eva_script = os.path.join(eval_path, "conlleval")
 
 optparser = optparse.OptionParser()
 optparser.add_option(
-    "-T", "--train", default="/home/laseung/WorkSpace/NER-pytorch-POS(Onehot)-Sylable-Korean/Clue_word_dic/input/NPN_train_machine_active_prc.txt",
+    "-T", "--train", default="",
     help="Train set location"
 )
 optparser.add_option(
-    "-d", "--dev", default="/home/laseung/WorkSpace/NER-pytorch-POS(Onehot)-Sylable-Korean/Clue_word_dic/input/C_E_train2_prc.txt",
+    "-d", "--dev", default="",
     help="Dev set location"
 )
 optparser.add_option(
-    "-t", "--test", default="/home/laseung/WorkSpace/NER-pytorch-POS(Onehot)-Sylable-Korean/Clue_word_dic/input/NPN_test_prc.txt",
+    "-t", "--test", default="",
     help="Test set location"
 )
 optparser.add_option(
@@ -58,7 +58,7 @@ optparser.add_option(
     type='int', help="Character embedding dimension"
 )
 optparser.add_option(
-    "-C", "--char_emb", default="/home/laseung/WorkSpace/NER-pytorch-POS(Onehot)-Sylable-Korean/Clue_word_dic/dataset/glove_news+wiki+sejong_sy_32.txt",
+    "-C", "--char_emb", default="",
     help="Location of pretrained character embedding"
 )
 optparser.add_option(
@@ -86,7 +86,7 @@ optparser.add_option(
     type='int', help="Use a bidirectional LSTM for words"
 )
 optparser.add_option(
-    "-p", "--pre_emb", default="/home/laseung/WorkSpace/NER-pytorch-POS(Onehot)-Sylable-Korean/Clue_word_dic/dataset/news+wikiVec_glove.txt",
+    "-p", "--pre_emb", default="",
     help="Location of pretrained embeddings"
 )
 optparser.add_option(
@@ -130,11 +130,11 @@ optparser.add_option(
     type='int', help='Select train mode or test mode, 1 = train mode, 0 = test mode'
 )
 optparser.add_option(
-    '-E', '--elmo_option', default='../elmo/3M_News_options.json',
+    '-E', '--elmo_option', default='',
     help='Location fo ELMo option file'
     )
 optparser.add_option(
-    '-H', '--elmo_weight', default='../elmo/3M_News_elmo_weights.hdf5',
+    '-H', '--elmo_weight', default='',
     help='Location of ELMo weight file'
     )
 optparser.add_option(
