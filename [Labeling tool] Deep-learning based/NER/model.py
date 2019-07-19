@@ -8,7 +8,7 @@ import torch.autograd as autograd
 from torch.autograd import Variable
 import numpy as np
 from utils import *
-
+from allennlp.modules.elmo import Elmo
 START_TAG = '<START>'
 STOP_TAG = '<STOP>'
 
@@ -38,10 +38,12 @@ def log_sum_exp(vec):
 
 class BiLSTM_CRF(nn.Module):
 
-    def __init__(self, word_to_ix, tag_to_ix, char_to_ix, mor_to_ix, embedding_dim, hidden_dim, char_lstm_dim,
+    def __init__(self, word_to_ix,ix_to_word, tag_to_ix, char_to_ix, mor_to_ix, embedding_dim, hidden_dim, char_lstm_dim,
                 char_dim, pre_word_embeds, pre_char_embeds, use_gpu=False,
-                 n_cap=None, cap_embedding_dim=None, use_crf=True):
+                 n_cap=None, cap_embedding_dim=None, use_crf=True, use_elmo=False, elmo_option = None, elmo_weight = None):
         super(BiLSTM_CRF, self).__init__()
+        self.use_elmo = use_elmo
+        self.id_to_word = ix_to_word
         self.use_gpu = use_gpu
         self.embedding_dim = embedding_dim
         self.hidden_dim = hidden_dim
@@ -49,13 +51,20 @@ class BiLSTM_CRF(nn.Module):
         self.tag_to_ix = tag_to_ix
         self.n_cap = n_cap
         self.cap_embedding_dim = cap_embedding_dim
+        self.elmo_embedding_dim = 1024
+        self.tag_dim = 11
+        if self.use_elmo:
+            self.elmo = Elmo(elmo_option, elmo_weight, 1, dropout=0)
         self.use_crf = use_crf
         self.tagset_size = len(tag_to_ix)
+        self.attn_tag_size = self.tagset_size-2
         self.char_size = len(char_to_ix)
         self.char_lstm_dim = char_lstm_dim
         self.mor_size = len(mor_to_ix)
         self.rang = np.array(np.arange(self.mor_size))
         self.onehot = np.zeros((self.mor_size, self.mor_size))
+        self.onehot[self.rang, self.rang] = 1
+        self.ps_size = 2
 
         if self.n_cap and self.cap_embedding_dim:
             self.cap_embeds = nn.Embedding(self.n_cap, self.cap_embedding_dim)
@@ -63,9 +72,6 @@ class BiLSTM_CRF(nn.Module):
 
         self.char_embeds = nn.Embedding(self.char_size, char_dim)
         self.word_embeds = nn.Embedding(self.vocab_size, embedding_dim)
-        self.mor_embeds = nn.Embedding(self.mor_size, self.mor_size)
-        self.mor_embeds.weight = nn.Parameter(torch.FloatTensor(self.onehot))
-
         
         if pre_char_embeds is not None:
             self.pre_char_embeds = True
@@ -84,14 +90,21 @@ class BiLSTM_CRF(nn.Module):
 
         self.dropout = nn.Dropout(0.5)
         if self.n_cap and self.cap_embedding_dim:
-            self.lstm = nn.LSTM(embedding_dim+self.mor_size+char_lstm_dim*2+cap_embedding_dim, hidden_dim, bidirectional = True)
+            if self.use_elmo:
+                self.lstm = nn.LSTM(embedding_dim+char_lstm_dim*2+cap_embedding_dim+self.elmo_embedding_dim, hidden_dim, bidirectional = True)
+            else:
+                self.lstm = nn.LSTM(embedding_dim+char_lstm_dim*2+cap_embedding_dim, hidden_dim, bidirectional = True)
         else:
-            self.lstm = nn.LSTM(embedding_dim+self.mor_size+char_lstm_dim*2, hidden_dim, bidirectional = True)
+            if self.use_elmo:
+                self.lstm = nn.LSTM(embedding_dim+char_lstm_dim*2+self.elmo_embedding_dim, hidden_dim, bidirectional = True)
+            else:
+                self.lstm = nn.LSTM(embedding_dim+char_lstm_dim*2, hidden_dim, bidirectional = True)
         init_lstm(self.lstm)
         # self.hw_trans = nn.Linear(self.out_channels, self.out_channels)
         # self.hw_gate = nn.Linear(self.out_channels, self.out_channels)
         self.h2_h1 = nn.Linear(hidden_dim*2, hidden_dim)
         self.tanh = nn.Tanh()
+        # self.hidden2tag = nn.Linear(hidden_dim*2, self.tagset_size)
         self.hidden2tag = nn.Linear(hidden_dim*2, self.tagset_size)
         init_linear(self.h2_h1)
         init_linear(self.hidden2tag)
@@ -120,7 +133,7 @@ class BiLSTM_CRF(nn.Module):
 
         return score
 
-    def _get_lstm_features(self, sentence, mor, caps, 
+    def _get_lstm_features(self, sentence, sentence_elmo,
         chars2, chars2_length, d):
         # t = self.hw_gate(chars_embeds)
         # g = nn.functional.sigmoid(t)
@@ -141,18 +154,28 @@ class BiLSTM_CRF(nn.Module):
         for i in range(chars_embeds.size(0)):
             chars_embeds[d[i]] = chars_embeds_temp[i]
 
+        
+        # options_file = "/home/laseung/WorkSpace/NER-pytorch-POS(Onehot)-Sylable-Korean/Clue_word_dic/causality-pytorch-dic_mor_active_machine_elmo/elmo/3M_News_options.json"
+        # weight_file = "/home/laseung/WorkSpace/NER-pytorch-POS(Onehot)-Sylable-Korean/Clue_word_dic/causality-pytorch-dic_mor_active_machine_elmo/elmo/3M_News_elmo_weights.hdf5"
+
+        if self.use_elmo:
+            elmo_embeds = self.elmo(sentence_elmo)
+            elmo_embeds = elmo_embeds['elmo_representations'][0][0]
         word_embeds = self.word_embeds(sentence)
-        # pos_embeds = self.pos_embeds(pos)
-        mor_embeds = self.mor_embeds(mor)
         if self.n_cap and self.cap_embedding_dim:
             cap_embedding = self.cap_embeds(caps)
         
         if self.n_cap and self.cap_embedding_dim:
-            embeds = torch.cat((word_embeds, mor_embeds, chars_embeds,
-                cap_embedding), 1)
+            if self.use_elmo:
+                embeds = torch.cat((word_embeds, elmo_embeds, chars_embeds, cap_embedding), 1)
+            else:
+                embeds = torch.cat((word_embeds, chars_embeds, cap_embedding),1)
         else:
-            embeds = torch.cat((word_embeds, mor_embeds, chars_embeds
-                ), 1)
+            if self.use_elmo:
+                embeds = torch.cat((word_embeds, elmo_embeds, chars_embeds), 1)
+            else:
+                embeds = torch.cat((word_embeds, chars_embeds), 1)
+
 
         embeds = embeds.unsqueeze(1)
         embeds = self.dropout(embeds)
@@ -216,11 +239,11 @@ class BiLSTM_CRF(nn.Module):
         best_path.reverse()
         return path_score, best_path
 
-    def neg_log_likelihood(self, sentence, tags, mor, caps,
-        chars2, chars2_length, d):
+    def neg_log_likelihood(self, sentence, sentence_elmo,tags, 
+            chars2, chars2_length, d):
         # sentence, tags is a list of ints
         # features is a 2D tensor, len(sentence) * self.tagset_size
-        feats = self._get_lstm_features(sentence, mor, caps,
+        feats = self._get_lstm_features(sentence, sentence_elmo,
             chars2, chars2_length, d)
 
         if self.use_crf:
@@ -233,9 +256,9 @@ class BiLSTM_CRF(nn.Module):
             return scores
 
 
-    def forward(self, sentence, mor, caps,
+    def forward(self, sentence, sentence_elmo,
         chars, chars2_length, d):
-        feats = self._get_lstm_features(sentence, mor, caps,
+        feats = self._get_lstm_features(sentence, sentence_elmo,
             chars, chars2_length, d)
         # viterbi to get tag_seq
         if self.use_crf:
