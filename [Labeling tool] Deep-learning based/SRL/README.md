@@ -31,12 +31,13 @@ typing==3.7.4
 
 *** 예시 문장 ***
  
- ※ 학습 시
  이/NP+와/JKB 관련/NNG+,/SP 정부/NNG+는/JX 내달/NNG 남북/NNP+교류협력추진/NNG 실무위원회/NNG+를/JKO 열/VV+어/EC 정부/NNG 차원/NNG+의/JKG 남북/NNP+경제공동체/NNG 건설/NNG 방안/NNG+을/JKO 마무리하/VV+ㄹ/ETM 방침/NNG+이/VCP+나/EC 4.13/SN+총선/NNG 때/NNG+까지는/JX 민간급/NNG 경제협력/NNG 활성화/NNG 방안/NNG 추진/NNG+에/JKB 주력하/VV+ㄹ/ETM 계획/NNG+이/VCP+다/EF+./SF
  
  ->
  
  (술어 index) (술어 원형 정보) (형태소 분석된 문장)|||(의미역 태그)
+ 
+ ※ 학습 시
  
  6 yeol.01 이/NP+와/JKB 관련/NNG+,/SP 정부/NNG+는/JX 내달/NNG 남북/NNP+교류협력추진/NNG 실무위원회/NNG+를/JKO 열/VV+어/EC 정부/NNG 차원/NNG+의/JKG 남북/NNP+경제공동체/NNG 건설/NNG 방안/NNG+을/JKO 마무리하/VV+ㄹ/ETM 방침/NNG+이/VCP+나/EC 4.13/SN+총선/NNG 때/NNG+까지는/JX 민간급/NNG 경제협력/NNG 활성화/NNG 방안/NNG 추진/NNG+에/JKB 주력하/VV+ㄹ/ETM 계획/NNG+이/VCP+다/EF+./SF|||_	_	_	ARGM-TMP	_	ARG1	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_
  
