@@ -6,14 +6,14 @@ from collections import OrderedDict
 import loader
 import torch
 import time
-import cPickle
+import pickle as cPickle
 from torch.autograd import Variable
 import sys
 from utils import *
 from loader import *
 from model import BiLSTM_CRF
-reload(sys)
-sys.setdefaultencoding('utf-8')
+# reload(sys)
+# sys.setdefaultencoding('utf-8')
 t = time.time()
 models_path = "models/"
 eval_path = "output/"
@@ -58,7 +58,7 @@ optparser.add_option(
     type='int', help="Character embedding dimension"
 )
 optparser.add_option(
-    "-C", "--char_emb", default="dataset/Syla_Embeddings_size32.pkl",
+    "-C", "--char_emb", default="",
     help="Location of pretrained character embedding"
 )
 optparser.add_option(
@@ -86,7 +86,7 @@ optparser.add_option(
     type='int', help="Use a bidirectional LSTM for words"
 )
 optparser.add_option(
-    "-p", "--pre_emb", default="dataset/word_Embeddings_size64.pkl",
+    "-p", "--pre_emb", default="",
     help="Location of pretrained embeddings"
 )
 optparser.add_option(
@@ -114,8 +114,8 @@ optparser.add_option(
     type='int', help="Reload the last saved model"
 )
 optparser.add_option(
-    "-P", '--use_gpu', default='0',
-    type='int', help='whether or not to ues gpu'
+    "-P", '--use_gpu', default='1',
+    type='int', help='whether or not to use gpu'
 )
 optparser.add_option(
     '--loss', default='loss.txt',
@@ -125,11 +125,22 @@ optparser.add_option(
     '--name', default='test',
     help='model name'
 )
-
 optparser.add_option(
     '-m', '--mode', default='1',
     type='int', help='Select train mode or test mode, 1 = train mode, 0 = test mode'
 )
+optparser.add_option(
+    '-E', '--elmo_option', default = "",
+    help='Location of ELMo option file'
+    )
+optparser.add_option(
+    '-H', '--elmo_weight', default = "",
+    help='Location of ELMo weight file'
+    )
+optparser.add_option(
+    '-e', '--use_elmo', default = '1',
+    type='int', help='whether or not to use elmo'
+    )
 
 opts = optparser.parse_args()[0]
 
@@ -154,15 +165,19 @@ parameters['dropout'] = opts.dropout
 parameters['reload'] = opts.reload == 1
 parameters['name'] = opts.name
 parameters['mode'] = opts.mode
+parameters['elmo_option'] = opts.elmo_option
+parameters['elmo_weight'] = opts.elmo_weight
 
 parameters['use_gpu'] = opts.use_gpu == 1 and torch.cuda.is_available()
+parameters['use_elmo'] = opts.use_elmo
 use_gpu = parameters['use_gpu']
+use_elmo = parameters['use_elmo']
 if opts.plus_tag ==1:
     parameters['plus_tag'] = True
 else:
     parameters['plus_tag'] = False
 
-mapping_file = 'models/mapping.pkl'
+
 
 name = parameters['name']
 model_name = models_path + name #get_name(parameters)
@@ -176,6 +191,8 @@ assert parameters['char_dim'] > 0 or parameters['word_dim'] > 0
 assert 0. <= parameters['dropout'] < 1.0
 assert parameters['tag_scheme'] in ['iob', 'iobes']
 assert parameters['word_dim'] > 0
+if parameters['use_elmo']:
+    assert os.path.isfile(parameters['elmo_option']) and os.path.isfile(parameters['elmo_weight'])
 if parameters['is_pre_emb']:
     assert not parameters['pre_emb'] or os.path.isfile(parameters['pre_emb'])
 if parameters['is_char_emb']:
@@ -187,7 +204,9 @@ if not os.path.exists(eval_temp):
     os.makedirs(eval_temp)
 if not os.path.exists(models_path):
     os.makedirs(models_path)
- 
+
+mapping_file = 'models/mapping'+opts.train.split('/')[-1]+.'pkl'
+
 lower = parameters['lower']
 zeros = parameters['zeros']
 tag_scheme = parameters['tag_scheme']
@@ -198,7 +217,7 @@ plus_tag = parameters['plus_tag']
 #sth_sentences = [sentence, sentence, ..., sentence]
 #zeors 1이면 모든 숫자 0으로 변환
 #lower 1이면 모두 소문자로 변환
-#마지막 파라미터 True면 word를 word/pos로 변환 
+#마지막 파라미터 True면 word를 word/pos로 변환
 train_sentences = loader.load_sentences(opts.train, lower, zeros, plus_tag)
 dev_sentences = loader.load_sentences(opts.dev, lower, zeros, plus_tag)
 test_sentences = loader.load_sentences(opts.test, lower, zeros, plus_tag)
@@ -222,7 +241,6 @@ dico_chars, char_to_id, id_to_char = char_mapping(train_sentences)
 dico_tags, tag_to_id, id_to_tag = tag_mapping(train_sentences)
 dico_mor, mor_to_id ,id_to_mor = mor_mapping(train_sentences)
 
-
 #Make train, dev, test data
 train_data = prepare_dataset(
     train_sentences, word_to_id, char_to_id, tag_to_id, mor_to_id, lower
@@ -244,68 +262,60 @@ all_char_embeds = {}
 word_embeds = np.random.uniform(-np.sqrt(0.06), np.sqrt(0.06), (len(word_to_id), opts.word_dim))
 char_embeds = np.random.uniform(-np.sqrt(0.06), np.sqrt(0.06), (len(char_to_id), opts.char_dim))
 
-#pretrained 워드 임베딩이 존재한다면 적용하고 존재하지 않으면 랜덤 사용
-if parameters['is_pre_emb']:
-	with open(opts.pre_emb, 'rb') as wf:
-		data_list = []
-		while(True):
-			try:
-				data = cPickle.load(wf)
-			except EOFError:
-				break
-			data_list.append(data)
-	for i, line in enumerate(data_list):
-		s = line.strip().split()
-		if len(s) == parameters['word_dim'] +1:
-			all_word_embeds[s[0]] = np.array([float(i) for i in s[1:]])
-	for w in word_to_id:
-		if w in all_word_embeds:
-			word_embeds[word_to_id[w]] = all_word_embeds[w]
-		elif w.lower() in all_word_embeds:
-			word_embeds[word_to_id[w]] = all_word_embeds[w.lower()]
-	print('Loaded %i pretrained word embeddings.' % len(all_word_embeds))
+if os.path.isfile(mapping_file):
+    with open(mapping_file, "rb") as f:
+        data = cPickle.load(f)
+        word_embeds = data['word_embeds']
 else:
-	print('Not exist pretrained word embeddings')
+    #pretrain 워드 임베딩이 존재한다면 적용하고 존재하지 않으면 랜덤 사용
+    if parameters['is_pre_emb']:
+        for i, line in enumerate(codecs.open(opts.pre_emb, 'r', 'utf-8')):
+            s = line.strip().split()
+            if len(s) == parameters['word_dim'] + 1:
+                all_word_embeds[s[0]] = np.array([float(i) for i in s[1:]])
+    
+        for w in word_to_id:
+            if w in all_word_embeds:
+                word_embeds[word_to_id[w]] = all_word_embeds[w]
+            elif w.lower() in all_word_embeds:
+                word_embeds[word_to_id[w]] = all_word_embeds[w.lower()]
+        print('Loaded %i pretrained word embeddings.' % len(all_word_embeds))
+    else: # Not exist word embeddings
+        print('Not exist pretrained word embeddings')
 
-#pretrained 음절 임베딩이 존재한다면 적용하고 존재하지 않으면 랜덤 사용
-if parameters['is_char_emb']:
-	with open(opts.char_emb, 'rb') as cf:
-		data_list = []
-		while(True):
-			try:
-				data = cPickle.load(cf)
-			except EOFError:
-				break
-			data_list.append(data)
-	for i, line in enumerate(data_list):
-		s = line.strip().split()
-		if len(s) == parameters['char_dim']+1:
-			all_char_embeds[s[0]] = np.array([float(i) for i in s[1:]])
-	for c in char_to_id:
-		if c in all_char_embeds:
-			char_embeds[char_to_id[c]] = all_char_embeds[c]
-		elif c.lower() in all_char_embeds:
-			char_embeds[char_to_id[c]] = all_char_embeds[c.lower()]
-	print('Loaded %i pretrained char embeddings' % len(all_char_embeds))
-else:
-	print('Not exist pretrained character embeddings')
+    #pretrain 음절 임베딩이 존재한다면 적용하고 존재하지 않으면 랜덤 사용
+    if parameters['is_char_emb']:
+        for i, line in enumerate(codecs.open(opts.char_emb, 'r', 'utf-8')):
+            s = line.strip().split()
+            if len(s) == parameters['char_dim']+1:
+                all_char_embeds[s[0]] = np.array([float(i) for i in s[1:]])
+        for c in char_to_id:
+            if c in all_char_embeds:
+                char_embeds[char_to_id[c]] = all_char_embeds[c]
+            elif c.lower() in all_char_embeds:
+                char_embeds[char_to_id[c]] = all_char_embeds[c.lower()]
+        print('Loaded %i pretrained char embeddings' % len(all_char_embeds))
+    else: # Not exist Character embeddings
+        print('Not exist pretrained character embeddings')
 
-with open(mapping_file, 'wb') as f:
-    mappings = {
+    with open(mapping_file, 'wb') as f:
+        mappings = {
         'word_to_id': word_to_id,
         'tag_to_id': tag_to_id,
         'char_to_id': char_to_id,
         'parameters': parameters,
-	'mor_to_id' : mor_to_id,
-        'word_embeds': word_embeds
-    }
-    cPickle.dump(mappings, f)
+	   'mor_to_id' : mor_to_id,
+        'word_embeds': word_embeds,
+        }
+
+        cPickle.dump(mappings, f)
 
 #Model Load
-model = BiLSTM_CRF(word_to_ix=word_to_id, tag_to_ix=tag_to_id, char_to_ix = char_to_id, mor_to_ix = mor_to_id,
+model = BiLSTM_CRF(word_to_ix=word_to_id, ix_to_word=id_to_word, tag_to_ix=tag_to_id, char_to_ix = char_to_id, mor_to_ix = mor_to_id,
     embedding_dim=parameters['word_dim'], hidden_dim=parameters['word_lstm_dim'], char_lstm_dim=parameters['char_lstm_dim'],
     char_dim = parameters['char_dim'], pre_word_embeds=word_embeds,
-    pre_char_embeds = char_embeds, use_gpu=parameters['use_gpu'], use_crf=parameters['crf'])
+    pre_char_embeds = char_embeds, use_gpu=parameters['use_gpu'], use_crf=parameters['crf'], use_elmo=parameters['use_elmo'],
+    elmo_option = parameters['elmo_option'], elmo_weight = parameters['elmo_weight'])
 
 
 if parameters['reload']:
@@ -317,13 +327,15 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 losses = []
 loss = 0.0
 best_test = -np.inf
+best_dev = -np.inf
 best_dev_F = -1.0
 best_test_F = -1.0
 best_train_F = -1.0
 best_epoch = 0
+best_dev_epoch = 0
 all_F = [[0, 0, 0]]
 plot_every = 50
-eval_every = 500
+eval_every = 350
 count = 0
 test_list = []
 dev_list = []
@@ -331,7 +343,7 @@ n_epoch = 100
 sys.stdout.flush()
 
 #성능 평가 함수
-def evaluating(model, datas):
+def evaluating(model, datas, epoch):
     prediction = []
     save = False
     new_F = 0.0
@@ -339,9 +351,9 @@ def evaluating(model, datas):
     for data in datas:
         ground_truth_id = data['tags']
         words = data['str_words']
-        caps = data['caps']
-        mors = data['mor']
         chars2 = data['chars']
+        sentence = [data['str_words']]
+        sentence_character_ids = batch_to_ids(sentence)
 
         chars2_sorted = sorted(chars2, key = lambda p: len(p), reverse=True)
         d = {}
@@ -359,26 +371,23 @@ def evaluating(model, datas):
 
         #Transform list data form to LongTensor data form
         dwords = Variable(torch.LongTensor(data['words']))
-        dmor = Variable(torch.LongTensor(mors))
         dcaps = Variable(torch.LongTensor(caps))
 
         if use_gpu:
-            val, out = model(dwords.cuda(), dmor.cuda(), dcaps.cuda(),
-                chars2_mask.cuda(), chars2_length, d)
+            val, out = model(dwords.cuda(), sentence_character_ids.cuda(), chars2_mask.cuda(), chars2_length, d)
         else:
-            val, out = model(dwords, dmor, dcaps,
-                chars2_mask, chars2_length, d)
+            val, out = model(dwords, sentence_character_ids, chars2_mask, chars2_length, d)
 
         predicted_id = out
         for (word, true_id, pred_id) in zip (words, ground_truth_id, predicted_id):
-            line = ' '.join([word, id_to_tag[true_id], id_to_tag[pred_id]])
+            line = ' '.join([word, id_to_tag[true_id], id_to_tag[pred_id.item()]])
             prediction.append(line)
             confusion_matrix[true_id, pred_id] +=1
         prediction.append('')
-    predf = eval_temp + '/pred.' + name
-    scoref = eval_temp + '/score.' + name
+    predf = eval_temp + '/pred.' + name +str(epoch)
+    scoref = eval_temp + '/score.' + name +str(epoch)
 
-    with open(predf, 'wb') as f:
+    with open(predf, 'w', encoding="utf-8") as f:
         f.write('\n'.join(prediction))
 
     os.system('%s < %s > %s' %(eval_script, predf, scoref))
@@ -395,7 +404,7 @@ def evaluating(model, datas):
     for i in range(confusion_matrix.size(0)):
         print(("{: >2}{: >7}%s{: >9}" % ("{: >7}" * confusion_matrix.size(0))).format(
             str(i), id_to_tag[i], str(confusion_matrix[i].sum()),
-            *([confusion_matrix[i][j] for j in range(confusion_matrix.size(0))] + 
+            *([confusion_matrix[i][j] for j in range(confusion_matrix.size(0))] +
                 ["%.3f" % (confusion_matrix[i][i] * 100. /max(1, confusion_matrix[i].sum()))])
             ))
 
@@ -412,11 +421,12 @@ if parameters['mode']:
             count += 1
             data = train_data[index]
             model.zero_grad()
+            from allennlp.modules.elmo import Elmo, batch_to_ids
+            sentence = [data['str_words']]
+            sentence_character_ids = batch_to_ids(sentence)
             sentence_in = data['words']
             tags = data['tags']
             chars2 = data['chars']
-            mors = data['mor']
-
             chars2_sorted = sorted(chars2, key=lambda p: len(p), reverse = True)
             d = {}
             for a, ci in enumerate(chars2):
@@ -433,18 +443,18 @@ if parameters['mode']:
             #Transform list data form to Varialble(torch.LongTensor) data form
             chars2_mask = Variable(torch.LongTensor(chars2_mask))
             sentence_in = Variable(torch.LongTensor(sentence_in))
-            mors = Variable(torch.LongTensor(mors))
+
+            # sentence_character_ids = Variable(sentence_character_ids)
             targets = torch.LongTensor(tags)
-            caps = Variable(torch.LongTensor(data['caps']))
             if use_gpu:
-                neg_log_likelihood = model.neg_log_likelihood(sentence_in.cuda(), targets.cuda(), mors.cuda(), caps.cuda(),
+                neg_log_likelihood = model.neg_log_likelihood(sentence_in.cuda(), sentence_character_ids.cuda(),targets.cuda(), 
                     chars2_mask.cuda(), chars2_length, d)
             else:
-                neg_log_likelihood = model.neg_log_likelihood(sentence_in, targets, mors, caps,
-                    chars2_mask, chars2_length, d)
-            loss += neg_log_likelihood.data[0] / len(data['words'])
+                neg_log_likelihood = model.neg_log_likelihood(sentence_in, sentence_character_ids, targets, chars2_mask, chars2_length, d)
+
+            loss += neg_log_likelihood.data / len(data['words'])
             neg_log_likelihood.backward()
-            torch.nn.utils.clip_grad_norm(model.parameters(), 5.0)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 5.0)
             optimizer.step()
 
             if i % plot_every == 0:
@@ -460,32 +470,42 @@ if parameters['mode']:
 
             if count % len(train_data) == 0:
                 adjust_learning_rate(optimizer, lr=learning_rate/(1+0.05*count/len(train_data)))
-	model.train(False)
-	best_dev_F, _ = evaluating(model, dev_data)
-	best_test_F, _ = evaluating(model, test_data)
-	if best_test_F > best_test:
-		best_test = best_test_F
-		best_epoch = epoch
-		with open(models_path+parameters['name'], 'wb') as f:
-			torch.save(model, f)
-		print("New best score on Test")
-	sys.stdout.flush()
-	model.train(True)
-	print(("dev f1 : {}").format(best_dev_F))
-	print(("test f1 : {}").format(best_test_F))
-	
+
+        model.train(False)
+        best_test_F, _ = evaluating(model, test_data, epoch)
+        best_dev_F, _ = evaluating(model, dev_data, epoch)
+
+        if best_test_F > best_test:
+            best_test = best_test_F
+            best_epoch = epoch
+            with open(models_path+parameters['name'], 'wb') as f:
+                torch.save(model, f)
+            print("New best score on Test")
+
+        if best_dev_F > best_dev:
+            best_dev = best_dev_F
+            best_dev_epoch = epoch
+            print("New best score on Dev")
+
+        sys.stdout.flush()
+        model.train(True)
+        print(("test f1 : {}").format(best_test))
+        print(("dev f1 : {}").format(best_dev))
         test_list.append(best_test_F)
-	dev_list.append(best_dev_F)
+        dev_list.append(best_dev_F)
         end_epoch_time = time.time()
+        print(test_list)
         print(dev_list)
-        print("Epoch {} done. Average cost: {}, time: {:.3f} min".format(epoch, np.mean(losses), (end_epoch_time - start_epoch_tim)/60.0))
+        print("Epoch {} done. Average cost: {}, time: {:.3f} min".format(epoch, sum(losses)/float(len(losses)), (end_epoch_time - start_epoch_tim)/60.0))
         print("Best test : {}".format(best_test))
-	print("Best test epoch : {}".format(best_epoch))
+        print("Best test epoch : {}".format(best_epoch))
+        print("Best dev : {}".format(best_dev))
+        print("Best dev epoch : {}".format(best_dev_epoch))
 
     print(time.time() - t)
 else:
     test_use_gpu = opts.use_gpu == 1 and torch.cuda.is_available()
-    model1 = torch.load(models_path+'test_model/'+parameters['name'])
+    model1 = torch.load(models_path+parameters['name'])
     if test_use_gpu:
         model1.cuda()
     model1.eval()

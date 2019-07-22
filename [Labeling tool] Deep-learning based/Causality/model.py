@@ -8,6 +8,7 @@ import torch.autograd as autograd
 from torch.autograd import Variable
 import numpy as np
 from utils import *
+from allennlp.modules.elmo import Elmo
 
 START_TAG = '<START>'
 STOP_TAG = '<STOP>'
@@ -38,10 +39,12 @@ def log_sum_exp(vec):
 
 class BiLSTM_CRF(nn.Module):
 
-    def __init__(self, word_to_ix, tag_to_ix, embedding_dim, hidden_dim,
-                  pre_word_embeds, use_gpu=False,
-                 n_cap=None, cap_embedding_dim=None, use_crf=True):
+    def __init__(self, word_to_ix,ix_to_word, tag_to_ix, char_to_ix, mor_to_ix, embedding_dim, hidden_dim, char_lstm_dim,
+                char_dim, pre_word_embeds, pre_char_embeds, use_gpu=False,
+                 n_cap=None, cap_embedding_dim=None, use_crf=True, use_elmo=False, elmo_option = None, elmo_weight = None):
         super(BiLSTM_CRF, self).__init__()
+        self.use_elmo = use_elmo
+        self.id_to_word = ix_to_word
         self.use_gpu = use_gpu
         self.embedding_dim = embedding_dim
         self.hidden_dim = hidden_dim
@@ -49,14 +52,38 @@ class BiLSTM_CRF(nn.Module):
         self.tag_to_ix = tag_to_ix
         self.n_cap = n_cap
         self.cap_embedding_dim = cap_embedding_dim
+        self.elmo_embedding_dim = 1024
+        if self.use_elmo:
+            self.elmo = Elmo(elmo_option, elmo_weight, 1, dropout=0)
         self.use_crf = use_crf
         self.tagset_size = len(tag_to_ix)
+        self.char_size = len(char_to_ix)
+        self.char_lstm_dim = char_lstm_dim
+        self.mor_size = len(mor_to_ix)
+        self.rang = np.array(np.arange(self.mor_size))
+        self.onehot = np.zeros((self.mor_size, self.mor_size))
+        self.onehot[self.rang, self.rang] = 1
+        self.ps_size = 2
 
         if self.n_cap and self.cap_embedding_dim:
             self.cap_embeds = nn.Embedding(self.n_cap, self.cap_embedding_dim)
             init_embedding(self.cap_embeds.weight)
 
+        self.char_embeds = nn.Embedding(self.char_size, char_dim)
         self.word_embeds = nn.Embedding(self.vocab_size, embedding_dim)
+        self.mor_embeds = nn.Embedding(self.mor_size, self.mor_size)
+        self.mor_embeds.weight = nn.Parameter(torch.FloatTensor(self.onehot))
+        self.ps_embeds = nn.Embedding(self.ps_size, 1)
+
+        
+        if pre_char_embeds is not None:
+            self.pre_char_embeds = True
+            self.char_embeds.weights = nn.Parameter(torch.FloatTensor(pre_char_embeds))
+        else:
+            self.pre_char_embeds = False
+
+        self.char_lstm = nn.LSTM(char_dim, char_lstm_dim, num_layers=1, bidirectional=True)
+        init_lstm(self.char_lstm)        
         
         if pre_word_embeds is not None:
             self.pre_word_embeds = True
@@ -66,9 +93,15 @@ class BiLSTM_CRF(nn.Module):
 
         self.dropout = nn.Dropout(0.5)
         if self.n_cap and self.cap_embedding_dim:
-            self.lstm = nn.LSTM(embedding_dim+cap_embedding_dim, hidden_dim, bidirectional = True)
+            if self.use_elmo:
+                self.lstm = nn.LSTM(embedding_dim+char_lstm_dim*2+cap_embedding_dim+self.elmo_embedding_dim, hidden_dim, bidirectional = True)
+            else:
+                self.lstm = nn.LSTM(embedding_dim+char_lstm_dim*2+cap_embedding_dim, hidden_dim, bidirectional = True)
         else:
-            self.lstm = nn.LSTM(embedding_dim, hidden_dim, bidirectional = True)
+            if self.use_elmo:
+                self.lstm = nn.LSTM(embedding_dim+char_lstm_dim*2+self.elmo_embedding_dim, hidden_dim, bidirectional = True)
+            else:
+                self.lstm = nn.LSTM(embedding_dim+char_lstm_dim*2, hidden_dim, bidirectional = True)
         init_lstm(self.lstm)
         # self.hw_trans = nn.Linear(self.out_channels, self.out_channels)
         # self.hw_gate = nn.Linear(self.out_channels, self.out_channels)
@@ -102,38 +135,52 @@ class BiLSTM_CRF(nn.Module):
 
         return score
 
-    def _get_lstm_features(self, sentence, caps):
+    def _get_lstm_features(self, sentence, sentence_elmo,
+        chars2, chars2_length, d):
         # t = self.hw_gate(chars_embeds)
         # g = nn.functional.sigmoid(t)
         # h = nn.functional.relu(self.hw_trans(chars_embeds))
         # chars_embeds = g * h + (1 - g) * chars_embeds
 
-        # chars_embeds = self.char_embeds(chars2).transpose(0,1)
-        # packed = torch.nn.utils.rnn.pack_padded_sequence(chars_embeds, chars2_length)
-        # lstm_out, _ = self.char_lstm(packed)
-        # outputs, output_lengths = torch.nn.utils.rnn.pad_packed_sequence(lstm_out)
-        # outputs = outputs.transpose(0,1)
-        # chars_embeds_temp = Variable(torch.FloatTensor(torch.zeros((outputs.size(0), outputs.size(2)))))
-        # if self.use_gpu:
-        #     chars_embeds_temp = chars_embeds_temp.cuda()
-        # for i, index in enumerate(output_lengths):
-        #     chars_embeds_temp[i] = torch.cat((outputs[i, index-1, :self.char_lstm_dim], outputs[i, 0, self.char_lstm_dim:]))
-        # chars_embeds = chars_embeds_temp.clone()
-        # for i in range(chars_embeds.size(0)):
-        #     chars_embeds[d[i]] = chars_embeds_temp[i]
+        chars_embeds = self.char_embeds(chars2).transpose(0,1)
+        packed = torch.nn.utils.rnn.pack_padded_sequence(chars_embeds, chars2_length)
+        lstm_out, _ = self.char_lstm(packed)
+        outputs, output_lengths = torch.nn.utils.rnn.pad_packed_sequence(lstm_out)
+        outputs = outputs.transpose(0,1)
+        chars_embeds_temp = Variable(torch.FloatTensor(torch.zeros((outputs.size(0), outputs.size(2)))))
+        if self.use_gpu:
+            chars_embeds_temp = chars_embeds_temp.cuda()
+        for i, index in enumerate(output_lengths):
+            chars_embeds_temp[i] = torch.cat((outputs[i, index-1, :self.char_lstm_dim], outputs[i, 0, self.char_lstm_dim:]))
+        chars_embeds = chars_embeds_temp.clone()
+        for i in range(chars_embeds.size(0)):
+            chars_embeds[d[i]] = chars_embeds_temp[i]
 
+        
+        # options_file = "/home/laseung/WorkSpace/NER-pytorch-POS(Onehot)-Sylable-Korean/Clue_word_dic/causality-pytorch-dic_mor_active_machine_elmo/elmo/3M_News_options.json"
+        # weight_file = "/home/laseung/WorkSpace/NER-pytorch-POS(Onehot)-Sylable-Korean/Clue_word_dic/causality-pytorch-dic_mor_active_machine_elmo/elmo/3M_News_elmo_weights.hdf5"
+
+        if self.use_elmo:
+            elmo_embeds = self.elmo(sentence_elmo)
+            elmo_embeds = elmo_embeds['elmo_representations'][0][0]
         word_embeds = self.word_embeds(sentence)
-        # pos_embeds = self.pos_embeds(pos)
-        # mor_embeds = self.mor_embeds(mor)
         if self.n_cap and self.cap_embedding_dim:
             cap_embedding = self.cap_embeds(caps)
         
         if self.n_cap and self.cap_embedding_dim:
-            embeds = torch.cat((word_embeds,
-                cap_embedding), 1)
+            if self.use_elmo:
+                embeds = torch.cat((word_embeds, elmo_embeds, chars_embeds,
+                    cap_embedding), 1)
+            else:
+                embeds = torch.cat((word_embeds, chars_embeds, 
+                    cap_embedding),1)
         else:
-            # embeds = torch.cat((word_embeds), 1)
-            embeds = word_embeds
+            if self.use_elmo:
+                embeds = torch.cat((word_embeds, elmo_embeds, chars_embeds,
+                    ), 1)
+            else:
+                embeds = torch.cat((word_embeds, chars_embeds), 1)
+
 
         embeds = embeds.unsqueeze(1)
         embeds = self.dropout(embeds)
@@ -197,10 +244,12 @@ class BiLSTM_CRF(nn.Module):
         best_path.reverse()
         return path_score, best_path
 
-    def neg_log_likelihood(self, sentence, tags, caps):
+    def neg_log_likelihood(self, sentence, sentence_elmo,tags,
+        chars2, chars2_length, d):
         # sentence, tags is a list of ints
         # features is a 2D tensor, len(sentence) * self.tagset_size
-        feats = self._get_lstm_features(sentence, caps)
+        feats = self._get_lstm_features(sentence, sentence_elmo,
+            chars2, chars2_length, d)
 
         if self.use_crf:
             forward_score = self._forward_alg(feats)
@@ -212,9 +261,10 @@ class BiLSTM_CRF(nn.Module):
             return scores
 
 
-    def forward(self, sentence, caps):
-        feats = self._get_lstm_features(sentence, caps,
-            )
+    def forward(self, sentence, sentence_elmo,
+        chars, chars2_length, d):
+        feats = self._get_lstm_features(sentence, sentence_elmo,
+            chars, chars2_length, d)
         # viterbi to get tag_seq
         if self.use_crf:
             score, tag_seq = self.viterbi_decode(feats)

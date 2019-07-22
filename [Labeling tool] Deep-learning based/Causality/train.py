@@ -6,7 +6,7 @@ from collections import OrderedDict
 import loader
 import torch
 import time
-import pickle
+import pickle as cPickle
 from torch.autograd import Variable
 import sys
 from utils import *
@@ -26,7 +26,11 @@ optparser.add_option(
     help="Train set location"
 )
 optparser.add_option(
-        "-t", "--test", default="",
+    "-d", "--dev", default="",
+    help="Dev set location"
+)
+optparser.add_option(
+    "-t", "--test", default="",
     help="Test set location"
 )
 optparser.add_option(
@@ -50,6 +54,26 @@ optparser.add_option(
     type = 'int', help = '1:word/tag, 0:word'
 )
 optparser.add_option(
+    "-c", "--char_dim", default="32",
+    type='int', help="Character embedding dimension"
+)
+optparser.add_option(
+    "-C", "--char_emb", default="",
+    help="Location of pretrained character embedding"
+)
+optparser.add_option(
+    "--is_char_emb", default="1",
+    type = "int", help="Decide to use pretrained character embedding 0:Random character embedding, 1:pre trained character embedding")
+
+optparser.add_option(
+    "-q", "--char_lstm_dim", default = "64",
+    type = "int", help="character lstm dim")
+
+optparser.add_option(
+    "-b", "--char_bidirect", default="1",
+    type='int', help="Use a bidirectional LSTM for chars"
+)
+optparser.add_option(
     "-w", "--word_dim", default="64",
     type='int', help="Token embedding dimension"
 )
@@ -66,11 +90,7 @@ optparser.add_option(
     help="Location of pretrained embeddings"
 )
 optparser.add_option(
-        "-e", "--add_pre_emb", default = "dataset/wikiVec_skipgram.txt",
-        help = "Location of Adding pretrained embeddings"
-        )
-optparser.add_option(
-    "--is_pre_emb", default="0",
+    "--is_pre_emb", default="1",
     type='int', help="Decide to use pretrained word embeddings 0:Random Embedding, 1:pre trained embedding "
     )
 optparser.add_option(
@@ -95,7 +115,7 @@ optparser.add_option(
 )
 optparser.add_option(
     "-P", '--use_gpu', default='1',
-    type='int', help='whether or not to ues gpu'
+    type='int', help='whether or not to use gpu'
 )
 optparser.add_option(
     '--loss', default='loss.txt',
@@ -105,11 +125,23 @@ optparser.add_option(
     '--name', default='test',
     help='model name'
 )
-
 optparser.add_option(
     '-m', '--mode', default='1',
     type='int', help='Select train mode or test mode, 1 = train mode, 0 = test mode'
 )
+optparser.add_option(
+    '-E', '--elmo_option', default='',
+    help='Location fo ELMo option file'
+    )
+optparser.add_option(
+    '-H', '--elmo_weight', default='',
+    help='Location of ELMo weight file'
+    )
+optparser.add_option(
+    '-e', '--use_elmo', default = '1',
+    type='int', help='whether or not to use elmo'
+    )
+
 
 opts = optparser.parse_args()[0]
 
@@ -117,11 +149,15 @@ parameters = OrderedDict()
 parameters['tag_scheme'] = opts.tag_scheme
 parameters['lower'] = opts.lower == 1
 parameters['zeros'] = opts.zeros == 1
+parameters['char_dim'] = opts.char_dim
+parameters['char_emb'] = opts.char_emb
+parameters['char_bidirect'] = opts.char_bidirect == 1
 parameters['word_dim'] = opts.word_dim
 parameters['word_lstm_dim'] = opts.word_lstm_dim
 parameters['word_bidirect'] = opts.word_bidirect == 1
+parameters['char_lstm_dim'] = opts.char_lstm_dim
+parameters['is_char_emb'] = opts.is_char_emb
 parameters['pre_emb'] = opts.pre_emb
-parameters['add_pre_emb'] = opts.add_pre_emb
 parameters['is_pre_emb'] = opts.is_pre_emb
 parameters['all_emb'] = opts.all_emb == 1
 parameters['cap_dim'] = opts.cap_dim
@@ -130,15 +166,19 @@ parameters['dropout'] = opts.dropout
 parameters['reload'] = opts.reload == 1
 parameters['name'] = opts.name
 parameters['mode'] = opts.mode
+parameters['elmo_option'] = opts.elmo_option
+parameters['elmo_weight'] = opts.elmo_weight
 
 parameters['use_gpu'] = opts.use_gpu == 1 and torch.cuda.is_available()
+parameters['use_elmo'] = opts.use_elmo
 use_gpu = parameters['use_gpu']
+use_elmo = parameters['use_elmo']
 if opts.plus_tag ==1:
     parameters['plus_tag'] = True
 else:
     parameters['plus_tag'] = False
 
-mapping_file = 'models/mapping.pkl'
+
 
 name = parameters['name']
 model_name = models_path + name #get_name(parameters)
@@ -146,12 +186,18 @@ tmp_model = model_name + '.tmp'
 
 
 assert os.path.isfile(opts.train)
+assert os.path.isfile(opts.dev)
 assert os.path.isfile(opts.test)
+assert parameters['char_dim'] > 0 or parameters['word_dim'] > 0
 assert 0. <= parameters['dropout'] < 1.0
 assert parameters['tag_scheme'] in ['iob', 'iobes']
 assert parameters['word_dim'] > 0
+if parameters['use_elmo']:
+    assert os.path.isfile(parameters['elmo_option']) and os.path.isfile(parameters['elmo_weight'])
 if parameters['is_pre_emb']:
     assert not parameters['pre_emb'] or os.path.isfile(parameters['pre_emb'])
+if parameters['is_char_emb']:
+    assert not parameters['char_emb'] or os.path.isfile(parameters['char_emb'])
 
 if not os.path.isfile(eval_script):
     raise Exception('CoNLL evaluation script not found at "%s"' % eval_script)
@@ -165,18 +211,22 @@ zeros = parameters['zeros']
 tag_scheme = parameters['tag_scheme']
 plus_tag = parameters['plus_tag']
 
-#Load train, test data
+mapping_file = 'models/mapping'+opts.train.split('/')[-1]+'.pkl'
+
+#Load train, dev, test data
 #Load sentences = [[word, feature, ..., feature, tag], ..., [word,feature, ..., feature, ..., tag]]
 #sth_sentences = [sentence, sentence, ..., sentence]
 #zeors 1이면 모든 숫자 0으로 변환
 #lower 1이면 모두 소문자로 변환
 #마지막 파라미터 True면 word를 word/pos로 변환
 train_sentences = loader.load_sentences(opts.train, lower, zeros, plus_tag)
+dev_sentences = loader.load_sentences(opts.dev, lower, zeros, plus_tag)
 test_sentences = loader.load_sentences(opts.test, lower, zeros, plus_tag)
 
 #Decide tag scheme
 #코퍼스에 있는 기존 태그형태를 iob 또는 iobes태그로 변
 update_tag_scheme(train_sentences, tag_scheme)
+update_tag_scheme(dev_sentences, tag_scheme)
 update_tag_scheme(test_sentences, tag_scheme)
 
 #Create a dictionary / mapping of words
@@ -193,53 +243,66 @@ dico_tags, tag_to_id, id_to_tag = tag_mapping(train_sentences)
 dico_mor, mor_to_id ,id_to_mor = mor_mapping(train_sentences)
 
 
-#Make train, test data
+#Make train, dev, test data
 train_data = prepare_dataset(
     train_sentences, word_to_id, char_to_id, tag_to_id, mor_to_id, lower
+)
+dev_data = prepare_dataset(
+    dev_sentences, word_to_id, char_to_id, tag_to_id, mor_to_id, lower
 )
 test_data = prepare_dataset(
     test_sentences, word_to_id, char_to_id, tag_to_id, mor_to_id, lower
 )
 
-print("%i / %i sentences in train / test." % (
-    len(train_data), len(test_data)))
+print("%i / %i / %i sentences in train / dev / test." % (
+    len(train_data), len(dev_data), len(test_data)))
 
 all_word_embeds = {}
+all_char_embeds = {}
 
 #Initialize random embeddings
 word_embeds = np.random.uniform(-np.sqrt(0.06), np.sqrt(0.06), (len(word_to_id), opts.word_dim))
+char_embeds = np.random.uniform(-np.sqrt(0.06), np.sqrt(0.06), (len(char_to_id), opts.char_dim))
 
-#pretrain 워드 임베딩이 존재한다면 적용하고 존재하지 않으면 랜덤 사용
-if parameters['is_pre_emb']:
-    for i, line in enumerate(codecs.open(opts.pre_emb, 'r', 'utf-8')):
-        s = line.strip().split()
-        if len(s) == parameters['word_dim'] + 1:
-            all_word_embeds[s[0]] = np.array([float(i) for i in s[1:]])
-    for w in word_to_id:
-        if w in all_word_embeds:
-            word_embeds[word_to_id[w]] = all_word_embeds[w]
-        elif w.lower() in all_word_embeds:
-            word_embeds[word_to_id[w]] = all_word_embeds[w.lower()]
-    print('Loaded %i pretrained word embeddings.' % len(all_word_embeds))
-else: # Not exist word embeddings
-    print('Not exist pretrained word embeddings')
 
-with open(mapping_file, 'wb') as f:
-    mappings = {
-        'word_to_id': word_to_id,
-        'tag_to_id': tag_to_id,
-        'char_to_id': char_to_id,
-        'parameters': parameters,
-	'mor_to_id' : mor_to_id,
-        'word_embeds': word_embeds
-    }
-    pickle.dump(mappings, f)
+if os.path.isfile(mapping_file):
+    with open(mapping_file, 'rb') as f:
+        data = cPickle.load(f)
+        word_embeds = data['word_embeds']
+else:
+
+    #pretrain 워드 임베딩이 존재한다면 적용하고 존재하지 않으면 랜덤 사용
+    if parameters['is_pre_emb']:
+        for i, line in enumerate(codecs.open(opts.pre_emb, 'r', 'utf-8')):
+            s = line.strip().split()
+            if len(s) == parameters['word_dim'] + 1:
+                all_word_embeds[s[0]] = np.array([float(i) for i in s[1:]])
+        for w in word_to_id:
+            if w in all_word_embeds:
+                word_embeds[word_to_id[w]] = all_word_embeds[w]
+            elif w.lower() in all_word_embeds:
+                word_embeds[word_to_id[w]] = all_word_embeds[w.lower()]
+        print('Loaded %i pretrained word embeddings.' % len(all_word_embeds))
+    else: # Not exist word embeddings
+        print('Not exist pretrained word embeddings')
+
+    with open(mapping_file, 'wb') as f:
+        mappings = {
+            'word_to_id': word_to_id,
+            'tag_to_id': tag_to_id,
+            'char_to_id': char_to_id,
+            'parameters': parameters,
+	       'mor_to_id' : mor_to_id,
+            'word_embeds': word_embeds
+            }
+        cPickle.dump(mappings, f)
 
 #Model Load
-model = BiLSTM_CRF(word_to_ix=word_to_id, tag_to_ix=tag_to_id,
-    embedding_dim=parameters['word_dim'], hidden_dim=parameters['word_lstm_dim'],
-    pre_word_embeds=word_embeds, use_gpu=parameters['use_gpu'], use_crf=parameters['crf'])
-
+model = BiLSTM_CRF(word_to_ix=word_to_id, ix_to_word=id_to_word, tag_to_ix=tag_to_id, char_to_ix = char_to_id, mor_to_ix = mor_to_id,
+    embedding_dim=parameters['word_dim'], hidden_dim=parameters['word_lstm_dim'], char_lstm_dim=parameters['char_lstm_dim'],
+    char_dim = parameters['char_dim'], pre_word_embeds=word_embeds,
+    pre_char_embeds = char_embeds, use_gpu=parameters['use_gpu'], use_crf=parameters['crf'], use_elmo=parameters['use_elmo'],
+    elmo_option = parameters['elmo_option'], elmo_weight = parameters['elmo_weight'])
 
 if parameters['reload']:
     model.load_state_dict(torch.load(model_name))
@@ -249,11 +312,11 @@ learning_rate = 0.001
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 losses = []
 loss = 0.0
-best_epoch = 0
 best_test = -np.inf
 best_dev_F = -1.0
 best_test_F = -1.0
 best_train_F = -1.0
+best_epoch = 0
 all_F = [[0, 0, 0]]
 plot_every = 50
 eval_every = 350
@@ -272,15 +335,35 @@ def evaluating(model, datas, epoch):
         ground_truth_id = data['tags']
         words = data['str_words']
         caps = data['caps']
+        mors = data['mor']
+        chars2 = data['chars']
+        ps = data['ps']
+        sentence = [data['str_words']]
+        sentence_character_ids = batch_to_ids(sentence)
+
+        chars2_sorted = sorted(chars2, key = lambda p: len(p), reverse=True)
+        d = {}
+        for i, ci in enumerate(chars2):
+            for j, cj in enumerate(chars2_sorted):
+                if ci == cj and not j in d and not i in d.values():
+                    d[j] = i
+                    continue
+        chars2_length = [len(c) for c in chars2_sorted]
+        char_maxl = max(chars2_length)
+        chars2_mask = np.zeros((len(chars2_sorted), char_maxl), dtype = 'int')
+        for i, c in enumerate(chars2_sorted):
+            chars2_mask[i, :chars2_length[i]] = c
+        chars2_mask = Variable(torch.LongTensor(chars2_mask))
+
         #Transform list data form to LongTensor data form
         dwords = Variable(torch.LongTensor(data['words']))
-        dcaps = Variable(torch.LongTensor(caps))
 
         if use_gpu:
-            val, out = model(dwords.cuda(), dcaps.cuda())
+            val, out = model(dwords.cuda(), sentence_character_ids.cuda(),
+                chars2_mask.cuda(), chars2_length, d)
         else:
-            val, out = model(dwords, dcaps
-                )
+            val, out = model(dwords, sentence_character_ids,
+                chars2_mask, chars2_length, d)
 
         predicted_id = out
         for (word, true_id, pred_id) in zip (words, ground_truth_id, predicted_id):
@@ -288,10 +371,10 @@ def evaluating(model, datas, epoch):
             prediction.append(line)
             confusion_matrix[true_id, pred_id] +=1
         prediction.append('')
-    predf = eval_temp + '/pred.' + name + str(epoch)
-    scoref = eval_temp + '/score.' + name + str(epoch)
+    predf = eval_temp + '/pred.' + name +str(epoch)
+    scoref = eval_temp + '/score.' + name +str(epoch)
 
-    with open(predf, 'w') as f:
+    with open(predf, 'w', encoding="utf-8") as f:
         f.write('\n'.join(prediction))
 
     os.system('%s < %s > %s' %(eval_script, predf, scoref))
@@ -325,18 +408,43 @@ if parameters['mode']:
             count += 1
             data = train_data[index]
             model.zero_grad()
+            from allennlp.modules.elmo import Elmo, batch_to_ids
+            sentence = [data['str_words']]
+            sentence_character_ids = batch_to_ids(sentence)
             sentence_in = data['words']
             tags = data['tags']
+            chars2 = data['chars']
+            mors = data['mor']
+            ps = data['ps']
+
+            chars2_sorted = sorted(chars2, key=lambda p: len(p), reverse = True)
+            d = {}
+            for a, ci in enumerate(chars2):
+                for j, cj in enumerate(chars2_sorted):
+                    if ci == cj and not j in d and not a in d.values():
+                        d[j] = a
+                        continue
+            chars2_length = [len(c) for c in chars2_sorted]
+            char_maxl = max(chars2_length)
+            chars2_mask = np.zeros((len(chars2_sorted), char_maxl), dtype = 'int')
+            for a, c in enumerate(chars2_sorted):
+                chars2_mask[a, : chars2_length[a]] = c
+
+            #Transform list data form to Varialble(torch.LongTensor) data form
+            chars2_mask = Variable(torch.LongTensor(chars2_mask))
             sentence_in = Variable(torch.LongTensor(sentence_in))
             targets = torch.LongTensor(tags)
-            caps = Variable(torch.LongTensor(data['caps']))
+
             if use_gpu:
-                neg_log_likelihood = model.neg_log_likelihood(sentence_in.cuda(), targets.cuda(), caps.cuda())
+                neg_log_likelihood = model.neg_log_likelihood(sentence_in.cuda(), sentence_character_ids.cuda(),targets.cuda(),
+                    chars2_mask.cuda(), chars2_length, d)
             else:
-                neg_log_likelihood = model.neg_log_likelihood(sentence_in, targets, caps)
-            loss += neg_log_likelihood.data[0] / len(data['words'])
+                neg_log_likelihood = model.neg_log_likelihood(sentence_in, sentence_character_ids, targets,
+                    chars2_mask, chars2_length, d)
+
+            loss += neg_log_likelihood.data / len(data['words'])
             neg_log_likelihood.backward()
-            torch.nn.utils.clip_grad_norm(model.parameters(), 5.0)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 5.0)
             optimizer.step()
 
             if i % plot_every == 0:
@@ -353,6 +461,7 @@ if parameters['mode']:
             if count % len(train_data) == 0:
                 adjust_learning_rate(optimizer, lr=learning_rate/(1+0.05*count/len(train_data)))
 
+       #print(("dev f1 : {}").format(best_dev_F))
         model.train(False)
         best_test_F, _ = evaluating(model, test_data, epoch)
         if best_test_F > best_test:
@@ -367,7 +476,7 @@ if parameters['mode']:
         dev_list.append(best_test_F)
         end_epoch_time = time.time()
         print(dev_list)
-        print("Epoch {} done. Average cost: {}, time: {:.3f} min".format(epoch, np.mean(losses), (end_epoch_time - start_epoch_tim)/60.0))
+        print("Epoch {} done. Average cost: {}, time: {:.3f} min".format(epoch, sum(losses)/float(len(losses)), (end_epoch_time - start_epoch_tim)/60.0))
         print("Best test : {}".format(best_test))
         print("Best test epoch : {}".format(best_epoch))
 
