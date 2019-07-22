@@ -18,9 +18,13 @@
 Pyhton==3.5.6
 
 tensorflow_gpu==1.13.0rc1
+
 numpy==1.15.1
+
 tensorflow==1.14.0
+
 typing==3.7.4
+
 
 
 *** 예시 문장 ***
@@ -31,42 +35,69 @@ typing==3.7.4
  
 의존소 index // 지배소 index // 의존관계명 // 형태소 분석된 입력 어절
  
- ※ 학습 시
+ ※ 학습 시 (../data/corpus/smaple_train.txt)
 
  ; 그러나 수천 수만의 모략꾼, 협잡꾼, 사기꾼을 상대해야 하는 정치인이 정직하기란 심히 어려운 일일 것이다.
  
 1	12	AP	수천/NR
+
 2	3	NP	수만/NR|의/JKG
+
 3	6	NP	모략/NNG|꾼/XSN|,/SP
+
 4	6	NP_CNJ	협잡/NNG|꾼/XSN|,/SP
+
 5	9	NP_CNJ	사기/NNG|꾼/XSN|을/JKO
+
 6	7	NP	상대/NNG|하/XSV|아야/EC
+
 7	8	VP	하/VX|는/ETM
+
 8	9	VP	정치인/NNG|이/JKS
+
 9	10	NP	정직/NNG|하/XSA|기/ETN|란/JX
+
 10	12	VP_SBJ	심히/MAG
+
 11	12	AP	어렵/VA|ㄴ/ETM
+
 12	13	VP	일/NNG|이/VCP|ㄹ/ETM
+
 13	14	NP	것/NNB|이/VCP|다/EF|./SF
 
+
  
- ※ 태깅 시
+ ※ 태깅 시 (../data/corpus/smaple_test.txt)
  
 ; 그러나 수천 수만의 모략꾼, 협잡꾼, 사기꾼을 상대해야 하는 정치인이 정직하기란 심히 어려운 일일 것이다.
 1	0	$UNK$		그러나[MAJ]그러나/MAJ
+
 2	0	$UNK$		수천[NR]수천/NR
+
 3	0	$UNK$		수만[NR]|의[JKG]수만/NR|의/JKG
+
 4	0	$UNK$		모략[NNG]|꾼[XSN]|,[SP]모략/NNG|꾼/XSN|,/SP
+
 5	0	$UNK$		협잡[NNG]|꾼[XSN]|,[SP]협잡/NNG|꾼/XSN|,/SP
+
 6	0	$UNK$		사기[NNG]|꾼[XSN]|을[JKO]사기/NNG|꾼/XSN|을/JKO
+
 7	0	$UNK$		상대[NNG]|하[XSV]|아야[EC]상대/NNG|하/XSV|아야/EC
+
 8	0	$UNK$		하[VX]|는[ETM]하/VX|는/ETM
+
 9	0	$UNK$		정치인[NNG]|이[JKS]정치인/NNG|이/JKS
+
 10	0	$UNK$		정직[NNG]|하[XSA]|기[ETN]|란[JX]정직/NNG|하/XSA|기/ETN|란/JX
+
 11	0	$UNK$		심히[MAG]심히/MAG
+
 12	0	$UNK$		어렵[VA]|ㄴ[ETM]어렵/VA|ㄴ/ETM
+
 13	0	$UNK$		일[NNG]|이[VCP]|ㄹ[ETM]일/NNG|이/VCP|ㄹ/ETM
+
 14	0	$UNK$		것[NNB]|이[VCP]|다[EF]|.[SF]것/NNB|이/VCP|다/EF|./SF
+
 
 *** 주의사항 ***
 
