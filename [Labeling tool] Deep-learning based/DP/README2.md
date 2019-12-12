@@ -2,7 +2,7 @@
 ======================
 
 1. 소속 : 서강대학교 자연어처리 연구실  
-1. 작성자 : 정영훈<hoon2j@gmail.com>. 
+1. 작성자 : 정영훈 <hoon2j@gmail.com>. 
 1. 개발자  
   - 한장훈 <hanjh04@naver.com>  
   - 박영준 <yeongjoon1227@gmail.com>  
@@ -15,17 +15,17 @@
 * 참조 사이트 : <https://github.com/sgnlplabeling/nlp_labeling>  
 
 ## Codes
-><https://github.com/XuezheMax/NeuroNLP2>
-><https://github.com/danifg/Left2Right-Pointer-Parser>
+><https://github.com/XuezheMax/NeuroNLP2>  
+><https://github.com/danifg/Left2Right-Pointer-Parser>  
 
 ## Papers
->Left-to-Right Dependency Parsing with Pointer Networks - Daniel Fernández-González et al
->Stack-Pointer Networks for Dependency Parsing - Xuezhe Ma et al
+>Left-to-Right Dependency Parsing with Pointer Networks - Daniel Fernández-González et al  
+>Stack-Pointer Networks for Dependency Parsing - Xuezhe Ma et al  
 
 ## Requirements
->python == 3.6.9
->pytorch == 1.1.0
->cuda == 10.0
+>python == 3.6.9  
+>pytorch == 1.1.0  
+>cuda == 10.0  
 
 ## Training
 1. RIGHT-TO-LEFT Dependency Parser
