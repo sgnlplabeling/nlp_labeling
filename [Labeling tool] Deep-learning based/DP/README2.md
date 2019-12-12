@@ -3,11 +3,7 @@
 
 1. 소속 : 서강대학교 자연어처리 연구실  
 1. 작성자 : 정영훈 <hoon2j@gmail.com>. 
-1. 개발자  
-  - 한장훈 <hanjh04@naver.com>  
-  - 박영준 <yeongjoon1227@gmail.com>  
-  - 정영훈 <hoon2j@gmail.com>  
-  - 이인권 <md98765@naver.com>  
+1. 개발자 : 한장훈, 박영준, 정영훈, 이인권
 1. 관리자 : 김주애 <jju75474@gmail.com>  
 
 * 본 프로그램은 서강대학교 자연어처리 연구실의 소중한 자산입니다.  
