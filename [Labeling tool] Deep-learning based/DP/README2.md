@@ -37,6 +37,6 @@
 ./examples/run_inference.sh
 ```
 
-※ parameter 설정은 각각의 shell file의 option을 통해서 선택/수정 가능합니다. 
-※ 현재 train, test 데이터는 예시 파일로, 일부만 업로드 되어있습니다. 
-전체 데이터가 필요할 경우에는 작성자 및 관리자의 이메일로 요청바랍니다. 
+※ parameter 설정은 각각의 shell file의 option을 통해서 선택/수정 가능합니다.  
+※ 현재 train, test 데이터는 예시 파일로, 일부만 업로드 되어있습니다.  
+전체 데이터가 필요할 경우에는 작성자 및 관리자의 이메일로 요청바랍니다.  
