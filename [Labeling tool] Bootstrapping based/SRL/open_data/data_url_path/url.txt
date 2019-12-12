@@ -1,2 +1,0 @@
-SRL CRF machine labeled data : https://drive.google.com/open?id=1YrmB3Xcy6YDljxZVcsIkBUOpasTk6ms6
-Active learning data : https://drive.google.com/open?id=1oklMhxLsNg1UyjTi6Wp9WEl_6qF3bvpJ
