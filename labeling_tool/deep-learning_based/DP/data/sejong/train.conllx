@@ -1,0 +1,100 @@
+1	1993/SN|//SP|06/SN|//SP|08/SN	_	_	SN+SP+SN+SP+SN	_	2	NP	_	_
+2	19/SN	_	_	SN	_	0	NP	_	_
+
+1	엠마누엘/NNP	_	_	NNP	_	2	NP	_	_
+2	웅가/NNP|로/JKB	_	_	NNP+JKB	_	3	NP	_	_
+3	//SP	_	_	SP	_	0	X	_	_
+
+1	의상/NNP|서/JKB	_	_	NNP+JKB	_	3	NP_AJT	_	_
+2	실내/NNG	_	_	NNG	_	3	NP	_	_
+3	장식품/NNG|으로/JKB|…/SE	_	_	NNG+JKB+SE	_	0	NP_AJT	_	_
+
+1	디자인/NNG	_	_	NNG	_	2	NP	_	_
+2	세계/NNG	_	_	NNG	_	3	NP_OBJ	_	_
+3	넓히/VV|어/EC	_	_	VV+EC	_	0	VP	_	_
+
+1	프랑스/NNP|의/JKG	_	_	NNP+JKG	_	4	NP_MOD	_	_
+2	세계/NNG|적/XSN|이/VCP|ㄴ/ETM	_	_	NNG+XSN+VCP+ETM	_	4	VNP_MOD	_	_
+3	의상/NNG	_	_	NNG	_	4	NP	_	_
+4	디자이너/NNG	_	_	NNG	_	6	NP	_	_
+5	엠마누엘/NNP	_	_	NNP	_	6	NP	_	_
+6	웅가로/NNP|가/JKS	_	_	NNP+JKS	_	11	NP_SBJ	_	_
+7	실내/NNG	_	_	NNG	_	8	NP	_	_
+8	장식/NNG|용/XSN	_	_	NNG+XSN	_	9	NP	_	_
+9	직물/NNG	_	_	NNG	_	10	NP	_	_
+10	디자이너/NNG|로/JKB	_	_	NNG+JKB	_	11	NP_AJT	_	_
+11	나서/VV|었/EP|다/EF|./SF	_	_	VV+EP+EF+SF	_	0	VP	_	_
+
+1	목욕/NNG|가운/NNG|부터/JX	_	_	NNG+NNG+JX	_	4	NP_AJT	_	_
+2	탁자보/NNG|,/SP	_	_	NNG+SP	_	4	NP_CNJ	_	_
+3	냅킨/NNG|,/SP	_	_	NNG+SP	_	4	NP_CNJ	_	_
+4	앞치마/NNG|까지/JX	_	_	NNG+JX	_	11	NP_AJT	_	_
+5	그/NP|가/JKS	_	_	NP+JKS	_	6	NP_SBJ	_	_
+6	디자인/NNG|하/XSV|ㄴ/ETM	_	_	NNG+XSV+ETM	_	7	VP_MOD	_	_
+7	작품/NNG|들/XSN|에서/JKB	_	_	NNG+XSN+JKB	_	8	NP_AJT	_	_
+8	두드러지/VV|는/ETM	_	_	VV+ETM	_	9	VP_MOD	_	_
+9	것/NNB|은/JX	_	_	NNB+JX	_	11	NP_SBJ	_	_
+10	색/NNG|의/JKG	_	_	NNG+JKG	_	11	NP_MOD	_	_
+11	조화/NNG|이/VCP|다/EF|./SF	_	_	NNG+VCP+EF+SF	_	0	VNP	_	_
+
+1	남미/NNP|풍/XSN|의/JKG	_	_	NNP+XSN+JKG	_	3	NP_MOD	_	_
+2	강렬/XR|하/XSA|ㄴ/ETM	_	_	XR+XSA+ETM	_	3	VP_MOD	_	_
+3	원색/NNG|끼리/XSN|의/JKG	_	_	NNG+XSN+JKG	_	4	NP_MOD	_	_
+4	조화/NNG|,/SP	_	_	NNG+SP	_	8	NP_CNJ	_	_
+5	수채화/NNG	_	_	NNG	_	6	NP_AJT	_	_
+6	같이/MAG	_	_	MAG	_	7	AP	_	_
+7	안온/NNG|하/XSA|ㄴ/ETM	_	_	NNG+XSA+ETM	_	8	VP_MOD	_	_
+8	배색/NNG	_	_	NNG	_	9	NP	_	_
+9	등/NNB	_	_	NNB	_	16	NP	_	_
+10	색/NNG|의/JKG	_	_	NNG+JKG	_	11	NP_MOD	_	_
+11	분위기/NNG|를/JKO	_	_	NNG+JKO	_	12	NP_OBJ	_	_
+12	강조/NNG|하/XSV|는/ETM	_	_	NNG+XSV+ETM	_	14	VP_MOD	_	_
+13	기하학/NNG|적/XSN	_	_	NNG+XSN	_	14	NP	_	_
+14	무늬/NNG|,/SP	_	_	NNG+SP	_	16	NP_CNJ	_	_
+15	꽃무늬/NNG	_	_	NNG	_	16	NP	_	_
+16	디자인/NNG|이/JKS	_	_	NNG+JKS	_	18	NP_SBJ	_	_
+17	주류/NNG|를/JKO	_	_	NNG+JKO	_	18	NP_OBJ	_	_
+18	이루/VV|고/EC	_	_	VV+EC	_	19	VP	_	_
+19	있/VX|다/EF|./SF	_	_	VX+EF+SF	_	0	VP	_	_
+
+1	엠마누엘/NNP	_	_	NNP	_	2	NP	_	_
+2	웅가로/NNP|는/JX	_	_	NNP+JX	_	16	NP_SBJ	_	_
+3	"/SS	_	_	SS	_	14	L	_	_
+4	실내/NNG	_	_	NNG	_	5	NP	_	_
+5	장식품/NNG|을/JKO	_	_	NNG+JKO	_	6	NP_OBJ	_	_
+6	디자인/NNG|하/XSV|ㄹ/ETM	_	_	NNG+XSV+ETM	_	7	VP_MOD	_	_
+7	때/NNG	_	_	NNG	_	13	NP_AJT	_	_
+8	옷/NNG|을/JKO	_	_	NNG+JKO	_	9	NP_OBJ	_	_
+9	만들/VV|ㄹ/ETM	_	_	VV+ETM	_	10	VP_MOD	_	_
+10	때/NNG|와/JKB|는/JX	_	_	NNG+JKB+JX	_	11	NP_SBJ	_	_
+11	다르/VA|ㄴ/ETM	_	_	VA+ETM	_	12	VP_MOD	_	_
+12	해방감/NNG|을/JKO	_	_	NNG+JKO	_	13	NP_OBJ	_	_
+13	느끼/VV|ㄴ다/EC	_	_	VV+EC	_	14	VP	_	_
+14	"/SS	_	_	SS	_	15	R	_	_
+15	고/JKQ	_	_	JKQ	_	16	X_CMP	_	_
+16	말/NNG|하/XSV|ㄴ다/EF|./SF	_	_	NNG+XSV+EF+SF	_	0	VP	_	_
+
+1	매일/MAG	_	_	MAG	_	6	NP_AJT	_	_
+2	욕실/NNG|에서/JKB	_	_	NNG+JKB	_	6	NP_AJT	_	_
+3	1/SN|시간/NNG	_	_	SN+NNG	_	4	NP	_	_
+4	반/NNG	_	_	NNG	_	5	NP	_	_
+5	이상/NNG|을/JKO	_	_	NNG+JKO	_	6	NP_OBJ	_	_
+6	보내/VV|ㄴ다는/ETM	_	_	VV+ETM	_	7	VP_MOD	_	_
+7	그/NP|는/JX	_	_	NP+JX	_	19	NP_SBJ	_	_
+8	체조/NNG|와/JC	_	_	NNG+JC	_	11	NP_CNJ	_	_
+9	텔레비전/NNG	_	_	NNG	_	10	NP	_	_
+10	시청/NNG|,/SP	_	_	NNG+SP	_	11	NP_CNJ	_	_
+11	식사/NNG|까지/JX	_	_	NNG+JX	_	12	NP_OBJ	_	_
+12	하/VV|ㄹ/ETM	_	_	VV+ETM	_	13	VP_MOD	_	_
+13	수/NNB	_	_	NNB	_	14	NP_SBJ	_	_
+14	있/VV|는/ETM	_	_	VV+ETM	_	15	VP_MOD	_	_
+15	욕실/NNG|이/JKS	_	_	NNG+JKS	_	16	NP_SBJ	_	_
+16	나오/VV|아야/EC	_	_	VV+EC	_	17	VP	_	_
+17	하/VX|ㄴ다고/EC	_	_	VX+EC	_	19	VP_CMP	_	_
+18	주장/NNG|하/XSV|ㄹ/ETM	_	_	NNG+XSV+ETM	_	19	VP_MOD	_	_
+19	정도/NNG|이/VCP|다/EF|./SF	_	_	NNG+VCP+EF+SF	_	0	VNP	_	_
+
+1	1993/SN|//SP|06/SN|//SP|10/SN	_	_	SN+SP+SN+SP+SN	_	2	NP	_	_
+2	18/SN	_	_	SN	_	0	NP	_	_
+
+1	여름/NNG	_	_	NNG	_	4	NP	_	_

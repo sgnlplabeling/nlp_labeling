@@ -1,0 +1,80 @@
+import torch
+import sys
+import os
+import json
+sys.path.append(".")
+sys.path.append("..")
+
+from neuronlp2.models import StackPtrNet
+from neuronlp2 import utils
+from neuronlp2.io import conllx_stacked_data
+
+def get_words(line):
+    words = line.split()[1]
+    return words.split('|')
+
+def make_word_set(data_path):
+    word_set = set()
+    data_f = open(data_path, 'r')
+    for line in data_f:
+        if len(line.split()) == 0: continue
+        words = get_words(line)
+        word_set.update(words)
+    data_f.close()
+    return word_set
+
+def get_embedding(unseen_words, embedd_dict):
+    unseen_emb_dict = {word: embedd for word, embedd in embedd_dict.items()
+                                    if word in unseen_words}
+    return unseen_emb_dict
+
+def get_unseen_embedding(word_set, word_alphabet, embedding_path):
+    prev_word_set = set()
+    for _, word in word_alphabet.enumerate_items(1):
+       prev_word_set.add(word)
+
+    unseen_words = word_set - prev_word_set
+    embedd_dict, _ = utils.load_embedding_dict('NNLM', embedding_path)
+    
+    unseen_emb_dict = get_embedding(unseen_words, embedd_dict)
+    return unseen_emb_dict
+
+def save_to_file(word_alphabet, model, unseen_emb_dict):
+    with open(os.path.join(path, 'embedding.txt'), 'w') as f:
+        for word, idx in word_alphabet.items():
+            embedding = model.word_embedd.weight[idx, :].data.numpy()
+            embedding = ' '.join([str(e) for e in embedding])
+            f.write('{}\t{}\n'.format(word.encode('euc-kr'), embedding.encode('euc-kr')))
+        for word, embedding in unseen_emb_dict.items():
+            embedding = ' '.join([str(e) for e in embedding[0]])
+            f.write('{}\t{}\n'.format(word.encode('euc-kr'), embedding.encode('euc-kr')))
+    print('file saved at:{}'.format(os.path.join(path, 'embedding.txt')))
+
+if __name__ == "__main__":
+    path = sys.argv[1]
+    data_path = sys.argv[2]
+    embedding_path = sys.argv[3]
+
+    arg_path = os.path.join(path, 'network.pt.arg.json')
+    model_path = os.path.join(path, 'network.pt')
+    alphabet_path = os.path.join(path, 'alphabets/') 
+    embedding_path = embedding_path
+    #'data/embedding/Korean_POS_lap.nnlm.c10.neg30.w3.h100.wc1e-4.i5.a0.025.bin.txt'
+
+    def load_model_arguments_from_json():
+        arguments = json.load(open(arg_path, 'r'))
+        return arguments['args'], arguments['kwargs']
+    args, kwargs = load_model_arguments_from_json()
+    model = StackPtrNet(*args, **kwargs)
+   
+    # words from test set
+    word_set = make_word_set(data_path)
+    # words from train and dev set
+    word_alphabet, _, _, _ = conllx_stacked_data.create_alphabets(alphabet_path, None, pos_embedding=4, data_paths=[None, None])
+
+    # get 'TARGET' words
+    unseen_emb_dict = get_unseen_embedding(word_set, word_alphabet, embedding_path)
+
+    # save to a text file
+    save_to_file(word_alphabet, model, unseen_emb_dict)
+
