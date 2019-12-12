@@ -28,7 +28,8 @@
 ~~~
 예시문장 : 프랑스의 세계적인 의상 디자이너 엠마누엘 웅가로가 실내 장식용 직물 디자이너로 나섰다.  
 
-** ID FORM _ _ XPOS _ HEAD DEPREL _ _ **  
+ID FORM _ _ XPOS _ HEAD DEPREL _ _
+-----------------------------------
 1	프랑스/NNP|의/JKG	_	_	NNP+JKG	_	4	NP_MOD	_	_
 2	세계/NNG|적/XSN|이/VCP|ㄴ/ETM	_	_	NNG+XSN+VCP+ETM	_	4	VNP_MOD	_	_
 3	의상/NNG	_	_	NNG	_	4	NP	_	_
