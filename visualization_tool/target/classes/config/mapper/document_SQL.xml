@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="document">
+	<resultMap id="DocumentMap" type="DocumentVo">
+        <result property="docId" column="DOC_ID"/>
+        <result property="colId" column="COL_ID"/>
+        <result property="recordId" column="RECORD_ID"/>
+        <result property="recordSeq" column="RECORD_SEQ"/>
+        <result property="subject" column="subject"/>
+        <result property="content" column="content"/>
+        <result property="regId" column="REG_ID"/>
+        <result property="regDate" column="REG_DATE"/>
+        <result property="confId" column="CONF_ID"/>
+        <result property="confDate" column="CONF_DATE"/>
+        <result property="rabelStat" column="RABEL_STAT"/>
+        <result property="labelGrade" column="LABEL_GRADE"/>              
+        <result property="learnStat" column="LEARN_STAT"/>
+        <result property="groupName" column="GROUP_NAME"/>
+        <result property="domain" column="NAME"/> 
+        <result property="domainPath" column="PATH"/>     
+        <result property="lastDate" column="LASTDATE"/>  
+    </resultMap>	
+    
+    <sql id="domain_searchTerm_sql">
+    	<if test='colId != null and colId != ""'>
+			AND	(c.COL_ID = #{colId} 
+			OR c.PATH = #{colId}
+			) 
+		</if>
+    </sql>
+    
+    <sql id="doc_searchTerm_sql">
+    	<if test='docIds != null and docIds != ""'>
+				AND	d.DOC_ID in 
+				<foreach collection="docIds" item="docId" open="(" close=")" separator=",">
+					${docId}
+				</foreach>
+		</if>
+		
+	    <if test='searchTermOpt != null and searchTermOpt != ""'>
+	    	<if test='searchTerm != null and searchTerm != ""'>
+				<if test='searchTermOpt == "subject"'>
+					AND d.SUBJECT like CONCAT('%',#{searchTerm},'%')
+				</if>
+				<if test='searchTermOpt == "content"'>
+					AND d.CONTENT like CONCAT('%',#{searchTerm},'%')
+				</if>	
+				<if test='searchTermOpt == "domain"'>
+					AND (CONCAT(c.NAME) like CONCAT('%',#{searchTerm},'%')
+						OR (
+							SELECT c1.NAME FROM COLLECTION_NEW c1 WHERE c1.col_id = c.parent_id
+						) like CONCAT('%'#{searchTerm},'%')
+					)
+				</if>
+				<if test='searchTermOpt == "regId"'>
+					AND d.REG_ID like CONCAT('%',#{searchTerm},'%') 
+				</if>	
+				<if test='searchTermOpt == "all"'>
+					AND (
+						d.REG_ID like CONCAT('%',#{searchTerm},'%') 
+						OR d.SUBJECT like CONCAT('%',#{searchTerm},'%')
+						OR d.CONTENT like CONCAT('%',#{searchTerm},'%')
+						OR CONCAT(c.NAME) like CONCAT('%',#{searchTerm},'%')
+						OR (
+							SELECT c1.NAME FROM COLLECTION_NEW c1 WHERE c1.col_id = c.parent_id
+						) like CONCAT('%'#{searchTerm},'%')
+						)
+				</if> 
+			</if>
+		</if>
+    </sql>
+    
+    <sql id="record_searchTerm_sql">
+		<if test='dateSearchOpt != null and dateSearchOpt != ""'>
+			<if test='dateSearchOpt == "all"'>
+				<![CDATA[
+	        		AND (
+	        		d.REG_DATE >= #{startDate} AND d.REG_DATE < date_add(#{endDate}, interval +1 day)
+	    			OR r.REG_DATE >= #{startDate} AND r.REG_DATE < date_add(#{endDate}, interval +1 day)
+	    			)
+	    		]]>
+			</if>
+			<if test='dateSearchOpt == "regDate"'>
+				<![CDATA[
+	        		AND d.REG_DATE >= #{startDate} AND d.REG_DATE < date_add(#{endDate}, interval +1 day)
+	    		]]>
+			</if>
+			<if test='dateSearchOpt == "lastDate"'>
+				<![CDATA[
+	        		AND r.REG_DATE >= #{startDate} AND r.REG_DATE < date_add(#{endDate}, interval +1 day)
+	    		]]>
+			</if>
+		</if>
+		
+		<if test='searchTermOpt != null and searchTermOpt != ""'>
+	    	<if test='searchTerm != null and searchTerm != ""'>
+	    		<if test='searchTermOpt == "subject"'>
+				AND d.SUBJECT like CONCAT('%',#{searchTerm},'%')
+				</if>
+		    	<if test='searchTermOpt == "domain"'>
+					AND (CONCAT(c.NAME) like CONCAT('%',#{searchTerm},'%')
+						OR (
+							SELECT c1.NAME FROM COLLECTION_NEW c1 WHERE c1.col_id = c.parent_id
+						) like CONCAT('%'#{searchTerm},'%')
+					)
+				</if>
+				<if test='searchTermOpt == "labeling"'>
+				AND r.RABEL_STAT like CONCAT('%',#{searchTerm},'%')
+				</if>
+				<if test='searchTermOpt == "confId"'>
+				AND r.CONF_ID like CONCAT('%',#{searchTerm},'%') 
+				</if>
+				<if test='searchTermOpt == "regId"'>
+				AND r.REG_ID like CONCAT('%',#{searchTerm},'%') 
+				</if>
+	   		 	<if test='searchTermOpt == "all"'>
+				AND (
+					r.REG_ID like CONCAT('%',#{searchTerm},'%') 
+					OR r.RABEL_STAT like CONCAT('%',#{searchTerm},'%')
+					OR r.CONF_ID like CONCAT('%',#{searchTerm},'%')
+					OR d.SUBJECT like CONCAT('%',#{searchTerm},'%')
+					OR d.CONTENT like CONCAT('%',#{searchTerm},'%')
+					OR (
+							SELECT c1.NAME FROM COLLECTION_NEW c1 WHERE c1.col_id = c.parent_id
+						) like CONCAT('%'#{searchTerm},'%') 
+					)
+				</if> 
+			</if>
+			<if test='searchTermOpt == "confY"'>
+			AND !isNULL(r.CONF_ID)
+			</if>
+			<if test='searchTermOpt == "confN"'>
+			AND isNULL(r.CONF_ID)
+			</if>
+		</if>	
+    </sql>   
+    
+	<insert id="insertDocument" parameterType="DocumentVo" useGeneratedKeys="true"   
+ 		keyColumn="DOC_ID" keyProperty="docId">
+			INSERT INTO 
+				DOCUMENT_NEW (SUBJECT, CONTENT, REG_ID, COL_ID) 
+			VALUES (
+				#{subject},#{content},#{userId},#{colId}
+			)
+	</insert>
+
+	<insert id="insertRecord" parameterType="DocumentVo" useGeneratedKeys="true"   
+ 		keyColumn="RECORD_ID" keyProperty="recordId">
+			INSERT INTO 
+				RECORD_NEW (DOC_ID, GROUP_NAME, REG_ID, RABEL_STAT, LEARN_STAT) 
+			VALUES (
+				#{docId},#{groupName},#{userId}, #{rabelStat},#{learnStat}
+				)
+	</insert>
+	
+	<select id="getDocList" parameterType="DocumentVo" resultMap="DocumentMap">
+		SELECT
+			d.DOC_ID, d.SUBJECT, d.REG_DATE as regDate, d.CONTENT,
+			c.NAME as domain, c.PATH as domainPath
+		FROM 
+			DOCUMENT_NEW d inner join COLLECTION_NEW c
+				on c.COL_ID = d.COL_ID
+		WHERE 
+			1=1
+			<include refid="doc_searchTerm_sql"/>
+		ORDER BY doc_id desc
+		LIMIT ${pageSize} OFFSET ${offSet}
+	</select>
+		
+	<select id="getDocSubjectList" parameterType="DocumentVo" resultMap="DocumentMap">
+		SELECT
+			d.DOC_ID, d.SUBJECT, d.REG_DATE as regDate, d.REG_ID as regId
+		FROM 
+			DOCUMENT_NEW d inner join COLLECTION_NEW c
+				on c.COL_ID = d.COL_ID
+		WHERE 
+			1=1
+			<include refid="domain_searchTerm_sql"/>
+			<if test='searchTerm != null and searchTerm != ""'>
+			AND d.SUBJECT LIKE CONCAT('%',#{searchTerm}, '%')
+			</if>
+		ORDER BY d.SUBJECT desc
+	</select>
+	
+	<select id="getDocOne" parameterType="DocumentVo" resultMap="DocumentMap">
+		SELECT
+			*
+		FROM 
+			DOCUMENT_NEW d
+		WHERE 
+			1=1
+			<if test='docId != null and docId != ""'>
+			AND d.DOC_ID = #{docId}
+			</if>
+			<if test='subject != null and subject != ""'>
+			AND d.SUBJECT = #{subject} 
+			AND d.COL_ID = #{colId}
+			</if>
+	</select>
+
+	<select id="getRecordOne" parameterType="DocumentVo" resultMap="DocumentMap">
+		SELECT
+			c.*,
+			d.DOC_ID, d.COL_ID, d.SUBJECT, d.CONTENT, d.REG_DATE,
+			r.RECORD_ID, r.RECORD_SEQ, r.DOC_ID, r.GROUP_NAME, r.REG_ID,
+			r.CONF_ID, r.CONF_DATE, r.RABEL_STAT, r.LEARN_STAT, r.REG_DATE as lastDate, r.LABEL_GRADE as labelGrade
+		FROM 
+			DOCUMENT_NEW d
+				left outer join RECORD_NEW r
+					on d.DOC_ID = r.DOC_ID
+				inner join COLLECTION_NEW c
+					on c.COL_ID = d.COL_ID
+		WHERE 
+			1=1
+			<if test='docId != null and docId != ""'>
+			AND d.doc_id = #{docId}
+			</if>
+			<if test='groupName != null and groupName != ""'>
+			AND r.GROUP_NAME = #{groupName}
+			</if>
+			<if test='recordId != null and recordId != ""'>
+			AND r.RECORD_ID = #{recordId}
+			</if>
+	</select>
+	
+	<select id="getRecordList" parameterType="DocumentVo" resultMap="DocumentMap">
+		SELECT
+			RECORD_ID, RECORD_SEQ, DOC_ID, GROUP_NAME,
+			REG_ID, REG_DATE, CONF_ID, CONF_DATE, RABEL_STAT, LEARN_STAT
+		FROM 
+			RECORD_NEW
+		WHERE 
+			1=1
+			AND DOC_ID = #{docId}
+	    	<if test='groupName != null and groupName != ""'>
+				AND GROUP_NAME = #{groupName}
+			</if>
+	</select>
+	
+	<select id="getDocListCount" parameterType="DocumentVo" resultType="int">
+		SELECT
+			count(*)
+		FROM 
+			DOCUMENT_NEW d inner join COLLECTION_NEW c
+				on c.COL_ID = d.COL_ID
+		WHERE 
+			1=1
+			<include refid="domain_searchTerm_sql"/>
+			<include refid="doc_searchTerm_sql"/>
+	</select>
+	
+	<select id="getRecordListCount" parameterType="int" resultType="int">
+		SELECT
+			count(*)
+		FROM 
+			RECORD_NEW
+		WHERE 
+			1=1
+			and doc_id = #{docId}
+	</select>
+	
+	<delete id="deleteRecord" parameterType="java.util.HashMap">
+		DELETE FROM RECORD_NEW
+		WHERE 
+			1=1
+			<if test='docId != null and docId != ""'>
+			AND DOC_ID = #{docId}
+			</if>
+			<if test='docId == null or docId == ""'>
+			AND RECORD_ID = #{recordId}
+			</if>
+	</delete>
+	
+	<delete id="deleteAnnotation" parameterType="java.util.HashMap">
+		DELETE FROM ANNOTATION_NEW
+		WHERE 
+			RECORD_ID = #{recordId}
+	</delete>
+	
+	<delete id="deleteDocument" parameterType="java.util.HashMap">
+		DELETE FROM DOCUMENT_NEW
+		WHERE 
+			DOC_ID = #{docId}
+	</delete>
+	
+	<update id="updateRecordConf" parameterType="DocumentVo">
+		UPDATE RECORD_NEW 
+		SET 
+			<if test='confId != null and confId != ""'>
+			CONF_ID = #{confId}, CONF_DATE = sysdate()
+			</if>
+			<if test='confId == null || confId == ""'>
+			CONF_ID = null, CONF_DATE = null
+			</if>
+			, REG_ID = #{userId}
+		WHERE 
+			RECORD_ID = #{recordId}
+	</update>
+	
+	<update id="updateRecord" parameterType="DocumentVo"    
+ 		keyColumn="RECORD_ID" keyProperty="recordId">
+		UPDATE RECORD_NEW 
+		SET 
+			RECORD_SEQ = RECORD_SEQ+1,
+			REG_DATE = sysdate(),
+			REG_ID = #{userId}
+			<if test='rabelStat != null and rabelStat != ""'>
+			,RABEL_STAT = #{rabelStat}
+			</if>
+			<if test='learnStat != null and learnStat != ""'>
+			,LEARN_STAT = #{learnStat}
+			</if>
+		WHERE 
+			1=1
+			<if test='recordId != null and recordId != ""'>
+			AND RECORD_ID = #{recordId}
+			</if>
+			<if test='docId != null and docId != ""'>
+			AND DOC_ID = #{docId} AND GROUP_NAME = #{groupName}
+			</if>			
+	</update>	
+	
+	<update id="updateRabelStat" parameterType="DocumentVo"    
+ 		keyColumn="RECORD_ID" keyProperty="recordId">
+		UPDATE RECORD_NEW 
+		SET 
+			RABEL_STAT = #{rabelStat}
+		WHERE 
+			RECORD_ID = #{recordId}		
+	</update>
+	
+	<update id="updateLearningStat" parameterType="DocumentVo"    
+ 		keyColumn="RECORD_ID" keyProperty="recordId">
+		UPDATE RECORD_NEW 
+		SET 
+			LEARN_STAT = #{learnStat}
+		WHERE 
+			RECORD_ID = #{recordId}		
+	</update>
+	
+	<select id="getDocNum" parameterType="DocumentVo" resultMap="DocumentMap">
+		SELECT
+			distinct(d.doc_id)
+		FROM 
+			DOCUMENT_NEW d
+				left outer join (
+				SELECT * 
+				FROM RECORD_NEW
+				<if test='groupName != null and groupName != ""'>
+				WHERE GROUP_NAME = #{groupName}
+				</if>
+				) r
+					on d.DOC_ID = r.DOC_ID
+				inner join COLLECTION_NEW c
+					on c.COL_ID = d.COL_ID
+		WHERE 
+			1=1	
+			<include refid="domain_searchTerm_sql"/>
+			<include refid="record_searchTerm_sql"/>
+			ORDER BY d.REG_DATE desc
+			LIMIT ${pageSize} OFFSET ${offSet}
+	</select>
+	
+	<select id="getDocRecordList" parameterType="java.util.HashMap" resultMap="DocumentMap">
+		SELECT
+			d.DOC_ID, r.GROUP_NAME, d.SUBJECT, d.REG_ID, d.REG_DATE, left(d.CONTENT,200) as content,
+			c.NAME as domain, c.PATH as domainPath,
+			r.RECORD_ID, r.RECORD_SEQ, r.DOC_ID, r.GROUP_NAME,
+			r.CONF_ID, r.CONF_DATE, r.RABEL_STAT, r.LEARN_STAT, r.REG_DATE as lastDate,
+			(
+				select count(*)
+				from RECORD_NEW
+				where DOC_ID = d.DOC_ID
+				group by DOC_ID
+			) as count
+		FROM 
+			DOCUMENT_NEW d
+				left outer join RECORD_NEW r
+					on d.DOC_ID = r.DOC_ID
+					<if test='groupName != null and groupName != ""'>
+						AND r.GROUP_NAME = #{groupName}
+					</if>
+				inner join COLLECTION_NEW c
+					on c.COL_ID = d.COL_ID
+		WHERE 
+			1=1	
+			AND d.doc_id in 
+ 			<foreach collection="list" item="list" open="(" close=")" separator=",">
+	    		${list.docId}
+			</foreach>
+			ORDER BY d.DOC_ID desc
+	</select>
+	
+	<select id="getDocRecordListCount" parameterType="DocumentVo" resultType="int">
+		SELECT
+			count(distinct(d.doc_id))
+		FROM 
+			DOCUMENT_NEW d 
+				left outer join (
+				SELECT * 
+				from RECORD_NEW
+				<if test='groupName != null and groupName != ""'>
+				where GROUP_NAME = #{groupName}
+				</if>
+				) r
+					on d.DOC_ID = r.DOC_ID
+				inner join COLLECTION_NEW c
+					on c.COL_ID = d.COL_ID
+		WHERE 
+			1=1	
+			<include refid="domain_searchTerm_sql"/>
+			<include refid="record_searchTerm_sql"/>
+	</select>
+	
+	<select id="getDocHistoryList" parameterType="java.util.HashMap" resultMap="DocumentMap">
+		SELECT
+			d.DOC_ID, r.GROUP_NAME, d.SUBJECT, d.REG_DATE,
+			c.NAME as domain, c.PATH as domainPath,
+			r.RECORD_ID, r.DOC_ID, r.GROUP_NAME,
+			r.CONF_ID, r.CONF_DATE, r.RABEL_STAT, r.LEARN_STAT, r.REG_DATE as lastDate, r.REG_ID,
+			(
+				SELECT j.note
+				FROM JOB_HISTORY j
+				WHERE j.record_id = r.record_id
+				ORDER by id desc
+				LIMIT 1
+			) as content,
+			<!-- 현재 record_seq가 맞지않아, job history에서 가져옴 -->
+			(
+				SELECT count(distinct(record_seq)) 
+				FROM JOB_HISTORY j
+				WHERE j.record_id = r.record_id
+					and j.type ='레이블링' and j.job in ('수정', '언레이블링','종료')
+			) as record_seq
+		FROM 
+			DOCUMENT_NEW d
+				left outer join RECORD_NEW r
+					on d.DOC_ID = r.DOC_ID
+					<if test='groupName != null and groupName != ""'>
+						AND r.GROUP_NAME = #{groupName}
+					</if>
+				inner join COLLECTION_NEW c
+					on c.COL_ID = d.COL_ID
+		WHERE 
+			1=1	
+			<include refid="domain_searchTerm_sql"/>
+			<include refid="record_searchTerm_sql"/>
+			ORDER BY r.REG_DATE desc
+			LIMIT ${pageSize} OFFSET ${offSet}
+	</select>	
+	
+	<select id="getDocHistoryListCount" parameterType="DocumentVo" resultType="int">
+		SELECT
+			count(*)
+		FROM 
+			DOCUMENT_NEW d
+				left outer join RECORD_NEW r
+					on d.DOC_ID = r.DOC_ID
+					<if test='groupName != null and groupName != ""'>
+						AND r.GROUP_NAME = #{groupName}
+					</if>
+				inner join COLLECTION_NEW c
+					on c.COL_ID = d.COL_ID
+		WHERE 
+			1=1	
+			<include refid="domain_searchTerm_sql"/>
+			<include refid="record_searchTerm_sql"/>
+	</select>	
+	<select id="getLearningData" parameterType="DocumentVo" resultType="DocumentVo">
+		SELECT
+			LEARN_DATA as learnData
+		FROM 
+			RECORD_NEW
+		WHERE 1=1	
+		AND RECORD_ID = #{recordId}
+	</select>
+	
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <beans:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:jee="http://www.springframework.org/schema/jee"
+    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+    <http auto-config='true'>
+   		<intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <intercept-url pattern="/login/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <intercept-url pattern="/check/**" access="ROLE_USER" />
+        <intercept-url pattern="/data/**" access="ROLE_USER" />
+        <intercept-url pattern="/brat/**" access="ROLE_USER" />
+        <intercept-url pattern="/auto/**" access="ROLE_USER" />
+        <intercept-url pattern="/work/**" access="ROLE_USER" />
+        <intercept-url pattern="/learning/**" access="ROLE_USER" />
+       
+		<form-login login-page="/login/loginForm.do"
+                    username-parameter="id"
+                    password-parameter="password"    
+                    login-processing-url="/login/loginProcess.do"
+                    default-target-url="/login/login_success.do"
+                    authentication-failure-url="/login/loginForm.do?result=false"
+                    always-use-default-target='true'
+                    />
+        <logout 
+             logout-url="/logout"
+             logout-success-url="/login/logout.do" />
+        <session-management>
+            <concurrency-control max-sessions="1" expired-url="/login_duplicate"/>
+        </session-management>
+    </http>
+    
+    <beans:bean class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/>
+    
+    <authentication-manager>
+        <authentication-provider>
+        	<jdbc-user-service data-source-ref="dataSourceSpied"
+        	users-by-username-query="select USER_ID as username,USER_PWD as password,enabled from USER where USER_ID=?"
+        	authorities-by-username-query="select USER_ID as username,role from USER where USER_ID=?"
+        	/>
+           </authentication-provider>
+    </authentication-manager>   
+    
+</beans:beans>

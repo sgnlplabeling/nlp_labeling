@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="history">
+
+    <resultMap id="HistoryMap" type="HistoryVo">
+        <result property="id" column="ID"/>
+        <result property="recordId" column="RECORD_ID"/>
+        <result property="recordSeq" column="RECORD_SEQ"/>
+        <result property="type" column="TYPE"/>
+        <result property="job" column="JOB"/>
+        <result property="note" column="NOTE"/>
+        <result property="regId" column="REG_ID"/>
+        <result property="regDate" column="REG_DATE"/>
+        <result property="subject" column="SUBJECT"/>
+        <result property="groupName" column="GROUP_NAME"/>
+        <result property="domainPath" column="PATH"/>
+    </resultMap>	
+    
+    <resultMap id="AnnotationMap" type="AnnotationVo">
+        <result property="annId" column="ANN_ID"/>
+        <result property="name" column="NAME"/>
+        <result property="startPoint" column="START_POINT"/>
+        <result property="endPoint" column="END_POINT"/>
+        <result property="content" column="CONTENT"/>
+        <result property="recordId" column="RECORD_ID"/>
+        <result property="recordSeq" column="RECORD_SEQ"/>
+        <result property="count" column="COUNT"/>
+    </resultMap>
+    
+    <sql id="history_searchTerm_sql">
+		<![CDATA[
+       		AND j.REG_DATE >= #{startDate} AND j.REG_DATE < date_add(#{endDate}, interval +1 day)
+   		]]>
+		
+		<if test='searchTermOpt != null and searchTermOpt != ""'>
+	    	<if test='searchTerm != null and searchTerm != ""'>
+	    		<if test='searchTermOpt == "subject"'>
+				AND r.SUBJECT like CONCAT('%',#{searchTerm},'%')
+				</if>
+	    		<if test='searchTermOpt == "job"'>
+				AND j.job like CONCAT('%',#{searchTerm},'%')
+				</if>	    		
+				<if test='searchTermOpt == "note"'>
+				AND j.note like CONCAT('%',#{searchTerm},'%')
+				</if>				
+				<if test='searchTermOpt == "regId"'>
+				AND j.REG_ID like CONCAT('%',#{searchTerm},'%') 
+				</if>
+	   		 	<if test='searchTermOpt == "all"'>
+				AND (
+					r.SUBJECT like CONCAT('%',#{searchTerm},'%')
+					OR j.job like CONCAT('%',#{searchTerm},'%')
+					OR j.note like CONCAT('%',#{searchTerm},'%')
+					OR j.REG_ID like CONCAT('%',#{searchTerm},'%')
+					)
+				</if>
+			</if> 
+		</if>
+		<if test='typeOpt != null and typeOpt != ""'>
+			AND j.type = #{typeOpt}
+		</if>
+    </sql>   
+    
+	<insert id="addHistoryRecord" parameterType="HistoryVo">
+			INSERT INTO 
+				JOB_HISTORY (RECORD_ID, RECORD_SEQ, TYPE, JOB, REG_ID, NOTE) 
+			SELECT
+				#{recordId}, record_seq, #{type},#{job},#{userId},#{note}
+			FROM RECORD_NEW
+			WHERE record_id = #{recordId}
+			
+	</insert>
+
+	<insert id="addHistory" parameterType="HistoryVo">
+			INSERT INTO 
+				JOB_HISTORY (TYPE, JOB, REG_ID, NOTE) 
+			VALUES (
+				#{type},#{job},#{userId},#{note}
+			)
+	</insert>
+	
+	<select id="getHistoryList" parameterType="CommonVo" resultMap="HistoryMap">
+		SELECT
+			j.*, r.RECORD_ID, r.SUBJECT, r.GROUP_NAME, r.domainPath, r.domain
+		FROM 
+			JOB_HISTORY j 
+				LEFT OUTER JOIN (
+					SELECT 
+						r1.RECORD_ID, d.SUBJECT, c.name as domain, c.PATH as domainPath, r1.GROUP_NAME
+					FROM 
+						RECORD_NEW r1 
+							INNER JOIN DOCUMENT_NEW d
+								on r1.DOC_ID = d.DOC_ID
+							INNER JOIN COLLECTION_NEW c
+								on d.COL_ID = c.COL_ID 
+					) r 
+				on j.RECORD_ID = r.RECORD_ID
+		WHERE 
+			1=1
+			<include refid="history_searchTerm_sql"/>
+		ORDER BY j.ID desc
+		LIMIT ${pageSize} OFFSET ${offSet}
+	</select>
+	
+	<select id="getHistoryListCount" parameterType="CommonVo" resultType="int">
+		SELECT
+			count(*)
+		FROM 
+			JOB_HISTORY j 
+				LEFT OUTER JOIN (
+					SELECT 
+						r1.RECORD_ID, d.SUBJECT, c.name as domain, c.PATH as domainPath, r1.GROUP_NAME
+					FROM 
+						RECORD_NEW r1 
+							INNER JOIN DOCUMENT_NEW d
+								on r1.DOC_ID = d.DOC_ID
+							INNER JOIN COLLECTION_NEW c
+								on d.COL_ID = c.COL_ID 
+					) r 
+				on j.RECORD_ID = r.RECORD_ID
+		WHERE 
+			1=1
+			<include refid="history_searchTerm_sql"/>
+	</select>
+	
+	<select id="getRecordHistoryList" parameterType="DocumentVo" resultMap="HistoryMap">
+		SELECT 
+			* 
+		FROM
+			JOB_HISTORY
+		WHERE 
+			RECORD_ID = #{recordId}
+		GROUP BY RECORD_SEQ
+		ORDER BY RECORD_SEQ desc
+	</select>
+	
+	<select id="getCompareLoc" parameterType="DocumentVo" resultMap="AnnotationMap">
+	(
+		SELECT * 
+		FROM ANNOTATION_NEW A
+		WHERE
+		(
+			A.ANN_ID NOT IN (
+				SELECT 
+					B.ANN_ID 
+				FROM 
+					ANNOTATION_NEW B
+				WHERE 
+					A.RECORD_ID = B.RECORD_ID
+					AND B.RECORD_ID = ${recordId} AND B.RECORD_SEQ = ${lastRecordSeq}
+			) OR A.NAME != (
+				SELECT 
+					distinct(B.NAME) 
+				FROM 
+					ANNOTATION_NEW B
+				WHERE 
+					A.RECORD_ID = B.RECORD_ID
+					AND B.RECORD_ID = ${recordId} AND B.RECORD_SEQ = ${lastRecordSeq} AND A.ANN_ID = B.ANN_ID
+			)
+		)
+		AND A.RECORD_ID = ${recordId} AND A.RECORD_SEQ = ${recordSeq}
+	)
+	UNION
+	(
+		SELECT * 
+		FROM ANNOTATION_NEW A
+		WHERE
+		(
+			A.ANN_ID NOT IN (
+				SELECT 
+					B.ANN_ID 
+				FROM 
+					ANNOTATION_NEW B
+				WHERE 
+					A.RECORD_ID = B.RECORD_ID
+					AND B.RECORD_ID = ${recordId} AND B.RECORD_SEQ = ${recordSeq}
+			) OR A.NAME != (
+				SELECT 
+					distinct(B.NAME) 
+				FROM 
+					ANNOTATION_NEW B
+				WHERE 
+					A.RECORD_ID = B.RECORD_ID
+					AND B.RECORD_ID = ${recordId} AND B.RECORD_SEQ = ${recordSeq} AND A.ANN_ID = B.ANN_ID
+			)
+		)
+		AND A.RECORD_ID = ${recordId} AND A.RECORD_SEQ = ${lastRecordSeq}
+	)
+	</select>
+</mapper>

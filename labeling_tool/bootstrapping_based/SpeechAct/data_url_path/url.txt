@@ -1,0 +1,13 @@
+labeled data : 
+	donga_pos_hotel_corpus.txt : https://drive.google.com/open?id=1EfBUo9N36lS3mCCPgJdc4h_kfRmzpCsR
+	donga_pos_schedule_corpus.txt : https://drive.google.com/open?id=1-ljEGWNNlAOz5Srj5g10nrWz9IRxuXat
+
+Unlabeled data : 
+    데이터 문의: 박영준	
+
+Unlabeled data의 Label :
+	https://drive.google.com/open?id=12PVazFx9tIPK8ODgf8h7bYEzf9ldx-AW
+
+Bootstrap 완료된 문장과 그 문장들의 Label:
+	
+

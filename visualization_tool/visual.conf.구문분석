@@ -1,0 +1,89 @@
+[labels]
+
+NP | 체언구
+NP_MOD | 체언구_체언 수식어
+NP_AJT | 체언구_용언 수식어
+NP_SBJ | 체언구_주어
+NP_OBJ | 체언구_목적어
+NP_CMP | 체언구_보어
+NP_CNJ | 체언구_접속어
+NP_INT | 체언구_독립어
+
+VP | 용언구
+VP_AJT | 용언구_용언수식어
+VP_OBJ | 용언구_목적어
+VP_CNJ | 용언구_접속어
+VP_CMP | 용언구_보어
+VP_MOD | 용언구_체언 수식어
+VP_SBJ | 용언구_주어
+
+VNP | 긍정 지정사구
+VNP_MOD | 긍정 지정사구_체언수식어
+VNP_AJT | 긍정 지정사구_용언 수식어
+VNP_SBJ | 긍정 지정사구_주어
+VNP_OBJ | 긍정 지정사구_목적어
+VNP_CNJ | 긍정 지정사구_접속어
+VNP_CMP | 긍정 지정사구_보어
+
+X | 의사 구
+X_CNJ | 의사 구_접속어
+X_OBJ | 의사 구_목적어
+X_AJT | 의사 구_용언 수식어
+X_MOD | 의사 구_체언 수식어
+X_CMP | 의사 구_보어
+X_SBJ | 의사 구_주어
+
+AP | 부사구
+AP_AJT | 부사구_용언수식어
+AP_MOD | 부사구_체언 수식어
+
+DP | 관형사구
+L, R | 인용부호나 괄호의 구문표지에 표시. 왼쪽 부호에는 L을, 오른쪽 부호에는 R을 표시
+
+IP | 감탄사구
+
+[drawing]
+
+SPAN_DEFAULT	borderColor:darken
+
+NP 	bgColor:#f4b8f2
+NP_MOD 	bgColor:#f4b8f2
+NP_AJT 	bgColor:#f4b8f2
+NP_SBJ 	bgColor:#f4b8f2
+NP_OBJ 	bgColor:#f4b8f2
+NP_CMP 	bgColor:#f4b8f2
+NP_CNJ 	bgColor:#f4b8f2
+NP_INT 	bgColor:#f4b8f2
+
+VP 	bgColor:#f4b8f2
+VP_AJT 	bgColor:#f4b8f2
+VP_OBJ 	bgColor:#f4b8f2
+VP_CNJ 	bgColor:#f4b8f2
+VP_CMP 	bgColor:#f4b8f2
+VP_MOD 	bgColor:#f4b8f2
+VP_SBJ 	bgColor:#f4b8f2
+
+VNP 	bgColor:#f4b8f2
+VNP_MOD 	bgColor:#f4b8f2
+VNP_AJT 	bgColor:#f4b8f2
+VNP_SBJ 	bgColor:#f4b8f2
+VNP_OBJ 	bgColor:#f4b8f2
+VNP_CNJ 	bgColor:#f4b8f2
+VNP_CMP 	bgColor:#f4b8f2
+
+X 	bgColor:#f4b8f2
+X_CNJ 	bgColor:#f4b8f2
+X_OBJ 	bgColor:#f4b8f2
+X_AJT 	bgColor:#f4b8f2
+X_MOD 	bgColor:#f4b8f2
+X_CMP 	bgColor:#f4b8f2
+X_SBJ 	bgColor:#f4b8f2
+
+AP 	bgColor:#f4b8f2
+AP_AJT 	bgColor:#f4b8f2
+AP_MOD 	bgColor:#f4b8f2
+
+DP 	bgColor:#f4b8f2
+L, R 	bgColor:#f4b8f2
+
+

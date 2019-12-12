@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<title>학습 코퍼스 구축 도구</title>
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
+
+<script type="text/javascript">
+<!--
+	$(function(){
+
+		//개채명 외 아코디언
+		$('.label_accordion li:first-child').addClass('on');
+		$('.label_accordion li:first-child .cont_gray').show();
+		$('.btn_label_onoff').click(function(){
+			if(!$(this).closest('li').hasClass('on')){
+				$(this).closest('.label_accordion').find('.cont_gray').slideUp('fast');
+				$(this).closest('.label_accordion').find('li').removeClass('on');
+				$(this).closest('.label_accordion').find('.btn_label_onoff').attr('title','펼치기');
+				$(this).closest('li').addClass('on');
+				$(this).parent().next('.cont_gray').slideDown('fast');
+				$(this).attr('title','');
+			};
+			return false;
+		});
+
+		//cyan 버튼
+		$('.label_cyan_list > li > a').click(function(){
+			$(this).closest('ul').find('a').removeClass('on');
+			$(this).addClass('on');
+			return false;
+		});
+
+		//1차 레이블링 탭버튼
+		$('.tit_opt.type_label > ul > li > a').click(function(){
+			$(this).closest('ul').find('a').removeClass('on');
+			$(this).addClass('on');
+			return false;
+		});
+
+	});
+//-->
+</script>
+
+</head>
+<body>
+
+<div id="skipnavi">
+	<ul>
+	<li><a href="#menu">주메뉴 바로가기</a></li>
+	<li><a href="#content">본문 바로가기</a></li>
+	</ul>
+</div>
+
+<hr />
+
+<div id="wrapper">
+
+	<!-- header start -->
+	<div class="header">
+
+		<div class="head_top clear">
+			<h1><img src="images/common/logo.png" alt="학습 코퍼스 구축 도구" class="top_logo" /></h1>
+			<ul class="util_menu">
+				<li><a href="#" class="util_user">최고 관리자</a></li>
+				<li><a href="#" class="util_signout">Logout</a></li>
+			</ul>
+		</div>
+
+		<!-- 주메뉴 start : 1depth 활성화시 li 에 class="on" 추가 -->
+		<div id="menu">
+			<ul id="main-menu">
+				<li><a href="#">데이터 관리</a>
+					<ul class="sub-menu">
+						<li><a href="#">menu 1-1</a></li>
+						<li><a href="#">menu 1-2</a></li>
+						<li><a href="#">menu 1-3</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#">자동 레이블링</a>
+					<ul class="sub-menu">
+						<li><a href="#">menu 2-1</a></li>
+						<li><a href="#">menu 2-2</a></li>
+						<li><a href="#">menu 2-3</a></li>
+					</ul>
+				</li>
+				<li class="on"><a href="#">레이블링 검증</a>
+					<ul class="sub-menu">
+						<li><a href="#">개체명 검증</a></li>
+						<li><a href="#">의존관계 검증</a></li>
+					</ul>				
+				</li>
+				<li>
+					<a href="#">학습데이터 생성</a>
+					<ul class="sub-menu">
+						<li><a href="#">menu 4-1</a></li>
+						<li><a href="#">menu 4-2</a></li>
+						<li><a href="#">menu 4-3</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#">작업관리</a>
+					<ul class="sub-menu">
+						<li><a href="#">menu 5-1</a></li>
+						<li><a href="#">menu 5-2</a></li>
+						<li><a href="#">menu 5-3</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<!--// 주메뉴 end -->
+
+	</div>
+	<!--// header end -->
+
+
+<hr />
+
+
+	<!-- content start -->
+	<div id="content">
+
+		<!-- page title start -->
+		<div class="tit_page clear2">
+			<h2>레이블링 검증</h2>
+			
+			<div class="location">
+				<ul>
+				<li>Home</li>
+				<li class="loc_this">레이블링 검증</li>
+				</ul>
+			</div>
+		</div>
+		<!--// page title end -->
+
+
+
+		<div class="cont">
+
+			<!-- full area start -->
+			<div class="full_area">
+
+				<div class="type_label01 clear2">
+
+					<!-- 도메인 start -->
+					<div class="cont_win label_01">
+						<div class="cont_tit2">도메인</div>
+						<div class="cont_gray clear2" style="height:630px;">
+						트리삽입
+						</div>
+					</div>
+					<!--// 도메인 end -->
+
+					<!-- 개체명 start -->
+					<div class="label_02">
+						<div class="cont_win">
+							<ul class="label_accordion">
+								<li>
+									<p class="cont_tit2 clear2">개체명<a href="#" class="btn_label_onoff" title="펼치기"></a></p>
+									<div class="cont_gray clear2" style="height:506px;">
+									트리삽입1
+									</div>
+								</li>
+								<li>
+									<p class="cont_tit2 clear2">구문분석<a href="#" class="btn_label_onoff" title="펼치기"></a></p>
+									<div class="cont_gray clear2" style="height:506px;">
+									트리삽입2
+									</div>
+								</li>
+								<li>
+									<p class="cont_tit2 clear2">의미역<a href="#" class="btn_label_onoff" title="펼치기"></a></p>
+									<div class="cont_gray clear2" style="height:506px;">
+									트리삽입3
+									</div>
+								</li>
+								<li>
+									<p class="cont_tit2 clear2">의존관계<a href="#" class="btn_label_onoff" title="펼치기"></a></p>
+									<div class="cont_gray clear2" style="height:506px;">
+									트리삽입4
+									</div>
+								</li>
+								<li>
+									<p class="cont_tit2 clear2">화행<a href="#" class="btn_label_onoff" title="펼치기"></a></p>
+									<div class="cont_gray clear2" style="height:506px;">
+									트리삽입5
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<!--// 개체명 end -->
+
+					<div class="label_03">
+						<!-- 문서목록 start -->
+						<div class="cont_win">
+							<div class="cont_tit2">문서목록</div>
+							<div class="cont_gray clear2" style="height:130px;">
+								<ul class="label_cyan_list">
+									<li><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+									<li><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+									<li><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+									<li><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+									<li><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+									<li><a href="#">[구글, 신경망 번역, 두달만에 시용량 50% 증가] 파이낸셜뉴스</a></li>
+								</ul>
+							</div>
+						</div>
+						<!--// 문서목록 end -->
+
+						<!-- 1차 레이블링 start -->
+						<div class="cont_win mt_20">
+							<div class="cont_tit2">1차 레이블링
+								<div class="tit_opt type_label">
+									<ul class="ul_lc_none mr_10">
+										<li><a href="#" class="on">전체<span></span></a></li>
+										<li><a href="#">개체명<span></span></a></li>
+										<li><a href="#">구문분석<span></span></a></li>
+									</ul>
+									<a href="#" class="btn_tit_box">편집</a>
+									<a href="#" class="btn_tit_box">비교</a>
+								</div>
+							</div>
+							<div class="cont_gray clear2" style="height:220px;">
+							내용 삽입
+							</div>
+						</div>
+						<!--// 1차 레이블링 end -->
+
+						<!-- 2차 레이블링 start -->
+						<div class="cont_win mt_20">
+							<div class="cont_tit2">2차 레이블링
+								<div class="tit_opt type_label">
+									<ul class="ul_lc_none mr_10">
+										<li><a href="#" class="on">전체<span></span></a></li>
+										<li><a href="#">의미역<span></span></a></li>
+										<li><a href="#">인과관계<span></span></a></li>
+										<li><a href="#">화행<span></span></a></li>
+									</ul>
+									<a href="#" class="btn_tit_box">편집</a>
+									<a href="#" class="btn_tit_box">비교</a>
+								</div>
+							</div>
+							<div class="cont_gray clear2" style="height:178px;">
+							내용 삽입<br />
+							</div>
+						</div>
+						<!--// 2차 레이블링 end -->
+
+
+					</div>
+				</div>
+
+
+			
+			</div>
+			<!--// full area end -->
+
+		</div>
+
+	</div>
+	<!--// content end -->
+
+
+<hr />	
+	
+	
+	<!-- footer start -->
+	<div id="footer">Copyright(c) <img src="images/common/dq_logo.png" alt="Diquest" />. All Rights Reserved.</div>
+	<!--// footer end -->
+
+</div>
+
+</body>
+
+</html>

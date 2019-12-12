@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="checkRelation">
+
+    <resultMap id="AnnotationMap" type="AnnotationVo">
+        <result property="annId" column="ANN_ID"/>
+        <result property="name" column="NAME"/>
+        <result property="startPoint" column="START_POINT"/>
+        <result property="endPoint" column="END_POINT"/>
+        <result property="content" column="CONTENT"/>
+        <result property="recordId" column="RECORD_ID"/>
+        <result property="recordSeq" column="RECORD_SEQ"/>
+        <result property="count" column="COUNT"/>
+        <result property="typeOpt" column="TYPEOPT"/>
+    </resultMap>
+    
+    <resultMap id="DocumentMap" type="DocumentVo">
+        <result property="docId" column="DOC_ID"/>
+        <result property="subject" column="subject"/>
+        <result property="count" column="COUNT"/>
+        <result property="recordId" column="RECORD_ID"/>
+        <result property="regId" column="REG_ID"/>
+    </resultMap>	
+    
+	<resultMap id="RelationMap" type="RelationVo">
+        <result property="relId" column="REL_ID"/>
+        <result property="label" column="LABELS"/>
+        <result property="name" column="NAME"/>
+        <result property="parentRel" column="PARENT_REL"/>
+        <result property="startRel" column="START_ENT"/>
+        <result property="endRel" column="END_ENT"/>
+        <result property="option" column="OPTION"/>
+        <result property="color" column="COLOR"/>
+        <result property="groupName" column="GROUP_NAME"/>
+        <result property="jstreeName" column="JSTREENAME"/>
+    </resultMap>	
+   
+  
+	<select id="getRelationList" parameterType="CommonVo" resultMap="RelationMap">
+		SELECT
+			REL_ID, NAME, PARENT_REL, START_ENT, END_ENT, OPTION, COLOR, GROUP_NAME, LABELS,
+			CONCAT(NAME, ' (', LABELS, ') ') as JSTREENAME
+		FROM 
+			RELATION
+		WHERE 
+			group_name = #{groupName}
+	</select>	
+	
+	<select id="getKeywordStartPoint" resultMap="AnnotationMap" parameterType="java.util.HashMap">
+		SELECT 
+		a2.content as content, count(a2.content) as count
+		FROM 
+			ANNOTATION_NEW a 
+				inner join RECORD_NEW r
+					on a.RECORD_ID = r.RECORD_ID
+						and a.RECORD_SEQ = r.RECORD_SEQ
+						and r.GROUP_NAME = #{groupName}
+						and a.NAME in ( select name from RELATION where rel_id in 
+						<foreach collection="relIds" item="relId" open="(" close=")" separator=",">
+						    ${relId}
+						</foreach>
+						)
+				inner join ANNOTATION_NEW a2
+					on a.START_POINT = a2.ANN_ID 
+						AND a2.RECORD_ID = a.RECORD_ID 
+						AND a2.RECORD_SEQ = a.RECORD_SEQ
+		WHERE 
+			1=1
+			<if test='searchTerm != null and searchTerm != ""'>
+			AND a2.CONTENT like CONCAT('%',#{searchTerm},'%') 
+			</if>
+		GROUP BY a2.content
+		ORDER BY a2.content DESC
+	</select>
+
+	<select id="getKeywordEndPoint" resultMap="AnnotationMap" parameterType="java.util.HashMap">
+		SELECT 
+		a2.content as content, count(a2.content) as count
+		FROM 
+			ANNOTATION_NEW a 
+				inner join RECORD_NEW r
+					on a.RECORD_ID = r.RECORD_ID
+						and a.RECORD_SEQ = r.RECORD_SEQ
+						and r.GROUP_NAME = #{groupName}
+						and a.NAME in ( select name from RELATION where rel_id in 
+						<foreach collection="relIds" item="relId" open="(" close=")" separator=",">
+						    ${relId}
+						</foreach>
+						)
+				inner join ANNOTATION_NEW a2
+					on a.END_POINT = a2.ANN_ID 
+						AND a2.RECORD_ID = a.RECORD_ID 
+						AND a2.RECORD_SEQ = a.RECORD_SEQ
+		WHERE 
+			1=1
+			<if test='searchTerm != null and searchTerm != ""'>
+			AND a2.CONTENT like CONCAT('%',#{searchTerm},'%') 
+			</if>
+		GROUP BY a2.content
+		ORDER BY a2.content DESC
+	</select>
+
+	<select id="getKeywordList" resultMap="AnnotationMap" parameterType="RelationVo">
+		SELECT A.CONTENT, count(A.CONTENT) as count, A.TYPEOPT
+		FROM (
+			SELECT 
+				a2.CONTENT as content, if (a.START_POINT = a2.ANN_ID,'start','end') as TYPEOPT
+			FROM 
+				ANNOTATION_NEW a 
+					inner join RECORD_NEW r
+						on a.RECORD_ID = r.RECORD_ID
+							and a.RECORD_SEQ = r.RECORD_SEQ
+							and r.GROUP_NAME = #{groupName}
+					inner join RELATION rel
+						on a.NAME = rel.NAME
+							and rel.REL_ID in 
+							<foreach collection="relIds" item="relId" open="(" close=")" separator=",">
+							    ${relId}
+							</foreach>
+					<if test='(startRel != null and startRel != "") or (endRel != null and endRel != "")'>
+						INNER JOIN ANNOTATION_NEW a3
+							ON a3.RECORD_ID = a.RECORD_ID 
+							AND a3.RECORD_SEQ = a.RECORD_SEQ	
+						<if test='startRel != null and startRel != ""'>
+							AND a3.CONTENT = #{startRel} 
+							AND a3.ANN_ID = a.START_POINT 	
+						</if>
+						<if test='endRel != null and endRel != ""'>
+							AND a3.CONTENT = #{endRel} 
+							AND a3.ANN_ID = a.END_POINT 
+						</if>
+					</if>
+					INNER JOIN ANNOTATION_NEW a2
+						on 
+						<if test='startRel != null and startRel != ""'>
+							a.END_POINT = a2.ANN_ID
+						</if>
+						<if test='endRel != null and endRel != ""'>
+							a.START_POINT = a2.ANN_ID
+						</if>
+						<if test='endRel == null and startRel == null'>
+							<choose>
+								<when test='type.equals("start".toString())'>
+									a.START_POINT = a2.ANN_ID
+								</when>
+								<otherwise>
+									a.END_POINT = a2.ANN_ID
+								</otherwise>
+							</choose>
+						</if>
+							AND a2.RECORD_ID = a.RECORD_ID 
+							AND a2.RECORD_SEQ = a.RECORD_SEQ
+			WHERE 
+				1=1
+				<if test='searchTerm != null and searchTerm != ""'>
+				AND a2.CONTENT like CONCAT('%',#{searchTerm},'%') 
+				</if>
+			ORDER BY a2.content DESC
+		) A
+		<where>
+			AND A.TYPEOPT = #{type}
+		</where>
+		GROUP BY A.CONTENT, A.TYPEOPT
+		ORDER BY count desc
+	</select>
+	
+	<select id="getLabelingDocList" resultMap="DocumentMap" parameterType="AnnotationVo">
+		SELECT 
+			count(a.RECORD_ID) as count, r.DOC_ID, r.RECORD_ID,
+			(SELECT d.subject FROM DOCUMENT_NEW d WHERE d.doc_id = r.DOC_ID) as subject
+		FROM 
+			ANNOTATION_NEW a 
+				inner join RECORD_NEW r
+					on a.RECORD_ID = r.RECORD_ID
+						and a.RECORD_SEQ = r.RECORD_SEQ
+						and r.GROUP_NAME = #{groupName}
+				inner join RELATION rel
+					on a.NAME = rel.NAME
+						and rel.REL_ID in 
+						<foreach collection="relIds" item="relId" open="(" close=")" separator=",">
+						    ${relId}
+						</foreach>
+				<if test='startPoint != null and startPoint != ""'>		
+				inner join ANNOTATION_NEW a2
+					on a.start_point = a2.ANN_ID 
+						AND a2.RECORD_ID = a.RECORD_ID 
+						AND a2.RECORD_SEQ = a.RECORD_SEQ
+				</if>
+				<if test='endPoint != null and endPoint != ""'>
+				inner join ANNOTATION_NEW a3
+					on a.end_point = a3.ANN_ID 
+						AND a3.RECORD_ID = a.RECORD_ID 
+						AND a3.RECORD_SEQ = a.RECORD_SEQ	
+				</if>			
+		WHERE 
+			1=1
+			<if test='startPoint != null and startPoint != ""'>
+			 and a2.CONTENT = #{startPoint}
+			 </if>
+			 <if test='endPoint != null and endPoint != ""'>
+			 and a3.CONTENT = #{endPoint}
+			</if>
+		group by a.RECORD_ID
+		
+	</select>
+	
+	<select id="getUnlabelingList" resultMap="DocumentMap" parameterType="java.util.HashMap">
+		SELECT 
+			DOC_ID, SUBJECT, REG_ID
+		FROM 
+			DOCUMENT_NEW
+		WHERE 
+		1=1
+			<if test='list.size != 0'>
+			AND	DOC_ID not in 
+			<foreach collection="list" item="list" open="(" close=")" separator=",">
+				${list.docId}
+			</foreach>
+		</if>
+		ORDER BY SUBJECT desc
+	</select>
+
+	
+	<select id="getRelationLoc" resultMap="RelationMap" parameterType="AnnotationVo">
+		SELECT 
+				a.ANN_ID as REL_ID
+			<if test='startPoint != null and startPoint != ""'>
+				,a2.ANN_ID as START_ENT
+			</if>
+			<if test='endPoint != null and endPoint != ""'>
+				,a3.ANN_ID as END_ENT
+			</if>
+		FROM 
+			ANNOTATION_NEW a 
+				<if test='startPoint != null and startPoint != ""'>		
+				inner join ANNOTATION_NEW a2
+					on a.start_point = a2.ANN_ID 
+						AND a2.RECORD_ID = a.RECORD_ID 
+						AND a2.RECORD_SEQ = a.RECORD_SEQ
+				</if>
+				<if test='endPoint != null and endPoint != ""'>
+				inner join ANNOTATION_NEW a3
+					on a.end_point = a3.ANN_ID 
+						AND a3.RECORD_ID = a.RECORD_ID 
+						AND a3.RECORD_SEQ = a.RECORD_SEQ	
+				</if>		
+								
+		WHERE 
+			1=1
+			<if test='startPoint != null and startPoint != ""'>
+			 and a2.CONTENT = #{startPoint}
+			 </if>
+			 <if test='endPoint != null and endPoint != ""'>
+			 and a3.CONTENT = #{endPoint}
+			</if>
+			and a.NAME in ( select name from RELATION where rel_id in 
+			<foreach collection="relIds" item="relId" open="(" close=")" separator=",">
+			    ${relId}
+			</foreach>
+			)
+			AND a.RECORD_ID = #{recordId}
+			AND a.RECORD_SEQ = (
+				SELECT r.RECORD_SEQ 
+				FROM RECORD_NEW r
+				WHERE r.RECORD_ID = #{recordId}
+			)
+	</select>
+	
+</mapper>

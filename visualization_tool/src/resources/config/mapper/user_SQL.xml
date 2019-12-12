@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user">
+
+	<select id="readAuthority" parameterType="String" resultType="String"> 
+		SELECT type as authority FROM USER WHERE user_id = #{username} 
+	</select>
+	
+	<select id="selectUserListCount" parameterType="CommonVo" resultType="int"> 
+		SELECT COUNT(*)
+		FROM USER
+		WHERE 1=1
+	</select>
+	
+	<select id="selectUserList" parameterType="CommonVo" resultType="UserVo"> 
+		SELECT USER_ID as userId, USER_PWD as password, USER_NAME as username, TYPE, NOTE, REG_DATE as regDate, MOD_DATE as modDate
+		FROM USER
+		WHERE 1=1
+		ORDER BY REG_DATE
+		LIMIT ${pageSize} OFFSET ${offSet}
+	</select>
+	
+	<select id="selectUserView" parameterType="CommonVo" resultType="UserVo"> 
+		SELECT USER_ID as userId, USER_PWD as password, USER_NAME as username, TYPE, NOTE, REG_DATE as regDate, MOD_DATE as modDate, AUTH_DOMAIN_MNG as authDomainMng, AUTH_DOC_MNG as authDocMng, AUTH_TAG_MNG as authTagMng, AUTH_CONF_MNG as authConfMng, AUTH_ENTITY_MNG as authEntityMng, AUTH_RELATION_MNG as authRelationMng, AUTH_LABEL_MNG as authLabelMng, AUTH_LEARN_MNG as authLearnMng
+		FROM USER
+		WHERE user_id = #{userId}
+	</select>
+	
+	<delete id="deleteUser" parameterType="CommonVo">
+		DELETE FROM USER
+		WHERE user_id = #{userId}
+	</delete>
+	
+	<insert id="insertUser" parameterType="UserVo" useGeneratedKeys="true"   
+ 		keyColumn="USER_ID" keyProperty="userId">
+			INSERT INTO 
+				USER (USER_ID, USER_PWD, ROLE, ENABLED, USER_NAME, NOTE, TYPE, REG_DATE, MOD_DATE, AUTH_DOMAIN_MNG, AUTH_DOC_MNG, AUTH_TAG_MNG, AUTH_CONF_MNG, AUTH_ENTITY_MNG, AUTH_RELATION_MNG, AUTH_LABEL_MNG, AUTH_LEARN_MNG) 
+			VALUES (
+				#{userId},#{password},'ROLE_USER','true',#{username},#{note},#{type},SYSDATE(),SYSDATE(),#{authDomainMng},#{authDocMng},#{authTagMng},#{authConfMng},#{authEntityMng},#{authRelationMng},#{authLabelMng},#{authLearnMng}
+			)
+	</insert>
+	
+	<update id="updateUser" parameterType="UserVo"    
+ 		keyColumn="USER_ID" keyProperty="userId">
+		UPDATE USER 
+		SET 
+			USER_NAME = #{username},
+			NOTE = #{note},
+			MOD_DATE = SYSDATE()
+			<if test='type != null and type != ""'>
+				,TYPE = #{type}
+			</if>
+			<if test='authDomainMng != null and authDomainMng != ""'>
+				,AUTH_DOMAIN_MNG = #{authDomainMng}
+			</if>
+			<if test='authDocMng != null and authDocMng != ""'>
+				,AUTH_DOC_MNG = #{authDocMng}
+			</if>
+			<if test='authTagMng != null and authTagMng != ""'>
+				,AUTH_TAG_MNG = #{authTagMng}
+			</if>
+			<if test='authConfMng != null and authConfMng != ""'>
+				,AUTH_CONF_MNG = #{authConfMng}
+			</if>
+			<if test='authEntityMng != null and authEntityMng != ""'>
+				,AUTH_ENTITY_MNG = #{authEntityMng}
+			</if>
+			<if test='authRelationMng != null and authRelationMng != ""'>
+				,AUTH_RELATION_MNG = #{authRelationMng}
+			</if>
+			<if test='authLabelMng != null and authLabelMng != ""'>
+				,AUTH_LABEL_MNG = #{authLabelMng}
+			</if>
+			<if test='authLearnMng != null and authLearnMng != ""'>
+				,AUTH_LEARN_MNG = #{authLearnMng}
+			</if>
+		WHERE USER_ID = #{userId}
+	</update>
+	
+	<update id="updateUserPwd" parameterType="UserVo"    
+ 		keyColumn="USER_ID" keyProperty="userId">
+		UPDATE USER 
+		SET 
+			USER_PWD = #{newPassword}
+		WHERE USER_ID = #{userId}
+	</update>
+
+</mapper>

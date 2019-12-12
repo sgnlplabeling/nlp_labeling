@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="entity">
+    <resultMap id="EntityMap" type="EntityVo">
+        <result property="entId" column="ENT_ID"/>
+        <result property="name" column="NAME"/>
+        <result property="label" column="LABELS"/>
+        <result property="bgColor" column="BGCOLOR"/>
+        <result property="parentEnt" column="PARENT_ENT"/>
+        <result property="groupName" column="GROUP_NAME"/>
+        <result property="jstreeName" column="JSTREENAME"/>
+    </resultMap>
+    
+    <resultMap id="RelationMap" type="RelationVo">
+        <result property="relId" column="REL_ID"/>
+        <result property="label" column="LABELS"/>
+        <result property="name" column="NAME"/>
+        <result property="parentRel" column="PARENT_REL"/>
+        <result property="startRel" column="START_ENT"/>
+        <result property="endRel" column="END_ENT"/>
+        <result property="option" column="OPTION"/>
+        <result property="color" column="COLOR"/>
+        <result property="groupName" column="GROUP_NAME"/>
+        <result property="jstreeName" column="JSTREENAME"/>
+    </resultMap>	
+    
+	<resultMap id="AnnotationMap" type="AnnotationVo">
+        <result property="annId" column="ANN_ID"/>
+        <result property="name" column="NAME"/>
+        <result property="startPoint" column="START_POINT"/>
+        <result property="endPoint" column="END_POINT"/>
+        <result property="content" column="CONTENT"/>
+        <result property="recordId" column="RECORD_ID"/>
+        <result property="recordSeq" column="RECORD_SEQ"/>
+        <result property="count" column="COUNT"/>
+    </resultMap>
+    
+    <resultMap id="DocumentMap" type="DocumentVo">
+        <result property="docId" column="DOC_ID"/>
+        <result property="colId" column="COL_ID"/>
+        <result property="recordId" column="RECORD_ID"/>
+        <result property="recordSeq" column="RECORD_SEQ"/>
+        <result property="subject" column="SUBJECT"/>
+        <result property="content" column="CONTENT"/>
+        <result property="regId" column="REG_ID"/>
+        <result property="regDate" column="REG_DATE"/>
+        <result property="confId" column="CONF_ID"/>
+        <result property="confDate" column="CONF_DATE"/>
+        <result property="rabelStat" column="RABEL_STAT"/>
+        <result property="labelGrade" column="LABEL_GRADE"/>              
+        <result property="learnStat" column="LEARN_STAT"/>
+        <result property="groupName" column="GROUP_NAME"/>
+        <result property="domain" column="NAME"/> 
+        <result property="domainPath" column="PATH"/>     
+        <result property="lastDate" column="LASTDATE"/>  
+    </resultMap>
+    	
+    <select id="getOverlapCheck" parameterType="java.util.HashMap" resultMap="EntityMap">
+		SELECT
+			ENT_ID, NAME, BGCOLOR, PARENT_ENT, GROUP_NAME, LABELS
+		FROM 
+			ENTITY
+		WHERE 
+			group_name = #{groupName}
+			and name in 
+			<foreach collection="list" item="list" open="(" close=")" separator=",">
+			#{list.name}
+			</foreach>
+	</select>
+	
+	<insert id="insertEntity" parameterType="EntityVo" useGeneratedKeys="true"   
+ 		keyColumn="ENT_ID" keyProperty="entId">
+			INSERT INTO 
+				ENTITY (NAME, BGCOLOR, PARENT_ENT, GROUP_NAME, LABELS) 
+			SELECT
+				#{name},#{bgColor},#{parentEnt},#{groupName},#{label}
+			FROM ENTITY
+			WHERE not exists (
+				SELECT * 
+				FROM ENTITY
+				WHERE name = #{name} and GROUP_NAME = #{groupName}
+			)
+			limit 1
+	</insert>
+	
+	<select id="getEntityOne" parameterType="EntityVo" resultMap="EntityMap">
+		SELECT
+			*
+		FROM 
+			ENTITY
+		WHERE 
+			group_name = #{groupName}
+			and name = #{name}
+	</select>
+	
+	<select id="getRelationList" parameterType="EntityVo" resultMap="RelationMap">
+		SELECT
+			*
+		FROM 
+			RELATION
+		WHERE 
+			group_name = #{groupName}
+			and name = #{name}
+	</select>
+	
+	<update id="updateEntity" parameterType="EntityVo">
+		UPDATE ENTITY 
+		SET 
+			NAME = #{name}
+			, LABELS = #{label}
+			, BGCOLOR = #{bgColor}
+		WHERE 
+			ENT_ID = #{entId}
+	</update>
+	
+	<delete id="deleteEntity" parameterType="EntityVo">
+		DELETE FROM ENTITY
+		WHERE 
+			1=1
+			AND ENT_ID = #{entId}
+	</delete>
+	
+	<select id="getEntityDocList" parameterType="EntityVo" resultMap="DocumentMap">
+		SELECT 
+			r.record_id, r.rabel_stat, c.NAME as domain, d.SUBJECT as subject, left(d.CONTENT,200) as content,
+			d.REG_ID, d.REG_DATE, r.CONF_ID, r.group_name
+		FROM 
+			ANNOTATION_NEW a 
+				INNER JOIN RECORD_NEW r
+					ON a.RECORD_ID = r.RECORD_ID AND a.RECORD_SEQ = r.RECORD_SEQ
+				INNER JOIN DOCUMENT_NEW d
+					on d.DOC_ID = r.DOC_ID
+				INNER JOIN COLLECTION_NEW c
+					ON c.COL_ID = d.COL_ID
+		WHERE 
+			1=1
+			<if test='name != null and name != ""'>
+			AND a.NAME = #{name} 
+			</if>
+			<if test='groupName != null and groupName != ""'>
+			AND r.GROUP_NAME = #{groupName}
+			</if>
+		GROUP BY 
+			a.RECORD_ID
+		ORDER BY 
+			r.REG_DATE desc
+		LIMIT ${pageSize} OFFSET ${offSet}																																																																		
+	</select>
+
+	<select id="getEntityDocListCount" parameterType="EntityVo" resultMap="DocumentMap">
+		SELECT 
+			a.RECORD_ID
+		FROM 
+			ANNOTATION_NEW a 
+				INNER JOIN RECORD_NEW r
+					ON a.RECORD_ID = r.RECORD_ID AND a.RECORD_SEQ = r.RECORD_SEQ
+				INNER JOIN DOCUMENT_NEW d
+					on d.DOC_ID = r.DOC_ID
+				INNER JOIN COLLECTION_NEW c
+					ON c.COL_ID = d.COL_ID
+		WHERE 
+			1=1
+			<if test='name != null and name != ""'>
+			AND a.NAME = #{name} 
+			</if>
+			<if test='groupName != null and groupName != ""'>
+			AND r.GROUP_NAME = #{groupName}
+			</if>
+		GROUP BY 
+			a.RECORD_ID
+	</select>	
+	
+	<select id="getAnnotationList" parameterType="EntityVo" resultMap="AnnotationMap">
+		SELECT 
+			*
+		FROM 
+			ANNOTATION_NEW a 
+		WHERE
+			a.record_id = #{recordId}
+			and a.RECORD_SEQ = (
+				SELECT r.RECORD_SEQ
+				FROM RECORD_NEW r
+				WHERE r.record_id = #{recordId}
+			)
+				
+			<if test='name!= null and name!= ""'>
+			and a.NAME != #{name}
+	  		and a.START_POINT != #{name}
+	        and a.END_POINT != #{name}   
+			</if>
+							
+		ORDER BY a.start_point+0
+	</select>
+	
+	<select id="getEntityList" parameterType="EntityVo" resultMap="EntityMap">
+		SELECT 
+			*
+		FROM 
+			ENTITY
+		WHERE
+			group_name = #{groupName}
+	</select>
+	
+	<select id="getEntityByEntId" parameterType="EntityVo" resultMap="EntityMap">
+		SELECT
+			*
+		FROM 
+			ENTITY
+		WHERE 
+			ENT_ID IN
+			<foreach collection="searchTagName" item="tagName" open=" (" close=")" separator=",">
+				#{tagName}
+			</foreach>
+	</select>
+	
+	<select id="getRelationOne" parameterType="RelationVo" resultMap="RelationMap">
+		SELECT
+			*
+		FROM 
+			RELATION
+		WHERE 
+			group_name = #{groupName}
+			and name = #{name}
+			and start_ent = #{startRel}
+	</select>
+	
+	<update id="updateRelation" parameterType="RelationVo">
+		UPDATE RELATION 
+		SET 
+			START_ENT = #{startRel}
+			, END_ENT = #{endRel}
+			, LABELS = #{label}
+		WHERE 
+			REL_ID = #{relId}
+	</update>
+	
+	<insert id="insertRelation" parameterType="RelationVo" useGeneratedKeys="true"   
+ 		keyColumn="REL_ID" keyProperty="relId">
+			INSERT INTO 
+				RELATION (NAME, GROUP_NAME, PARENT_REL, START_ENT, END_ENT, LABELS) 
+			VALUES (
+				#{name},#{groupName},#{parentRel}, #{startRel}, #{endRel}, #{label}
+				)
+	</insert>
+	
+	<delete id="deleteRelation" parameterType="RelationVo">
+		DELETE FROM RELATION
+		WHERE 
+			1=1
+			AND NAME = #{name}
+			AND GROUP_NAME = #{groupName}
+			<if test='relIds != null and relIds !=""'>
+				AND REL_ID not in 
+				<foreach collection="relIds" item="relId" open="(" close=")" separator=",">
+				#{relId}
+				</foreach>
+			</if>
+	</delete>
+</mapper>
