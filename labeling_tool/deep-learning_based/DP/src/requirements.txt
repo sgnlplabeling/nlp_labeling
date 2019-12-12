@@ -1,4 +1,0 @@
-tensorflow_gpu==1.13.0rc1
-numpy==1.15.1
-tensorflow==1.14.0
-typing==3.7.4
