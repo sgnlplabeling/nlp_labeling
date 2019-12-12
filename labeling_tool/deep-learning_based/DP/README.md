@@ -24,7 +24,7 @@
 >cuda == 10.0  
 
 ## Data Format
-CONLLX data
+CONLLX Format
 ~~~
 예시문장 : 프랑스의 세계적인 의상 디자이너 엠마누엘 웅가로가 실내 장식용 직물 디자이너로 나섰다.  
 
