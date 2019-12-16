@@ -1,5 +1,5 @@
 numpy==1.14.5
 konlpy==0.5.1
 scikit_learn==0.20.0
-tensorflow_gpu==1.10.0
+tensorflow_gpu==1.15.0
 tensorflow==1.10.0
