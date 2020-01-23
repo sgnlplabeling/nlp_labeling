@@ -49,5 +49,6 @@ python main.py
 NSML을 사용하는 코드로서 NSML을 통해서만 Inference가 가능합니다.
 ```
 
-※ parameter 설정은 main.py 내의 option을 통해서 선택/수정 가능합니다. 
+※ parameter 설정은 main.py 내의 option을 통해서 선택/수정 가능합니다.
+
 ※ Train 데이터 : <https://github.com/naver/nlp-challenge/tree/master/missions/srl/data/train>
