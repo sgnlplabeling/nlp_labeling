@@ -1,26 +1,28 @@
-Requirement : 
+### Requirement
+```
 	pip install requirements.txt
-	word_Embeddings_size64.pkl ÆÄÀÏÀ» python ÆÄÀÏµé°ú °°Àº Æú´õ ³»¿¡ µĞ´Ù. (°æ·Î À§Ä¡ º¯°æÀº data_helper.py -> ÇÔ¼ö load_pretrained_embeddings¿¡¼­ °¡´ÉÇÏ´Ù.)
+	word_Embeddings_size64.pkl íŒŒì¼ì„ python íŒŒì¼ë“¤ê³¼ ê°™ì€ í´ë” ë‚´ì— ë‘”ë‹¤. (ê²½ë¡œ ìœ„ì¹˜ ë³€ê²½ì€ data_helper.py -> í•¨ìˆ˜ load_pretrained_embeddingsì—ì„œ ê°€ëŠ¥í•˜ë‹¤.)
+```
 
-Data : 
+### Data
 	labeled_data dir
 
 	1. donga_pos_hotel_corpus.txt
 	ex) Speaker	Utterance	Dialogue act (old)	Dialogue act (new)
-	    Agent	¾È³çÇÏ/VA|¼¼¿ä/EF|?/SF	opening	opening
-	    Agent	¸í»ê/NNP|°ü±¤/NNG|ÀÔ/VCP|´Ï´Ù/EF|./SF	introducing-oneself	introduce
-	    User	³×/NNP|Àú/NP|´Â/JX|¼³¾Ç»ê/NNP|°ú/JC|¼Ó¸®»ê/NNG|À»/JKO|¿©ÇàÇÏ/VV|°í/EC|½Í/VX|Àºµ¥/EF|¿ä/JX|./SF	inform	inform
+	    Agent	ì•ˆë…•í•˜/VA|ì„¸ìš”/EF|?/SF	opening	opening
+	    Agent	ëª…ì‚°/NNP|ê´€ê´‘/NNG|ì…/VCP|ë‹ˆë‹¤/EF|./SF	introducing-oneself	introduce
+	    User	ë„¤/NNP|ì €/NP|ëŠ”/JX|ì„¤ì•…ì‚°/NNP|ê³¼/JC|ì†ë¦¬ì‚°/NNG|ì„/JKO|ì—¬í–‰í•˜/VV|ê³ /EC|ì‹¶/VX|ì€ë°/EF|ìš”/JX|./SF	inform	inform
 
 	2. donga_pos_schedule_corpus.txt
 	ex) Speaker	Utterance	Dialogue act (old)	Dialogue act (new)
-	    user	¾Æ¸§/VA|¾Æ/EC|Àß/MAG|Àä/VV|´Ï/EF|?/SF	greeting	opening
-	    system	³×/IC|,/SP|Àß/MAG|Àä/VV|½À´Ï´Ù/EF|./SF	greeting	opening
-	    user	¾Æ¸§/VA|¾Æ/EC|ÀÏÁ¤/NNG|È®ÀÎ/NNG|Á»/MAG|ÇØÁà/VV|./SF	request	request
+	    user	ì•„ë¦„/VA|ì•„/EC|ì˜/MAG|ì¤/VV|ë‹ˆ/EF|?/SF	greeting	opening
+	    system	ë„¤/IC|,/SP|ì˜/MAG|ì¤/VV|ìŠµë‹ˆë‹¤/EF|./SF	greeting	opening
+	    user	ì•„ë¦„/VA|ì•„/EC|ì¼ì •/NNG|í™•ì¸/NNG|ì¢€/MAG|í•´ì¤˜/VV|./SF	request	request
 
 	3. donga_pos_active_3000_data.txt
-	ex) ³»/NP|°í¿î/NNP|ÇÇºÎ/NNG
-	    µµ´ëÃ¼/MAG|ºñ°á/NNG|ÀÌ/JKS|¹¹/NP|¿¡/JKB|¿ä/JX|~/SO|³ª/NP|¿¡°Ô/JKB|µµ/JX|Á»/MAG|¾Ë·ÁÁà/VV|¿ä/EF|~/SO
-	    ÀúÃàÇÒµ·/NNG|ÀÌ/VCP|ÀÖ/VA|¾î¾ßÁö/EC
+	ex) ë‚´/NP|ê³ ìš´/NNP|í”¼ë¶€/NNG
+	    ë„ëŒ€ì²´/MAG|ë¹„ê²°/NNG|ì´/JKS|ë­/NP|ì—/JKB|ìš”/JX|~/SO|ë‚˜/NP|ì—ê²Œ/JKB|ë„/JX|ì¢€/MAG|ì•Œë ¤ì¤˜/VV|ìš”/EF|~/SO
+	    ì €ì¶•í• ëˆ/NNG|ì´/VCP|ìˆ/VA|ì–´ì•¼ì§€/EC
 
 	4. active_3000_label.txt
 	ex) wh-question
@@ -28,81 +30,81 @@ Data :
 	    wh-question
 	
 	5. donga_pos_train_data.txt
-	À§ÀÇ 1~4 µ¥ÀÌÅÍ ÆÄÀÏÀ» ÅëÇÕÇÑ ÆÄÀÏ
-	ex) ¾È³çÇÏ/VA|¼¼¿ä/EF|?/SF	opening
-	    ¸í»ê/NNP|°ü±¤/NNG|ÀÔ/VCP|´Ï´Ù/EF|./SF	introduce
-	    ³×/NNP|Àú/NP|´Â/JX|¼³¾Ç»ê/NNP|°ú/JC|¼Ó¸®»ê/NNG|À»/JKO|¿©ÇàÇÏ/VV|°í/EC|½Í/VX|Àºµ¥/EF|¿ä/JX|./SF	inform
+	ìœ„ì˜ 1~4 ë°ì´í„° íŒŒì¼ì„ í†µí•©í•œ íŒŒì¼
+	ex) ì•ˆë…•í•˜/VA|ì„¸ìš”/EF|?/SF	opening
+	    ëª…ì‚°/NNP|ê´€ê´‘/NNG|ì…/VCP|ë‹ˆë‹¤/EF|./SF	introduce
+	    ë„¤/NNP|ì €/NP|ëŠ”/JX|ì„¤ì•…ì‚°/NNP|ê³¼/JC|ì†ë¦¬ì‚°/NNG|ì„/JKO|ì—¬í–‰í•˜/VV|ê³ /EC|ì‹¶/VX|ì€ë°/EF|ìš”/JX|./SF	inform
 
 	unlabeled_data dir
 
 	1. donga_pos_unlabeled_data.txt
-	ex) ¹ä/NNG|Àº/JX|¸Ô/VV|¾ú/EP|´Ï/EF|?/SF
-	    ÀÀ/NNG|¸Ô/VV|¾ú/EP|¾î¿ä/EF|!/SF
-	    ¸Â/VV|¾Æ/EC
+	ex) ë°¥/NNG|ì€/JX|ë¨¹/VV|ì—ˆ/EP|ë‹ˆ/EF|?/SF
+	    ì‘/NNG|ë¨¹/VV|ì—ˆ/EP|ì–´ìš”/EF|!/SF
+	    ë§/VV|ì•„/EC
 
-File List : 
+### File List
 1. main.py 
-	train°ú predict¸¦ À§ÇÏ¿© ½ÇÇàÇØ¾ß ÇÒ ÆÄÀÏ
-	½ÇÇà ¹æ¹ı : python main.py -i <input(train) file path> (-o <output dir path>)
-	-o <output dir path> ÁöÁ¤ÇÏÁö ¾ÊÀ¸¸é 'trained_results'ÀÌ¸§ÀÇ µğ·ºÅä¸®¿¡ ÀúÀåµÈ´Ù.
+	trainê³¼ predictë¥¼ ìœ„í•˜ì—¬ ì‹¤í–‰í•´ì•¼ í•  íŒŒì¼
+	ì‹¤í–‰ ë°©ë²• : python main.py -i <input(train) file path> (-o <output dir path>)
+	-o <output dir path> ì§€ì •í•˜ì§€ ì•Šìœ¼ë©´ 'trained_results'ì´ë¦„ì˜ ë””ë ‰í† ë¦¬ì— ì €ì¥ëœë‹¤.
 	
-	°á°ú¹° : trained_results µğ·ºÅä¸®
+	ê²°ê³¼ë¬¼ : trained_results ë””ë ‰í† ë¦¬
 		
-	°á°ú Á¤È®µµ : ¸¶Áö¸·¿¡ ÇÁ¸°Æ®µÇ´Â "The prediction accuracy is : XXX"
+	ê²°ê³¼ ì •í™•ë„ : ë§ˆì§€ë§‰ì— í”„ë¦°íŠ¸ë˜ëŠ” "The prediction accuracy is : XXX"
 
 2. train.py
-	CNN-RNN ¸ğµ¨À» ÇĞ½À½ÃÅ°´Â ÆÄÀÏ
-	½ÇÇà ¹æ¹ı : main.py¿¡¼­ È£ÃâµÇ¾î ½ÇÇàµÈ´Ù.
-	ÆÄ¶ó¹ÌÅÍ Á¶Á¤ : params º¯¼ö·Î ¼±¾ğ µÇ¾îÀÖ´Â °÷¿¡¼­ ¼öÁ¤ÇÏ¸é µÈ´Ù.
-		       ¹èÄ¡ »çÀÌÁî Á¶Á¤, ÀÓº£µù Â÷¿ø, µå¶ø¾Æ¿ô È®·ü, CNN filter »çÀÌÁî µîµî Á¶Á¤ÇÒ ¼ö ÀÖ´Ù.	       
-	°á°ú¹° : trained_results µğ·ºÅä¸®¿¡ 5°³ÀÇ ÆÄÀÏ°ú checkpoint ÆÄÀÏÀÌ ¸¸µé¾î Áø´Ù.
-		labels.json (label setÀ» ÀúÀå)
-		trained_parameters.json (ÆÄ¶ó¹ÌÅÍ ÀúÀå)
-		words_index.json (vocabulary ÀúÀå)
-		embedding_mat.pickle (¿öµå ÀÓº£µù ÀúÀå)
-		embedding_pre.pickle (ÀÌÀü È­Çà Á¤º¸ ÀÓº£µù ÀúÀå)
+	CNN-RNN ëª¨ë¸ì„ í•™ìŠµì‹œí‚¤ëŠ” íŒŒì¼
+	ì‹¤í–‰ ë°©ë²• : main.pyì—ì„œ í˜¸ì¶œë˜ì–´ ì‹¤í–‰ëœë‹¤.
+	íŒŒë¼ë¯¸í„° ì¡°ì • : params ë³€ìˆ˜ë¡œ ì„ ì–¸ ë˜ì–´ìˆëŠ” ê³³ì—ì„œ ìˆ˜ì •í•˜ë©´ ëœë‹¤.
+		       ë°°ì¹˜ ì‚¬ì´ì¦ˆ ì¡°ì •, ì„ë² ë”© ì°¨ì›, ë“œëì•„ì›ƒ í™•ë¥ , CNN filter ì‚¬ì´ì¦ˆ ë“±ë“± ì¡°ì •í•  ìˆ˜ ìˆë‹¤.	       
+	ê²°ê³¼ë¬¼ : trained_results ë””ë ‰í† ë¦¬ì— 5ê°œì˜ íŒŒì¼ê³¼ checkpoint íŒŒì¼ì´ ë§Œë“¤ì–´ ì§„ë‹¤.
+		labels.json (label setì„ ì €ì¥)
+		trained_parameters.json (íŒŒë¼ë¯¸í„° ì €ì¥)
+		words_index.json (vocabulary ì €ì¥)
+		embedding_mat.pickle (ì›Œë“œ ì„ë² ë”© ì €ì¥)
+		embedding_pre.pickle (ì´ì „ í™”í–‰ ì •ë³´ ì„ë² ë”© ì €ì¥)
 
 3. predict.py
-	ÇĞ½ÀµÈ CNN-RNN ¸ğµ¨À» ÀÌ¿ëÇÏ¿© ¿¹ÃøÇÏ´Â ÆÄÀÏ
-	½ÇÇà ¹æ¹ı : main.py¿¡¼­ È£ÃâµÇ¾î ½ÇÇàµÈ´Ù.
-	ÇÔ¼ö ¸®ÅÏ°ª : ¿¹ÃøµÈ labels º¤ÅÍ, Á¤È®µµ
-	°á°ú Á¤È®µµ : ¸¶Áö¸·¿¡ ÇÁ¸°Æ®µÇ´Â "The prediction accuracy is : XXX"
+	í•™ìŠµëœ CNN-RNN ëª¨ë¸ì„ ì´ìš©í•˜ì—¬ ì˜ˆì¸¡í•˜ëŠ” íŒŒì¼
+	ì‹¤í–‰ ë°©ë²• : main.pyì—ì„œ í˜¸ì¶œë˜ì–´ ì‹¤í–‰ëœë‹¤.
+	í•¨ìˆ˜ ë¦¬í„´ê°’ : ì˜ˆì¸¡ëœ labels ë²¡í„°, ì •í™•ë„
+	ê²°ê³¼ ì •í™•ë„ : ë§ˆì§€ë§‰ì— í”„ë¦°íŠ¸ë˜ëŠ” "The prediction accuracy is : XXX"
 
 4. text_cnn_rnn.py
-	CNN-RNN ¸ğµ¨
-	ÆÄ¶ó¹ÌÅÍ : embedding_mat (»ç¿ëµÉ pretrained embedding matrix),
-		 embedding_pre (ÀÌÀü È­Çà Á¤º¸ pretrained embedding matrix)
-		 non_static (True : Pretrained embedding »ç¿ë, False : randomly initialized embedding »ç¿ë)
-		 ÀÌ¿Ü¿¡µµ hidden_unit, sequence_length, max_pool_size, num_classes, embedding_size, filter_sizes, num_filters, l2_reg_lambda°¡ ÀÖ´Ù.
+	CNN-RNN ëª¨ë¸
+	íŒŒë¼ë¯¸í„° : embedding_mat (ì‚¬ìš©ë  pretrained embedding matrix),
+		 embedding_pre (ì´ì „ í™”í–‰ ì •ë³´ pretrained embedding matrix)
+		 non_static (True : Pretrained embedding ì‚¬ìš©, False : randomly initialized embedding ì‚¬ìš©)
+		 ì´ì™¸ì—ë„ hidden_unit, sequence_length, max_pool_size, num_classes, embedding_size, filter_sizes, num_filters, l2_reg_lambdaê°€ ìˆë‹¤.
 	
 5. cnn_attention.py
-	CNN ÀÔ·Â Àü È£ÃâµÇ´Â ÇÔ¼ö
-	ÀÌÀü È­Çà Á¤º¸¿Í ÀÔ·Â ¹ßÈ­ »çÀÌ ¾îÅÙ¼Ç °è»êÀ» ÁøÇàÇÑ´Ù.
+	CNN ì…ë ¥ ì „ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
+	ì´ì „ í™”í–‰ ì •ë³´ì™€ ì…ë ¥ ë°œí™” ì‚¬ì´ ì–´í…ì…˜ ê³„ì‚°ì„ ì§„í–‰í•œë‹¤.
 
 6. data_helper.py
-	µ¥ÀÌÅÍ ÀüÃ³¸®¸¦ ´ã´çÇÏ´Â ÆÄÀÏ
-	load_data : ÇĞ½À°ú Å×½ºÆ®¿¡ »ç¿ëµÇ´Â µ¥ÀÌÅÍ¸¦ ºÒ·¯¿Â´Ù. 
-	load_embeddings : pretrained embedding matrix·Î ºÎÅÍ vocabulary¿¡ ÀÖ´Â ´Ü¾îµéÀ» ºÒ·¯¿Â´Ù
-	load_pretrained_embeddings : pretrained embedding matrix¸¦ ºÒ·¯¿Â´Ù.
-	pad_sentences : ÀÔ·Â µ¥ÀÌÅÍ¸¦ Á¤ÇØÁø ±æÀÌ¿¡ ¸ÂÃç padding Ã³¸®¸¦ ÇÑ´Ù.
-	build_vocab : µ¥ÀÌÅÍ¿¡ »ç¿ëµÇ´Â vocabulary¸¦ ¸¸µç´Ù.
-	morp_data : ÇüÅÂ¼Ò ºĞ¼®ÇÏ´Â ¸ğµâÀÌ´Ù.
-	batch_iter : epoch¸¶´Ù batch data¸¦ »ı¼ºÇÑ´Ù.
+	ë°ì´í„° ì „ì²˜ë¦¬ë¥¼ ë‹´ë‹¹í•˜ëŠ” íŒŒì¼
+	load_data : í•™ìŠµê³¼ í…ŒìŠ¤íŠ¸ì— ì‚¬ìš©ë˜ëŠ” ë°ì´í„°ë¥¼ ë¶ˆëŸ¬ì˜¨ë‹¤. 
+	load_embeddings : pretrained embedding matrixë¡œ ë¶€í„° vocabularyì— ìˆëŠ” ë‹¨ì–´ë“¤ì„ ë¶ˆëŸ¬ì˜¨ë‹¤
+	load_pretrained_embeddings : pretrained embedding matrixë¥¼ ë¶ˆëŸ¬ì˜¨ë‹¤.
+	pad_sentences : ì…ë ¥ ë°ì´í„°ë¥¼ ì •í•´ì§„ ê¸¸ì´ì— ë§ì¶° padding ì²˜ë¦¬ë¥¼ í•œë‹¤.
+	build_vocab : ë°ì´í„°ì— ì‚¬ìš©ë˜ëŠ” vocabularyë¥¼ ë§Œë“ ë‹¤.
+	morp_data : í˜•íƒœì†Œ ë¶„ì„í•˜ëŠ” ëª¨ë“ˆì´ë‹¤.
+	batch_iter : epochë§ˆë‹¤ batch dataë¥¼ ìƒì„±í•œë‹¤.
 	
 
 7. predict_rawtext.py
-	½ÇÇà ¹æ¹ı : python predict_rawtext.py -i <input file path> -o <output file path> (-t <rained_dir>)
+	ì‹¤í–‰ ë°©ë²• : python predict_rawtext.py -i <input file path> -o <output file path> (-t <rained_dir>)
 	ex) python predict_rawtext.py -i '../data/unlabeled_data/donga_pos_unlabeled_data.txt' -o 'DailyLife_MachineLabeled_SG_DNN.txt'
 
-	-t <trained_dir> ÁöÁ¤ÇÏÁö ¾ÊÀ¸¸é './trained_results/' ÀÌ¸§ÀÇ µğ·ºÅä¸®·Î ÁöÁ¤µÈ´Ù.
-		trained_dir : train °á°ú(best_model.ckpt ÆÄÀÏ, embedding_mat.pickle, embedding_pre.pickle,
-		labels.json, trained_parameters.json, words_index.json)°¡ ´ã±ä ÆÄÀÏ
+	-t <trained_dir> ì§€ì •í•˜ì§€ ì•Šìœ¼ë©´ './trained_results/' ì´ë¦„ì˜ ë””ë ‰í† ë¦¬ë¡œ ì§€ì •ëœë‹¤.
+		trained_dir : train ê²°ê³¼(best_model.ckpt íŒŒì¼, embedding_mat.pickle, embedding_pre.pickle,
+		labels.json, trained_parameters.json, words_index.json)ê°€ ë‹´ê¸´ íŒŒì¼
 
-	À¯ÀÇ»çÇ× : input fileÀÇ °æ¿ì unlabeled ÆÄÀÏÀÌ¿©¾ß ÇÑ´Ù.
+	ìœ ì˜ì‚¬í•­ : input fileì˜ ê²½ìš° unlabeled íŒŒì¼ì´ì—¬ì•¼ í•œë‹¤.
 		
-	°á°ú ÆÄÀÏ : 
-		½ÇÇà °á°ú ¿¹Ãø labelÀº <output file>¿¡ ÀúÀåµÈ´Ù.
-		ex) ¹ä/NNG|Àº/JX|¸Ô/VV|¾ú/EP|´Ï/EF|?/SF	yn-question	49.17
-		    ÀÀ/NNG|¸Ô/VV|¾ú/EP|¾î¿ä/EF|!/SF	inform	72.3
-		    ¸Â/VV|¾Æ/EC	expressive	41.48
+	ê²°ê³¼ íŒŒì¼ : 
+		ì‹¤í–‰ ê²°ê³¼ ì˜ˆì¸¡ labelì€ <output file>ì— ì €ì¥ëœë‹¤.
+		ex) ë°¥/NNG|ì€/JX|ë¨¹/VV|ì—ˆ/EP|ë‹ˆ/EF|?/SF	yn-question	49.17
+		    ì‘/NNG|ë¨¹/VV|ì—ˆ/EP|ì–´ìš”/EF|!/SF	inform	72.3
+		    ë§/VV|ì•„/EC	expressive	41.48
 		
