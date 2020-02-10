@@ -205,7 +205,7 @@ if not os.path.exists(eval_temp):
 if not os.path.exists(models_path):
     os.makedirs(models_path)
 
-mapping_file = 'models/mapping'+opts.train.split('/')[-1]+.'pkl'
+mapping_file = 'models/mapping'+opts.train.split('/')[-1]+'.pkl'
 
 lower = parameters['lower']
 zeros = parameters['zeros']
