@@ -58,5 +58,6 @@
 ※ parameter 설정은 각각의 shell file의 option을 통해서 선택/수정 가능합니다.  
 ※ 현재 train, test 데이터는 예시 파일로, 일부만 업로드 되어있습니다.  
 전체 데이터가 필요할 경우에는 작성자 및 관리자의 이메일로 요청바랍니다. 
+
 ※ 해당 데이터는 pykomoran v0.1.5 과 etri 형태소 분석 API를 사용하여 생성한 학습 데이터 입니다.
   pykomoran으로 생성한 학습 데이터는 examples/reun_stackPtrParser.sh의 --train과 --dev의 파라메터로 사용하고, etri 형태소 분석 API를 사용하여 생성한 학습 데이터는 --etri_train과 --etri_dev의 파라미터로 사용하시면 됩니다.
