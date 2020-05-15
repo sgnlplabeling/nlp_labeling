@@ -19,7 +19,7 @@
         <org.mariadb.jdbc.version>1.5.4</org.mariadb.jdbc.version>
         <org.apache.tiles.version>3.0.7</org.apache.tiles.version>
         <lombok.version>1.16.4</lombok.version>
-        <jackson.core.version>2.6.0</jackson.core.version>
+        <jackson.core.version>2.11.0</jackson.core.version>
         <org.springframework-security-version>3.2.3.RELEASE</org.springframework-security-version> 
 	</properties>
 	<dependencies>
