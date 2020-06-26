@@ -76,6 +76,8 @@ bert_serving-client
  
  pip install -r requirements.txt
  
- data/bert_socket 경로에서 bert-serving-start -model_dir ../multilingual_L-12_H-768_A-12/ -num_worker=4 
+ data/ 경로에 pretrained model 저장 
+ 
+ data/bert_socket/ 경로에서 bert-serving-start -model_dir ../multilingual_L-12_H-768_A-12/ -num_worker=4  입력 
 
  python src/main.py
