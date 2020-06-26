@@ -1,6 +1,6 @@
 ### Requirement
 ```
-	pip install requirements.txt
+	pip install -requirements.txt
 	word_Embeddings_size64.pkl 파일을 python 파일들과 같은 폴더 내에 둔다. (경로 위치 변경은 data_helper.py -> 함수 load_pretrained_embeddings에서 가능하다.)
 ```
 
