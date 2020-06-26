@@ -11,7 +11,9 @@
 본 프로그램을 이용한 모든 결과물은 본 프로그램의 주소가 참조되어야 합니다.
 
 참조 사이트 : https://github.com/sgnlplabeling/nlp_labeling
+
 BERT module 참조 : https://github.com/hanxiao/bert-as-service
+
 Pretrained model : https://github.com/google-research/bert
 
 
