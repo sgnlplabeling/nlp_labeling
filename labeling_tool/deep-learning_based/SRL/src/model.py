@@ -37,92 +37,61 @@ class Model(object):
 
 
 	def add_placeholder(self):
-		self.word_inputs1 = tf.placeholder(dtype=tf.int32,
-										   shape=[None, None],
-										   name="word_inputs1"
-										   )
-		self.word_inputs2 = tf.placeholder(dtype=tf.int32,
-										   shape=[None, None],
-										   name="word_inputs2"
-										   )
-		self.word_inputs3 = tf.placeholder(dtype=tf.int32,
-										   shape=[None, None],
-										   name="word_inputs3"
-										   )
-		self.word_inputs4 = tf.placeholder(dtype=tf.int32,
-										   shape=[None, None],
-										   name="word_inputs4"
-										   )
-		self.pumsa_inputs1 = tf.placeholder(dtype=tf.int32,
+                self.word_berts1 = tf.placeholder(dtype=tf.float32, shape=[None, None, 768], name = "word_berts1")
+
+                self.word_inputs1 = tf.placeholder(dtype=tf.int32, shape=[None, None], name="word_inputs1")
+                self.word_inputs2 = tf.placeholder(dtype=tf.int32,  shape=[None, None],  name="word_inputs2" )
+                self.word_inputs3 = tf.placeholder(dtype=tf.int32, shape=[None, None],  name="word_inputs3" )
+                self.word_inputs4 = tf.placeholder(dtype=tf.int32, shape=[None, None],  name="word_inputs4" )
+
+
+                self.pumsa_inputs1 = tf.placeholder(dtype=tf.int32,
 											shape=[None, None],
 											name="pumsa_inputs1"
 											)
-		self.pumsa_inputs2 = tf.placeholder(dtype=tf.int32,
+                self.pumsa_inputs2 = tf.placeholder(dtype=tf.int32,
 											shape=[None, None],
 											name="pumsa_inputs2"
 											)
-		self.pumsa_inputs3 = tf.placeholder(dtype=tf.int32,
+                self.pumsa_inputs3 = tf.placeholder(dtype=tf.int32,
 											shape=[None, None],
 											name="pumsa_inputs3"
 											)
-		self.pumsa_inputs4 = tf.placeholder(dtype=tf.int32,
+                self.pumsa_inputs4 = tf.placeholder(dtype=tf.int32,
 											shape=[None, None],
 											name="pumsa_inputs4"
 											)
-		self.char_inputs = tf.placeholder(dtype=tf.int32,
-										  shape=[None, None, None],
-										  name="char_inputs")
+                self.char_inputs = tf.placeholder(dtype=tf.int32, shape=[None, None, None], name="char_inputs")
 
-		self.input_lemma = tf.placeholder(dtype=tf.int32,
-									 shape=[None, None],
-									 name="input_lemma"
-									 )
-		self.predicate_idxs = tf.placeholder(dtype=tf.int32,
-											 shape=[None, 2],
-											 name="predicate_idxs"
-											 )
-		self.predicate_distances = tf.placeholder(dtype=tf.float32,
-												  shape=[None, None, 14],
-												  name="predicate_distances"
-												  )
-		self.binary_vector = tf.placeholder(dtype=tf.float32,
+                self.input_lemma = tf.placeholder(dtype=tf.int32, shape=[None, None],name="input_lemma")
+                self.predicate_idxs = tf.placeholder(dtype=tf.int32,shape=[None, 2],name="predicate_idxs")
+                self.predicate_distances = tf.placeholder(dtype=tf.float32,shape=[None, None, 14], name="predicate_distances")
+                self.binary_vector = tf.placeholder(dtype=tf.float32,
 											shape=[None, None, 2],
 											name="binary_vector"
 											)
-		self.predicate_words1 = tf.placeholder(dtype=tf.int32,
-											   shape=[None, None],
-											   name="predicate_words1"
-											   )
-		self.predicate_words2 = tf.placeholder(dtype=tf.int32,
-											   shape=[None, None],
-											   name="predicate_words2"
-											   )
-		self.predicate_pumsas1 = tf.placeholder(dtype=tf.int32,
+                self.predicate_words1 = tf.placeholder(dtype=tf.int32,shape=[None, None], name="predicate_words1" )
+                self.predicate_words2 = tf.placeholder(dtype=tf.int32,  shape=[None, None], name="predicate_words2")
+                self.predicate_pumsas1 = tf.placeholder(dtype=tf.int32,
 												shape=[None, None],
 												name="predicate_pumsas1"
 												)
-		self.predicate_pumsas2 = tf.placeholder(dtype=tf.int32,
+                self.predicate_pumsas2 = tf.placeholder(dtype=tf.int32,
 												shape=[None, None],
 												name="predicate_pumsas2"
 												)
-		self.input_roles = tf.placeholder(dtype=tf.int32,
+                self.input_roles = tf.placeholder(dtype=tf.int32,
 									shape=[None, None],
 									name="input_roles")
-		self.labels = tf.placeholder(dtype=tf.int32,
-									  shape=[None, None],
-									  name="labels")
-		self.dropout = tf.placeholder(dtype=tf.float32,
-									  name="dropout")
-		self.char_length = tf.placeholder(dtype=tf.int32,
-										  name="char_length")
+                self.labels = tf.placeholder(dtype=tf.int32,shape=[None, None],name="labels")
+                self.dropout = tf.placeholder(dtype=tf.float32,name="dropout")
+                self.char_length = tf.placeholder(dtype=tf.int32, name="char_length")
 
-		if config.ELMo:
-			self.ELMo_input1 = tf.placeholder(dtype=tf.float32,
+                if config.ELMo:
+                        self.ELMo_input1 = tf.placeholder(dtype=tf.float32,
 										shape=[None, None, 1024],
 										name="ELMo_input1")
-			self.ELMo_input2 = tf.placeholder(dtype=tf.float32,
-											  shape=[None, None, 1024],
-											  name="ELMo_input2")
+                        self.ELMo_input2 = tf.placeholder(dtype=tf.float32, shape=[None, None, 1024],name="ELMo_input2")
 
 	def get_input_embeddings(self):
 		char_used = tf.sign(tf.abs(self.char_inputs))
@@ -141,7 +110,7 @@ class Model(object):
 		char_positioning_encoded = self.get_positioning_encoding(char_embedding)
 		char_positioning_encoded = tf.nn.dropout(char_positioning_encoded, self.dropout)
 
-		self.input_encoding = tf.concat([word_embed, char_positioning_encoded, self.binary_vector, self.predicate_distances], axis=-1)
+		self.input_encoding = tf.concat([word_embed, char_positioning_encoded, self.binary_vector, self.predicate_distances, self.word_berts1], axis=-1)
 		if config.ELMo:
 			self.ELMo_input1 = tf.nn.dropout(self.ELMo_input1, self.dropout)
 			self.ELMo_input2 = tf.nn.dropout(self.ELMo_input2, self.dropout)
@@ -367,47 +336,56 @@ class Model(object):
 
 
 	def create_feed_dict(self, sess, ELMo_context, ELMo_ids, is_train, batch):
-		words1, words2, words3, words4, pumsas1, pumsas2, pumsas3, pumsas4, \
-		ELMo_inputs, w1_idxs, w2_idxs, chars, labels, lemmas, predicate_idxs, predicate_boolean, \
-		predicate_words1, predicate_words2, predicate_pumsas1, predicate_pumsas2, predicate_distances, role_inputs, _ = batch
+                words1, words2, words3, words4, pumsas1, pumsas2, pumsas3, pumsas4, \
+                ELMo_inputs, w1_idxs, w2_idxs, chars, labels, lemmas, predicate_idxs, predicate_boolean, \
+                predicate_words1, predicate_words2, predicate_pumsas1, predicate_pumsas2, predicate_distances, role_inputs, _ ,word_bert1= batch
 
-		char_length = get_word_length(chars, self.char2idx["<PAD>"])
+                char_length = get_word_length(chars, self.char2idx["<PAD>"])
 
 		# get ELMo embeddings
-		if config.ELMo:
-			w1_ELMo_contexts, w2_ELMo_contexts = self.get_ELMo_embeddings(sess, ELMo_context, ELMo_ids, ELMo_inputs, w1_idxs, w2_idxs)
+                if config.ELMo:
+                        w1_ELMo_contexts, w2_ELMo_contexts = self.get_ELMo_embeddings(sess, ELMo_context, ELMo_ids, ELMo_inputs, w1_idxs, w2_idxs)
 
-		feed_dict = {
-			self.word_inputs1: np.array(words1),
-			self.word_inputs2: np.array(words2),
-			self.word_inputs3: np.array(words3),
-			self.word_inputs4: np.array(words4),
-			self.pumsa_inputs1: np.array(pumsas1),
-			self.pumsa_inputs2: np.array(pumsas2),
-			self.pumsa_inputs3: np.array(pumsas3),
-			self.pumsa_inputs4: np.array(pumsas4),
-			self.char_inputs: np.array(chars),
-			self.dropout: 1.0,
-			self.char_length: char_length,
-			self.predicate_words1: np.array(predicate_words1),
-			self.predicate_words2: np.array(predicate_words2),
-			self.predicate_pumsas1: np.array(predicate_pumsas1),
-			self.predicate_pumsas2: np.array(predicate_pumsas2),
-			self.input_lemma: np.array(lemmas),
-			self.binary_vector: np.array(predicate_boolean),
-			self.input_roles: np.array(role_inputs),
-			self.predicate_distances: np.array(predicate_distances),
-			self.predicate_idxs: np.array(predicate_idxs)
-		}
+                words1_nparray = np.array(words1)
+                words1_num = words1_nparray.shape[1]
+                word_bert1_ex = np.array(word_bert1)
+                word_bert1_expand = np.expand_dims(word_bert1_ex, axis=1)
+                for i in range(words1_num-1):
+                    word_bert1_expand = np.append(word_bert1_expand, np.expand_dims(np.array(word_bert1), axis=1), axis=1)
 
-		if config.ELMo:
-			feed_dict[self.ELMo_input1] = np.array(w1_ELMo_contexts)
-			feed_dict[self.ELMo_input2] = np.array(w2_ELMo_contexts)
-		if is_train:
-			feed_dict[self.labels] = np.asarray(labels)
-			feed_dict[self.dropout] = config.dropout
 
-		return feed_dict
+                feed_dict = {
+                        self.word_inputs1: np.array(words1),
+                        self.word_inputs2: np.array(words2),
+                        self.word_inputs3: np.array(words3),
+                        self.word_inputs4: np.array(words4),
+                        self.pumsa_inputs1: np.array(pumsas1),
+                        self.pumsa_inputs2: np.array(pumsas2),
+                        self.pumsa_inputs3: np.array(pumsas3),
+                        self.pumsa_inputs4: np.array(pumsas4),
+                        self.char_inputs: np.array(chars),
+                        self.dropout: 1.0,
+                        self.char_length: char_length,
+                        self.predicate_words1: np.array(predicate_words1),
+                        self.predicate_words2: np.array(predicate_words2),
+                        self.predicate_pumsas1: np.array(predicate_pumsas1),
+                        self.predicate_pumsas2: np.array(predicate_pumsas2),
+                        self.input_lemma: np.array(lemmas),
+                        self.binary_vector: np.array(predicate_boolean),
+                        self.input_roles: np.array(role_inputs),
+                        self.predicate_distances: np.array(predicate_distances),
+                        self.predicate_idxs: np.array(predicate_idxs),
+                        self.word_berts1: np.array(word_bert1_expand)
+                }
+
+                if config.ELMo:
+                        feed_dict[self.ELMo_input1] = np.array(w1_ELMo_contexts)
+                        feed_dict[self.ELMo_input2] = np.array(w2_ELMo_contexts)
+                if is_train:
+                        feed_dict[self.labels] = np.asarray(labels)
+                        feed_dict[self.dropout] = config.dropout
+
+                return feed_dict
 
 	def get_ELMo_embeddings(self, sess, ELMo_context, ELMo_ids, ELMo_inputs, w1_idxs, w2_idxs):
 		ELMo_context_input = sess.run(

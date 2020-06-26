@@ -4,3 +4,5 @@ hanja==0.11.0
 numpy==1.15.4
 tensorflow==1.14.0
 typing==3.7.4
+bert-serving-server
+bert-serving-client

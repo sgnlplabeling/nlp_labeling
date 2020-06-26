@@ -11,16 +11,21 @@
 본 프로그램을 이용한 모든 결과물은 본 프로그램의 주소가 참조되어야 합니다.
 
 참조 사이트 : https://github.com/sgnlplabeling/nlp_labeling
+BERT module 참조 : https://github.com/hanxiao/bert-as-service
+Pretrained model : https://github.com/google-research/bert
+
 
 ### 개발 환경 (src/requirements.txt 참조)
 ```
 Pyhton==3.5.6
 h5py==2.8.0
-tensorflow_gpu==1.6.0
+tensorflow_gpu==1.10.0
 hanja==0.11.0
 numpy==1.15.4
 tensorflow==1.14.0
 typing==3.7.4
+bert-serving-server
+bert_serving-client
 ```
 
 ### 예시 문장
@@ -60,6 +65,8 @@ typing==3.7.4
 4. 술어 index는 0부터 시작
 5. 초기 학습시, 파라미터는 config.py에서 수정 가능
 6. 한국어 ELMo 소스코드는 https://github.com/allenai/bilm-tf 를 참고하여 한국어 특성에 적합하게 수정함
+7. BERT의 pretrained model은 multilingual_L-12_H-768_A-12 사용, module 형태로 결합되어 preprocessing단계에서 작동
+8. pretrained model file은 용량 관계상 참조 사이트에서 별도로 다운받아야 함
  
 ### 실행 방법
  
@@ -67,4 +74,6 @@ typing==3.7.4
  
  pip install -r requirements.txt
  
+ data/bert_socket 경로에서 bert-serving-start -model_dir ../multilingual_L-12_H-768_A-12/ -num_worker=4 
+
  python src/main.py
