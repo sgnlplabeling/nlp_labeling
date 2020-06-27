@@ -12,9 +12,9 @@
 
 참조 사이트 : https://github.com/sgnlplabeling/nlp_labeling
 
-** *** 2020.06.26 업데이트 *** **
+### 2020.06.26 업데이트 내용
 
-입력 베딩으로 BERT 적용 
+입력 베딩으로 한국어 BERT 적용 
 
 BERT module 참조 : https://github.com/hanxiao/bert-as-service
 
