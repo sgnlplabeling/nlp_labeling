@@ -12,7 +12,7 @@
 
 참조 사이트 : https://github.com/sgnlplabeling/nlp_labeling
 
-***** 2020.06.26 업데이트 *****
+** *** 2020.06.26 업데이트 *** **
 
 입력 베딩으로 BERT 적용 
 
