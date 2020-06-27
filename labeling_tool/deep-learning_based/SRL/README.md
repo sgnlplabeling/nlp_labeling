@@ -2,7 +2,7 @@
 
 작성자 : 김병재(wizard3021@naver.com)
 
-개발 : 김병재(wizard3021@naver.com, 석사과정)
+개발 : 김병재(wizard3021@naver.com, 박사과정)
 
 관리자 : 김주애(jju75474@gmail.com, 박사과정)
 
@@ -12,13 +12,15 @@
 
 참조 사이트 : https://github.com/sgnlplabeling/nlp_labeling
 
-***** 06.26 업데이트 *****
+***** 2020.06.26 업데이트 *****
 
 입력 베딩으로 BERT 적용 
 
 BERT module 참조 : https://github.com/hanxiao/bert-as-service
 
 Pretrained model : https://github.com/google-research/bert
+
+********************************
 
 
 ### 개발 환경 (src/requirements.txt 참조)
